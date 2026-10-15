@@ -1,12 +1,33 @@
 """Overlay HY3 transport/model settings on pinned author configs; no vendor edits."""
 import copy
 import json
+import os
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT / "vendor" / "daedalus"
+
+# Overnight full-benchmark concurrency. Tunable at build time without editing code;
+# defaults keep the shared HY3/taiji pool at a moderate load (see reproduction notes).
+EXPLORERS = int(os.environ.get("PREDICTMEM_EXPLORERS", "6"))
+PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "6"))
+
+
+def _reuse_coverage(benchmark: str) -> str | None:
+    """Return the latest saved HY3 coverage survey for `benchmark`, if any.
+
+    The survey is benchmark-wide (task taxonomy), so a completed smoke survey is
+    valid input for the full generation run and avoids re-paying the one-time
+    ~19 min / ~1.85M token survey cost.
+    """
+    for name in (f"hy3_{benchmark}_generation_smoke2",
+                 f"hy3_{benchmark}_generation_smoke"):
+        path = VENDOR / "outputs" / "daedalus" / name / "coverage_tags.txt"
+        if path.exists():
+            return f"outputs/daedalus/{name}/coverage_tags.txt"
+    return None
 
 
 def build():
@@ -28,9 +49,10 @@ def build():
                 explorer_model="openai/hy3", explorer_reasoning_effort="high",
                 judge_model="openai/hy3", judge_reasoning_effort="high")
             if phase == "generation":
-                cfg["generation"].update(coverage_tags_path=None,
-                                          num_sessions=74 if benchmark == "tau2" else 90,
-                                          num_explorers=1)
+                cfg["generation"].update(
+                    coverage_tags_path=_reuse_coverage(benchmark),
+                    num_sessions=74 if benchmark == "tau2" else 90,
+                    num_explorers=EXPLORERS)
                 if benchmark == "tau2":
                     cfg["tau2"]["task_split"] = "train"
             if benchmark == "tau2":
@@ -40,7 +62,7 @@ def build():
             cfg["cost_accounting"] = {"enabled": True,
                                       "require_complete_estimates": False}
             cfg["run"] = {"num_runs": 5 if phase != "generation" else 1,
-                          "parallel": 1}
+                          "parallel": PARALLEL}
             if phase == "baseline":
                 cfg["memory"] = {"enabled": False}
             elif phase == "memory":
