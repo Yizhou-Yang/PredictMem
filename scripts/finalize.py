@@ -49,16 +49,20 @@ def main() -> None:
 
     status = {
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "stage": "full DAEDALUS HY3 reproduction (overnight)",
+        "stage": "full DAEDALUS + ACE HY3 reproduction (overnight)",
         "phases": {
             "tau2_generation": done.get("tau2_generation", "pending"),
             "tau2_consolidate": done.get("tau2_consolidate", "pending"),
             "tau2_baseline": done.get("tau2_baseline", "pending"),
             "tau2_memory": done.get("tau2_memory", "pending"),
+            "tau2_ace_accumulation": done.get("tau2_ace_accumulation", "pending"),
+            "tau2_ace_inference": done.get("tau2_ace_inference", "pending"),
             "appworld_generation": done.get("appworld_generation", "pending"),
             "appworld_consolidate": done.get("appworld_consolidate", "pending"),
             "appworld_baseline": done.get("appworld_baseline", "pending"),
             "appworld_memory": done.get("appworld_memory", "pending"),
+            "appworld_ace_accumulation": done.get("appworld_ace_accumulation", "pending"),
+            "appworld_ace_inference": done.get("appworld_ace_inference", "pending"),
         },
         "benchmarks": full.get("benchmarks", {}),
         "protocol": full.get("protocol", {}),
@@ -68,11 +72,14 @@ def main() -> None:
     (ROOT / "results" / "status.json").write_text(json.dumps(status, indent=2) + "\n")
 
     # Compact human summary.
-    lines = ["PredictMem DAEDALUS HY3 reproduction — status",
+    lines = ["PredictMem DAEDALUS + ACE HY3 reproduction — status",
              f"updated {status['updated_at']}"]
     for bench, b in status["benchmarks"].items():
         g = b.get("generation", {})
         d = b.get("memory_minus_baseline")
+        da = b.get("ace_minus_baseline")
+        ace = b.get("ace", {}).get("inference", {})
+        acc = b.get("ace", {}).get("accumulation", {})
         lines.append(f"\n[{bench}]")
         lines.append(f"  generation: tasks={g.get('num_tasks')} "
                      f"heuristics={g.get('num_heuristics')} "
@@ -85,6 +92,13 @@ def main() -> None:
         if d:
             lines.append(f"  Δ memory−baseline: {d['delta_pp']} pp "
                          f"(base {d['baseline']} → mem {d['memory']})")
+        lines.append(f"  ACE accumulation: {acc.get('status')} "
+                     f"tasks={acc.get('num_tasks')} bullets={acc.get('num_bullets')}")
+        lines.append(f"  ACE inference: {ace.get('status')} "
+                     f"sr={ace.get('success_rate_mean')}")
+        if da:
+            lines.append(f"  Δ ACE−baseline: {da['delta_pp']} pp "
+                         f"(base {da['baseline']} → ace {da['memory']})")
     print("\n".join(lines))
 
 

@@ -2,9 +2,10 @@
 
 tau2 hard-codes its natural-language assertion evaluator to
 ``gpt-4.1-2025-04-14`` (``tau2.config.DEFAULT_LLM_NL_ASSERTIONS``) and binds that
-value into ``tau2.evaluator.evaluator_nl_assertions`` at import time, so
-DAEDALUS's ``generation.judge_model`` never reaches it. This script re-points
-that module-level binding to HY3 before invoking the upstream entry point.
+value into ``tau2.evaluator.evaluator_nl_assertions`` at import time, so neither
+DAEDALUS's ``generation.judge_model`` nor the ``references/*`` methods reach it.
+This script re-points that module-level binding to HY3 before invoking the
+upstream entry point, then dispatches to the requested driver.
 
 PROTOCOL CHANGE — not a silent alias. The official tau2 evaluator is gpt-4.1;
 here the same HY3 backbone judges HY3-generated trajectories, which introduces a
@@ -25,17 +26,25 @@ _nl.DEFAULT_LLM_NL_ASSERTIONS_ARGS = {"temperature": 0.0}
 def _entry() -> None:
     if len(sys.argv) < 2:
         raise SystemExit(
-            "usage: tau2_hy3_eval.py {generation|inference} <upstream args...>"
+            "usage: tau2_hy3_eval.py "
+            "{generation|inference|ace_accumulation|ace_inference} <upstream args...>"
         )
     entry, rest = sys.argv[1], sys.argv[2:]
     sys.argv = [sys.argv[0], *rest]
     if entry == "generation":
         from daedalus.scripts.generation import main
+        main()
     elif entry == "inference":
         from daedalus.scripts.inference import main
+        main()
+    elif entry == "ace_accumulation":
+        from references.ace.accumulation import main
+        main()
+    elif entry == "ace_inference":
+        import references.ace.run as ace_run
+        ace_run.main(ace_run.METHOD)
     else:
         raise SystemExit(f"unknown entry point: {entry}")
-    main()
 
 
 if __name__ == "__main__":

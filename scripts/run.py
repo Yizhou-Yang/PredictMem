@@ -11,7 +11,8 @@ VENDOR = ROOT / "vendor" / "daedalus"
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("phase", choices=("baseline", "smoke", "generation", "generation_smoke", "memory", "consolidate"))
+    parser.add_argument("phase", choices=("baseline", "smoke", "generation", "generation_smoke",
+                                          "memory", "consolidate", "ace_accumulation", "ace_inference"))
     parser.add_argument("benchmark", choices=("tau2", "appworld"))
     args, extra = parser.parse_known_args()
     from dotenv import load_dotenv
@@ -28,6 +29,19 @@ def main():
         cmd = [sys.executable, "-m", "daedalus.scripts.consolidate",
                f"outputs/daedalus/hy3_{args.benchmark}_generation",
                "--model", "openai/hy3", "--reasoning-effort", "high", "--strategy", "single"]
+    elif args.phase in ("ace_accumulation", "ace_inference"):
+        # ACE reference method (references/ace): accumulation grows the playbook over
+        # the train split; inference injects it verbatim on the test split.
+        ace_phase = "accumulation" if args.phase == "ace_accumulation" else "inference"
+        config_path = str(ROOT / "configs" / f"ace_{args.benchmark}_{ace_phase}.yaml")
+        if args.benchmark == "tau2":
+            # tau2's NL-assertions judge is hard-coded; route through the HY3 shim.
+            shim_entry = "ace_accumulation" if args.phase == "ace_accumulation" else "ace_inference"
+            cmd = [sys.executable, str(ROOT / "scripts" / "tau2_hy3_eval.py"),
+                   shim_entry, "--config", config_path, *extra]
+        else:
+            module = f"references.ace.{'accumulation' if args.phase == 'ace_accumulation' else 'run'}"
+            cmd = [sys.executable, "-m", module, "--config", config_path, *extra]
     else:
         module = "generation" if args.phase.startswith("generation") else "inference"
         config_path = str(ROOT / "configs" / f"{args.benchmark}_{args.phase}.yaml")
