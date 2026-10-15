@@ -30,8 +30,17 @@ def main():
                "--model", "openai/hy3", "--reasoning-effort", "high", "--strategy", "single"]
     else:
         module = "generation" if args.phase.startswith("generation") else "inference"
-        cmd = [sys.executable, "-m", f"daedalus.scripts.{module}", "--config",
-               str(ROOT / "configs" / f"{args.benchmark}_{args.phase}.yaml"), *extra]
+        config_path = str(ROOT / "configs" / f"{args.benchmark}_{args.phase}.yaml")
+        if args.benchmark == "tau2":
+            # tau2's internal NL-assertions judge is hard-coded to gpt-4.1 and bound
+            # at import time, so generation.judge_model cannot reach it. Route tau2
+            # through an explicit HY3-evaluator shim (see tau2_hy3_eval.py) rather than
+            # silently aliasing the model name.
+            cmd = [sys.executable, str(ROOT / "scripts" / "tau2_hy3_eval.py"),
+                   module, "--config", config_path, *extra]
+        else:
+            cmd = [sys.executable, "-m", f"daedalus.scripts.{module}", "--config",
+                   config_path, *extra]
     import json
     lock = json.loads((ROOT / "sources.lock.json").read_text())
     for path, expected in {".": lock["daedalus"]["commit"],
