@@ -1,0 +1,48 @@
+{
+  "project": "PredictMem",
+  "status": "engineering scaffold and train-only smoke verified; full reproduction incomplete",
+  "competitors": [
+    {"method": "DAEDALUS", "role": "primary experience-memory baseline", "implementation": "pinned official source, no tracked core edits"},
+    {"method": "ACE", "role": "incremental playbook baseline", "implementation": "not yet implemented; DAEDALUS references/ace is a reimplementation, not original ACE"},
+    {"method": "SelfSuite", "role": "state-validation/retry control comparator", "implementation": "no public official implementation found in prior review; not yet reimplemented"}
+  ],
+  "deviations": [
+    "HY3 replaces both solver and auxiliary models; not original closed-model absolute score reproduction.",
+    "HY3 high effort is explicitly requested for solver/explorer/judge/simulator/consolidation; effective server behavior is not independently measured.",
+    "Standard DAEDALUS generation extractor keeps the official no-effort behavior.",
+    "tau2 user simulator is HY3 rather than official gpt-4.1-2025-04-14; report this as a separate simulator protocol arm.",
+    "Fresh HY3 coverage survey replaces the official saved survey; survey remains enabled.",
+    "Concurrency is one for service load control; this differs from official concurrent exploration and must be recorded.",
+    "tau2 internal natural-language assertions evaluator is independently hardcoded to gpt-4.1-2025-04-14 and is NOT overridden by generation.judge_model; generation smoke blocked on this dependency.",
+    "Official client may retry ambiguous billed requests; relay itself does not retry. Actual ledger attempts are not equal to logical generate calls."
+  ],
+  "information_boundary": {
+    "smoke": "train only",
+    "memory_construction": "official self-generated tasks, no benchmark hidden task-success labels",
+    "official_task_evaluation": "official evaluator and splits; do not replace silently",
+    "test_bank": "must freeze and hash before final paired evaluation",
+    "predictmem_method": "not implemented or trained in this scaffold"
+  },
+  "price": "unknown/null; zero priced subtotal is not a zero dollar bill",
+  "licenses": "Upstream MIT source referenced by lock file; benchmark datasets/source bundles/raw AppWorld artifacts excluded from redistribution. Follow upstream dataset licenses separately.",
+  "commands": {
+    "bootstrap": "python scripts/bootstrap.py",
+    "environment": "cd vendor/daedalus && .venv/bin/python ../../scripts/check_environment.py",
+    "upstream_tests": "cd vendor/daedalus && .venv/bin/python -m pytest -q",
+    "relay_tests": "vendor/daedalus/.venv/bin/python -m pytest scripts/test_relay.py -q",
+    "relay": "Set HY3_UPSTREAM_URL and HY3_KEY_FILE at runtime, then vendor/daedalus/.venv/bin/python scripts/relay.py (loopback only).",
+    "probe": "Set OPENAI_BASE_URL and OPENAI_API_KEY at runtime, then vendor/daedalus/.venv/bin/python scripts/probe_hy3.py",
+    "train_smoke": "vendor/daedalus/.venv/bin/python scripts/run.py smoke appworld (or tau2)",
+    "generation_smoke": "vendor/daedalus/.venv/bin/python scripts/run.py generation_smoke appworld (or tau2); real calls and full survey, potentially expensive.",
+    "generation": "vendor/daedalus/.venv/bin/python scripts/run.py generation appworld (or tau2); do not launch before resolving blockers.",
+    "consolidate": "vendor/daedalus/.venv/bin/python scripts/run.py consolidate appworld (or tau2)",
+    "paired_eval": "vendor/daedalus/.venv/bin/python scripts/run.py baseline appworld; vendor/daedalus/.venv/bin/python scripts/run.py memory appworld; likewise tau2. Configured for five repetitions. Not yet executed."
+  },
+  "blockers": [
+    "GitHub integration has read but no content-write access (403); SSH has no usable public-key credential.",
+    "tau2 internal official gpt-4.1 evaluator must have its own authorized route, or an explicit HY3-evaluator adaptation must be separately labeled and validated; never silently alias gpt-4.1 to HY3.",
+    "HY3 simulator ended the observed train case before exchange execution; validate simulator arm before final benchmarking.",
+    "AppWorld generation smoke interrupted after approximately 39 minutes in the generated-task judge call; not a completed memory bank.",
+    "No consolidated bank, full paired test evaluation, ACE result, SelfSuite result, or PredictMem trained-method result."
+  ]
+}
