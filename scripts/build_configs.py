@@ -52,6 +52,12 @@ def build():
         cfg = yaml.safe_load((out / f"{benchmark}_generation.yaml").read_text())
         cfg["experiment_name"] = f"hy3_{benchmark}_generation_smoke"
         cfg["generation"]["num_sessions"] = 1
+        # Reuse a prior smoke's completed coverage survey when available, so a
+        # single-session smoke does not re-pay the one-time survey cost.
+        prior_cov = f"outputs/daedalus/hy3_{benchmark}_generation_smoke/coverage_tags.txt"
+        if (VENDOR / prior_cov).exists():
+            cfg["experiment_name"] = f"hy3_{benchmark}_generation_smoke2"
+            cfg["generation"]["coverage_tags_path"] = prior_cov
         (out / f"{benchmark}_generation_smoke.yaml").write_text(
             yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
         # Smoke uses TRAIN only, preserving test tasks for final paired evaluation.
