@@ -15,6 +15,10 @@ VENDOR = ROOT / "vendor" / "daedalus"
 # default 5, appworld 3). Recorded as a deviation in reproduction_protocol.json.
 EXPLORERS = int(os.environ.get("PREDICTMEM_EXPLORERS", "12"))
 PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "24"))
+# Separate throughput setting, NOT a fix for truncated runs. Audit identified the
+# pinned task pool's 1500-second GLOBAL deadline; force-reap does not prove overload.
+# runtime_safety fixes the deadline and terminal acceptance independently.
+PARALLEL_APPWORLD = int(os.environ.get("PREDICTMEM_PARALLEL_APPWORLD", "12"))
 
 
 def _reuse_coverage(benchmark: str) -> str | None:
@@ -64,7 +68,7 @@ def build():
             cfg["cost_accounting"] = {"enabled": True,
                                       "require_complete_estimates": False}
             cfg["run"] = {"num_runs": 5 if phase != "generation" else 1,
-                          "parallel": PARALLEL}
+                          "parallel": PARALLEL_APPWORLD if benchmark == "appworld" else PARALLEL}
             if phase == "baseline":
                 cfg["memory"] = {"enabled": False}
             elif phase == "memory":

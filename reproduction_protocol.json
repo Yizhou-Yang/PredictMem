@@ -1,6 +1,30 @@
 {
   "project": "PredictMem",
-  "status": "DAEDALUS + ACE + ExpeL HY3 reproduction running overnight; full paired results pending",
+  "status": "Audit correction: original-paper reproduction not established; old complete labels and deltas withdrawn",
+  "audit": {
+    "superseded_commit": "f0a0ff1",
+    "paper_source": "https://arxiv.org/html/2610.08048v1#S4.T1",
+    "paper_table_1_msr_percent": {
+      "appworld": {"baseline": 44.3, "DAEDALUS": 60.2, "ACE": 60.5, "ExpeL": 59.0},
+      "tau2": {"baseline": 57.5, "DAEDALUS": 67.5, "ACE": 70.5, "ExpeL": 67.0}
+    },
+    "paper_table_1_pass_pow_5_percent": {
+      "appworld": {"baseline": 14.9, "DAEDALUS": 32.1, "ACE": 41.1, "ExpeL": 33.3},
+      "tau2": {"baseline": 22.5, "DAEDALUS": 37.5, "ACE": 37.5, "ExpeL": 37.5}
+    },
+    "paper_models": "gpt-5.4-mini solver default effort; gpt-5.4 auxiliaries high effort; tau2 user gpt-4.1-2025-04-14",
+    "paper_appworld_bank_selection": "90 retained sessions/88 accepted heuristics, including seven replacement sessions from scaling experiments; current HY3 bank has not reproduced this selection",
+    "confirmed_defects": [
+      "as_completed(timeout=1500) is an entire-pool global deadline, not inactivity; force-reap alone does not prove parallel-24 overload",
+      "Legacy trace existence/default success does not establish terminal completion; zero exit and done marker do not verify task sets",
+      "tau2 memory snapshot has 199/200 task scores, missing run_1 task38",
+      "AppWorld generation lacks sessions16,62; tau2 generation session47 is an error record",
+      "Unpinned sentence-transformers installation changed dependency environment; original frozen dependency equivalence not established"
+    ],
+    "explicit_runtime_fix": "scripts/runtime_safety.py: no-completion stall resets on completion; worker exceptions propagate; SHA256-bound normal-return markers; explicit CPU embedding; old output namespaces rejected",
+    "runtime_test_scope": "44 no-model CPU tests passed on any4; not full method or benchmark validation",
+    "acceptance": "Five exact official task-ID sets, score/trace agreement and SHA-bound terminal markers; freeze/hash method banks separately; no selective success retry"
+  },
   "competitors": [
     {"method": "DAEDALUS", "role": "primary experience-memory baseline", "implementation": "pinned official source, no tracked core edits"},
     {"method": "ACE", "role": "incremental playbook baseline", "implementation": "HY3 overlay on the pinned references/ace reimplementation (Generator/Reflector/Curator, offline no-ground-truth loop); sequential wave as in the paper"},
@@ -15,7 +39,7 @@
     "Standard DAEDALUS generation extractor keeps the official no-effort behavior.",
     "tau2 user simulator is HY3 rather than official gpt-4.1-2025-04-14; report this as a separate simulator protocol arm.",
     "Fresh HY3 coverage survey replaces the official saved survey; survey remains enabled (reused across the full generation run).",
-    "Concurrency raised because HY3 accepts high throughput: eval/inference parallel 24 (official 20) and generation explorers 12 (official default 5, appworld 3). ACE accumulation remains sequential wave parallel=1, which is the paper's faithful offline loop.",
+    "Recorded concurrency snapshots: tau2 inference 24, AppWorld config currently 12, generation explorers tau2 initial 6/AppWorld12. These are throughput settings, not evidence that lower concurrency repairs truncation. ACE accumulation stays sequential1. New runtime uses a true inactivity deadline.",
     "tau2 internal natural-language assertions evaluator is hardcoded to gpt-4.1-2025-04-14 and is NOT reached by generation.judge_model; it is now re-pointed to HY3 through an explicit, labeled shim (scripts/tau2_hy3_eval.py). This is a self-evaluation protocol change and must be reported as a separate HY3-evaluator arm.",
     "Official client may retry ambiguous billed requests; relay itself does not retry. Actual ledger attempts are not equal to logical generate calls.",
     "ACE is the references/ace reimplementation on daedalus's harness (solver prompt is daedalus's, empty seed playbook, Reflector/Curator on HY3), not the original ACE release; it measures the playbook, not a prompt change.",
@@ -23,8 +47,14 @@
   ],
   "information_boundary": {
     "smoke": "train only",
-    "memory_construction": "official self-generated tasks, no benchmark hidden task-success labels",
-    "official_task_evaluation": "official evaluator and splits; do not replace silently",
+    "memory_construction": {
+      "DAEDALUS": "self-generated tasks/conditions; no hidden benchmark task-success gold in memory construction",
+      "ACE": "train tasks, offline no-ground-truth playbook adaptation; single sequential rollout",
+      "ExpeL": "train tasks with success/failure feedback and Reflexion; not a no-gold comparator",
+      "test": "held-out test outcomes used only in final official evaluation, never memory construction"
+    },
+    "official_task_evaluation": "Pinned official splits/environment; tau2 simulator and NL assertions model explicitly changed to HY3. Not the original-model scoring protocol.",
+    "execution": "All non-training work and API experiments on any4 CPU, HY3 Taiji only; WorkBuddy API forbidden for experiments",
     "test_bank": "must freeze and hash before final paired evaluation",
     "predictmem_method": "not implemented or trained in this scaffold"
   },
@@ -49,7 +79,10 @@
   },
   "blockers": [
     "HY3 simulator ended the observed train case before exchange execution; validate simulator arm before final benchmarking.",
-    "AppWorld generation smoke interrupted after approximately 39 minutes in the generated-task judge call; not a completed memory bank.",
-    "No consolidated bank, full paired test evaluation, ACE/ExpeL result, or PredictMem trained-method result yet (overnight run in progress)."
+    "AppWorld generation 88/90 terminal sessions; tau2 generation 73 normal sessions plus one error; neither bank is verified complete.",
+    "Legacy inference snapshots lack terminal markers; tau2 DAEDALUS and all AppWorld comparisons are incomplete; all formal deltas withheld.",
+    "ACE/ExpeL bank and prompt-injection fidelity, dependency lock, HY3 simulator behavior and complete five-run evaluation remain to validate.",
+    "Relay wrapped HTTP/JSON transport failure; original upstream status and billing cannot be inferred from its 502 wrapper.",
+    "PredictMem method has not been trained or evaluated; no SOTA claim."
   ]
 }

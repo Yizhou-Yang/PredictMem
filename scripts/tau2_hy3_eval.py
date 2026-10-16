@@ -17,6 +17,11 @@ from __future__ import annotations
 
 import sys
 
+from runtime_safety import force_cpu, install
+
+# tau2/torch 等依赖导入之前强制 CPU，spawn 导入本入口时也生效。
+force_cpu()
+
 import tau2.evaluator.evaluator_nl_assertions as _nl
 
 _nl.DEFAULT_LLM_NL_ASSERTIONS = "openai/hy3"
@@ -30,6 +35,8 @@ def _entry() -> None:
             "{generation|inference|<method>_accumulation|<method>_inference} <upstream args...>"
         )
     entry, rest = sys.argv[1], sys.argv[2:]
+    method = entry.rsplit("_", 1)[0] if "_" in entry else None
+    install("tau2", method)
     sys.argv = [sys.argv[0], *rest]
     if entry == "generation":
         from daedalus.scripts.generation import main

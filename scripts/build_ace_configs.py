@@ -24,6 +24,9 @@ ACE_SRC = VENDOR / "references" / "ace" / "configs"
 # official 20 (see reproduction_protocol.json). Accumulation stays sequential (see
 # below) regardless of this value.
 PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "24"))
+# Separate throughput setting only. The confirmed truncation defect was a global
+# 1500-second task-pool deadline, not evidence that parallel 24 overloaded the CPU.
+PARALLEL_APPWORLD = int(os.environ.get("PREDICTMEM_PARALLEL_APPWORLD", "12"))
 
 
 def build() -> None:
@@ -49,7 +52,8 @@ def build() -> None:
                 # paper's sequential offline loop; wave size 1 (see module docstring)
                 cfg.setdefault("run", {})["parallel"] = 1
             else:
-                cfg["run"] = {"num_runs": 5, "parallel": PARALLEL}
+                cfg["run"] = {"num_runs": 5,
+                              "parallel": PARALLEL_APPWORLD if benchmark == "appworld" else PARALLEL}
             if benchmark == "tau2":
                 cfg.setdefault("tau2", {}).update(
                     user_llm="openai/hy3",

@@ -7,7 +7,8 @@ to HY3, matching how the DAEDALUS and ACE configs are overlaid.
 
 ExpeL replaces SelfSuite (no public code) as a reusable-benchmark, code-available
 experiential-learning baseline. It shares the exact same AppWorld / tau2 harness, solver,
-traces and scoring as DAEDALUS and ACE, so its delta is a like-for-like comparison.
+traces and scoring as DAEDALUS and ACE. Comparability still requires complete
+runs, matched protocol, frozen banks and verified terminal outcomes.
 
 Accumulation gathers experiences (ReAct+Reflexion, parallel over tasks) then extracts a
 single revisable insight list; inference injects that list plus the top-k similar successful
@@ -32,6 +33,9 @@ EXPEL_SRC = VENDOR / "references" / "expel" / "configs"
 # parallel over tasks; unlike ACE, >1 does not change the algorithm). HY3 accepts
 # high throughput, so this is raised above the official 20 (see protocol).
 PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "24"))
+# Separate throughput setting only; not a repair for the global task-pool deadline.
+# Force-reaped workers alone do not establish CPU/HY3 overload.
+PARALLEL_APPWORLD = int(os.environ.get("PREDICTMEM_PARALLEL_APPWORLD", "12"))
 
 
 def build() -> None:
@@ -55,13 +59,14 @@ def build() -> None:
                 reflection_model="openai/hy3",
                 reflection_reasoning_effort="high",
             )
+            par = PARALLEL_APPWORLD if benchmark == "appworld" else PARALLEL
             if phase == "accumulation":
                 # Keep the shared DAEDALUS extraction field honest too, though ExpeL
                 # reads expel.extraction_model for its insight extractor.
                 cfg.setdefault("accumulation", {}).update(extraction_model="openai/hy3")
-                cfg.setdefault("run", {})["parallel"] = PARALLEL
+                cfg.setdefault("run", {})["parallel"] = par
             else:
-                cfg.setdefault("run", {})["parallel"] = PARALLEL
+                cfg.setdefault("run", {})["parallel"] = par
                 # pin to this HY3 run's own insight pool
                 expel["insights_path"] = f"outputs/baselines/expel/memory/{name}/pool.json"
             cfg["expel"] = expel

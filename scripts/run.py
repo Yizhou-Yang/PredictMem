@@ -1,4 +1,4 @@
-"""Launch the unmodified official harness from its required working directory."""
+"""通过显式 runtime_safety shim 启动源码锁定的官方 harness。"""
 import argparse
 import os
 from pathlib import Path
@@ -26,6 +26,8 @@ def main():
     args, extra = parser.parse_known_args()
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env", override=False)
+    # 必须覆盖而非 setdefault；子进程与 spawn workers 均继承 CPU 约束。
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     if not os.environ.get("OPENAI_BASE_URL") or not os.environ.get("OPENAI_API_KEY"):
         parser.error("Supply OPENAI_BASE_URL and OPENAI_API_KEY at runtime; never commit credentials.")
     # Official tau2 simulator uses its own LiteLLM path, which reads API_BASE.
@@ -74,6 +76,13 @@ def main():
             raise SystemExit(f"Source revision mismatch: {path}")
         subprocess.run(["git", "diff", "--quiet"], cwd=VENDOR / path, check=True)
         subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=VENDOR / path, check=True)
+    # appworld/core/reference 的 -m 入口也必须先显式安装 shim。
+    if cmd[1] == "-m":
+        safety_args = ["--benchmark", args.benchmark]
+        if args.phase in REFERENCE_PHASES:
+            safety_args += ["--method", args.phase.rsplit("_", 1)[0]]
+        cmd = [cmd[0], str(ROOT / "scripts" / "runtime_safety.py"),
+               *safety_args, cmd[2], *cmd[3:]]
     # Invoke the locked project interpreter, not whichever Python launched this wrapper.
     cmd[0] = str(VENDOR / ".venv" / "bin" / "python")
     subprocess.run(cmd, cwd=VENDOR, env=os.environ.copy(), check=True)

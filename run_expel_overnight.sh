@@ -4,7 +4,7 @@
 # revisable insight list; inference injects the insight list + top-k similar successful
 # trajectories. Both phases run on HY3 (solver + reflection + extraction). Resumable via
 # phase markers and the accumulation's own per-task checkpoints.
-set -u
+set -euo pipefail
 cd /data/workspace/PredictMem
 PY=vendor/daedalus/.venv/bin/python
 STAMP=$(date +%Y%m%d_%H%M%S)
@@ -32,8 +32,9 @@ phase() {
     touch "$marker"
     return 0
   else
-    log "<<< FAIL $name (exit $?)"
-    return $?
+    local rc=$?
+    log "<<< FAIL $name (exit $rc)"
+    return "$rc"
   fi
 }
 
