@@ -1,9 +1,10 @@
 {
   "project": "PredictMem",
-  "status": "DAEDALUS + ACE HY3 reproduction running overnight; full paired results pending",
+  "status": "DAEDALUS + ACE + ExpeL HY3 reproduction running overnight; full paired results pending",
   "competitors": [
     {"method": "DAEDALUS", "role": "primary experience-memory baseline", "implementation": "pinned official source, no tracked core edits"},
-    {"method": "ACE", "role": "incremental playbook baseline", "implementation": "HY3 overlay on the pinned references/ace reimplementation (Generator/Reflector/Curator, offline no-ground-truth loop); sequential wave as in the paper"}
+    {"method": "ACE", "role": "incremental playbook baseline", "implementation": "HY3 overlay on the pinned references/ace reimplementation (Generator/Reflector/Curator, offline no-ground-truth loop); sequential wave as in the paper"},
+    {"method": "ExpeL", "role": "experiential-learning baseline replacing SelfSuite", "implementation": "HY3 overlay on the pinned references/expel reimplementation (experience gathering + insight extraction + top-k similar-trajectory recall); public code, same AppWorld/tau2 harness"}
   ],
   "dropped_competitors": [
     {"method": "SelfSuite", "reason": "no public implementation released; cannot be reproduced fairly or used as a verifiable comparator", "note": "removed from the competitor set per user decision"}
@@ -14,10 +15,11 @@
     "Standard DAEDALUS generation extractor keeps the official no-effort behavior.",
     "tau2 user simulator is HY3 rather than official gpt-4.1-2025-04-14; report this as a separate simulator protocol arm.",
     "Fresh HY3 coverage survey replaces the official saved survey; survey remains enabled (reused across the full generation run).",
-    "Concurrency is tunable (default 6) for service load control; this differs from official concurrent exploration and must be recorded.",
+    "Concurrency raised because HY3 accepts high throughput: eval/inference parallel 24 (official 20) and generation explorers 12 (official default 5, appworld 3). ACE accumulation remains sequential wave parallel=1, which is the paper's faithful offline loop.",
     "tau2 internal natural-language assertions evaluator is hardcoded to gpt-4.1-2025-04-14 and is NOT reached by generation.judge_model; it is now re-pointed to HY3 through an explicit, labeled shim (scripts/tau2_hy3_eval.py). This is a self-evaluation protocol change and must be reported as a separate HY3-evaluator arm.",
     "Official client may retry ambiguous billed requests; relay itself does not retry. Actual ledger attempts are not equal to logical generate calls.",
-    "ACE is the references/ace reimplementation on daedalus's harness (solver prompt is daedalus's, empty seed playbook, Reflector/Curator on HY3), not the original ACE release; it measures the playbook, not a prompt change."
+    "ACE is the references/ace reimplementation on daedalus's harness (solver prompt is daedalus's, empty seed playbook, Reflector/Curator on HY3), not the original ACE release; it measures the playbook, not a prompt change.",
+    "ExpeL is the references/expel reimplementation on daedalus's harness (solver, reflection and insight extraction all on HY3), not the original ExpeL repo; its reflector is HY3 (upstream configs also diverge from ExpeL's policy-model reflector). Accumulation parallelism is a throughput knob only, so it is set from PREDICTMEM_PARALLEL rather than the upstream 20."
   ],
   "information_boundary": {
     "smoke": "train only",
@@ -41,11 +43,13 @@
     "consolidate": "vendor/daedalus/.venv/bin/python scripts/run.py consolidate appworld (or tau2)",
     "paired_eval": "vendor/daedalus/.venv/bin/python scripts/run.py baseline appworld; vendor/daedalus/.venv/bin/python scripts/run.py memory appworld; likewise tau2. Configured for five repetitions.",
     "ace_accumulation": "vendor/daedalus/.venv/bin/python scripts/run.py ace_accumulation appworld (or tau2)",
-    "ace_inference": "vendor/daedalus/.venv/bin/python scripts/run.py ace_inference appworld (or tau2)"
+    "ace_inference": "vendor/daedalus/.venv/bin/python scripts/run.py ace_inference appworld (or tau2)",
+    "expel_accumulation": "vendor/daedalus/.venv/bin/python scripts/run.py expel_accumulation appworld (or tau2)",
+    "expel_inference": "vendor/daedalus/.venv/bin/python scripts/run.py expel_inference appworld (or tau2)"
   },
   "blockers": [
     "HY3 simulator ended the observed train case before exchange execution; validate simulator arm before final benchmarking.",
     "AppWorld generation smoke interrupted after approximately 39 minutes in the generated-task judge call; not a completed memory bank.",
-    "No consolidated bank, full paired test evaluation, ACE result, or PredictMem trained-method result yet (overnight run in progress)."
+    "No consolidated bank, full paired test evaluation, ACE/ExpeL result, or PredictMem trained-method result yet (overnight run in progress)."
   ]
 }

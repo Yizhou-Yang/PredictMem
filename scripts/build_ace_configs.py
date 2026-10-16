@@ -20,7 +20,10 @@ ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT / "vendor" / "daedalus"
 ACE_SRC = VENDOR / "references" / "ace" / "configs"
 
-PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "6"))
+# Inference parallelism. HY3 accepts high throughput, so this is raised above the
+# official 20 (see reproduction_protocol.json). Accumulation stays sequential (see
+# below) regardless of this value.
+PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "24"))
 
 
 def build() -> None:

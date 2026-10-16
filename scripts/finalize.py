@@ -20,15 +20,14 @@ def _run(cmd: list[str]) -> subprocess.CompletedProcess:
 
 
 def phase_markers() -> dict[str, str]:
-    """Map phase -> done/failed from the latest overnight marker set."""
+    """Map phase -> done/failed from the latest overnight marker set.
+
+    Marker files are named ``logs/.mark[_<prefix>]_<STAMP>.<phase>.done``; the phase is
+    the segment between the final dot and ``.done`` (``p.stem`` already drops ``.done``).
+    """
     markers = {}
-    marks = sorted(ROOT.glob("logs/.mark_*.done"))
-    if not marks:
-        return markers
-    base = marks[0].stem  # logs/.mark_<STAMP>.<phase>.done
-    for p in marks:
-        phase = p.stem.rsplit(".", 1)[0].split("_", 1)[1]
-        markers[phase] = "done"
+    for p in sorted(ROOT.glob("logs/.mark_*.done")):
+        markers[p.stem.rsplit(".", 1)[1]] = "done"
     return markers
 
 
@@ -49,7 +48,7 @@ def main() -> None:
 
     status = {
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "stage": "full DAEDALUS + ACE HY3 reproduction (overnight)",
+        "stage": "full DAEDALUS + ACE + ExpeL HY3 reproduction (overnight)",
         "phases": {
             "tau2_generation": done.get("tau2_generation", "pending"),
             "tau2_consolidate": done.get("tau2_consolidate", "pending"),
@@ -57,12 +56,16 @@ def main() -> None:
             "tau2_memory": done.get("tau2_memory", "pending"),
             "tau2_ace_accumulation": done.get("tau2_ace_accumulation", "pending"),
             "tau2_ace_inference": done.get("tau2_ace_inference", "pending"),
+            "tau2_expel_accumulation": done.get("tau2_expel_accumulation", "pending"),
+            "tau2_expel_inference": done.get("tau2_expel_inference", "pending"),
             "appworld_generation": done.get("appworld_generation", "pending"),
             "appworld_consolidate": done.get("appworld_consolidate", "pending"),
             "appworld_baseline": done.get("appworld_baseline", "pending"),
             "appworld_memory": done.get("appworld_memory", "pending"),
             "appworld_ace_accumulation": done.get("appworld_ace_accumulation", "pending"),
             "appworld_ace_inference": done.get("appworld_ace_inference", "pending"),
+            "appworld_expel_accumulation": done.get("appworld_expel_accumulation", "pending"),
+            "appworld_expel_inference": done.get("appworld_expel_inference", "pending"),
         },
         "benchmarks": full.get("benchmarks", {}),
         "protocol": full.get("protocol", {}),
@@ -72,14 +75,17 @@ def main() -> None:
     (ROOT / "results" / "status.json").write_text(json.dumps(status, indent=2) + "\n")
 
     # Compact human summary.
-    lines = ["PredictMem DAEDALUS + ACE HY3 reproduction — status",
+    lines = ["PredictMem DAEDALUS + ACE + ExpeL HY3 reproduction — status",
              f"updated {status['updated_at']}"]
     for bench, b in status["benchmarks"].items():
         g = b.get("generation", {})
         d = b.get("memory_minus_baseline")
         da = b.get("ace_minus_baseline")
+        dx = b.get("expel_minus_baseline")
         ace = b.get("ace", {}).get("inference", {})
         acc = b.get("ace", {}).get("accumulation", {})
+        expel = b.get("expel", {}).get("inference", {})
+        exacc = b.get("expel", {}).get("accumulation", {})
         lines.append(f"\n[{bench}]")
         lines.append(f"  generation: tasks={g.get('num_tasks')} "
                      f"heuristics={g.get('num_heuristics')} "
@@ -99,6 +105,13 @@ def main() -> None:
         if da:
             lines.append(f"  Δ ACE−baseline: {da['delta_pp']} pp "
                          f"(base {da['baseline']} → ace {da['memory']})")
+        lines.append(f"  ExpeL accumulation: {exacc.get('status')} "
+                     f"tasks={exacc.get('num_tasks')} insights={exacc.get('num_insights')}")
+        lines.append(f"  ExpeL inference: {expel.get('status')} "
+                     f"sr={expel.get('success_rate_mean')}")
+        if dx:
+            lines.append(f"  Δ ExpeL−baseline: {dx['delta_pp']} pp "
+                         f"(base {dx['baseline']} → expel {dx['memory']})")
     print("\n".join(lines))
 
 

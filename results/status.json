@@ -1,26 +1,370 @@
 {
-  "stage": "pinned harness installed; transport, train-only no-memory smoke, tau2 evaluator adaptation, and tau2 generation+consolidation verified",
-  "upstream_tests": {"passed": 365, "skipped": 4, "warnings": 2, "seconds": 13.15},
-  "project_tests": {"passed": 6, "detail": "relay boundary (4) + tau2 HY3-evaluator shim (2)"},
-  "ruff": "passed",
-  "tau2_nl_evaluator": {
-    "status": "adapted and verified",
-    "mechanism": "scripts/tau2_hy3_eval.py re-points tau2.evaluator.evaluator_nl_assertions to openai/hy3 before the entry point; explicit, not a silent alias.",
-    "verification": {"model": "openai/hy3", "round_trip": "passed", "met": true, "note": "single bounded evaluator call; not a benchmark score"},
-    "protocol_note": "Self-evaluation arm: HY3 judges HY3-generated trajectories; report separately from official gpt-4.1 tau2 evaluation."
+  "updated_at": "2026-10-16T02:31:53.642553+00:00",
+  "stage": "full DAEDALUS + ACE + ExpeL HY3 reproduction (overnight)",
+  "phases": {
+    "tau2_generation": "done",
+    "tau2_consolidate": "done",
+    "tau2_baseline": "done",
+    "tau2_memory": "done",
+    "tau2_ace_accumulation": "done",
+    "tau2_ace_inference": "done",
+    "tau2_expel_accumulation": "done",
+    "tau2_expel_inference": "pending",
+    "appworld_generation": "pending",
+    "appworld_consolidate": "done",
+    "appworld_baseline": "done",
+    "appworld_memory": "done",
+    "appworld_ace_accumulation": "done",
+    "appworld_ace_inference": "done",
+    "appworld_expel_accumulation": "done",
+    "appworld_expel_inference": "pending"
   },
-  "appworld_train_smoke": {"task": "82e2fac_1", "successes": 1, "tasks": 1, "calls": 10},
-  "tau2_retail_train_smoke": {"task": "0", "successes": 0, "tasks": 1, "calls": 14, "termination": "USER_STOP"},
-  "generation": {
-    "tau2": {"status": "verified end-to-end (1 session)", "tasks": 1, "heuristics": 1, "consolidated_heuristics": 4, "completed_calls": 60, "roles": {"explorer": 12, "extraction": 1, "judge": 4, "solver": 27, "user_simulator": 16}, "solver_mode": "conversational", "coverage": "reused prior survey", "tokens": {"prompt": 357267, "completion": 26649, "reasoning": 16652}},
-    "appworld": {"status": "interrupted", "coverage_tags": 14, "completed_ledger_calls": 91, "reason": "Interrupted after ~39 minutes in generated-task judge call; no completed bank."}
+  "benchmarks": {
+    "tau2": {
+      "generation": {
+        "status": "complete",
+        "num_tasks": 48,
+        "num_heuristics": 48,
+        "tokens_total": {
+          "prompt_tokens": 120688414,
+          "completion_tokens": 11431729,
+          "cache_read_tokens": 97538688,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 8036741,
+          "audio_input_tokens": 0,
+          "audio_output_tokens": 0,
+          "image_input_tokens": 0,
+          "image_output_tokens": 0,
+          "cache_details_available": true,
+          "uncached_prompt_tokens": 23149726
+        },
+        "num_completed_calls": 18210,
+        "estimated_total_cost_usd": null,
+        "cost_complete": false,
+        "consolidated_heuristics": 23
+      },
+      "baseline": {
+        "status": "complete",
+        "num_runs": 5,
+        "num_tasks_per_run": 40,
+        "success_rate_mean": 0.55,
+        "success_rate_std": 0.046770717334674264,
+        "success_rate_se": 0.020916500663351885,
+        "success_rate_per_run": [
+          0.475,
+          0.55,
+          0.6,
+          0.55,
+          0.575
+        ],
+        "tokens_total": {
+          "prompt_tokens": 14106508,
+          "completion_tokens": 1619997,
+          "cache_read_tokens": 11058432,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 807874,
+          "audio_input_tokens": 0,
+          "audio_output_tokens": 0,
+          "image_input_tokens": 0,
+          "image_output_tokens": 0,
+          "cache_details_available": true,
+          "uncached_prompt_tokens": 3048076
+        },
+        "num_completed_calls": 2861,
+        "estimated_total_cost_usd": null,
+        "cost_complete": false
+      },
+      "memory": {
+        "status": "complete",
+        "num_runs": 5,
+        "num_tasks_per_run": 40,
+        "success_rate_mean": 0.48769230769230765,
+        "success_rate_std": 0.045337328690396674,
+        "success_rate_se": 0.020275469773995695,
+        "success_rate_per_run": [
+          0.425,
+          0.5384615384615384,
+          0.475,
+          0.475,
+          0.525
+        ],
+        "tokens_total": {
+          "prompt_tokens": 15944112,
+          "completion_tokens": 1583454,
+          "cache_read_tokens": 13201920,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 867412,
+          "audio_input_tokens": 0,
+          "audio_output_tokens": 0,
+          "image_input_tokens": 0,
+          "image_output_tokens": 0,
+          "cache_details_available": true,
+          "uncached_prompt_tokens": 2742192
+        },
+        "num_completed_calls": 2776,
+        "estimated_total_cost_usd": null,
+        "cost_complete": false
+      },
+      "memory_minus_baseline": {
+        "baseline": 0.55,
+        "memory": 0.48769230769230765,
+        "delta_pp": -6.231
+      },
+      "ace": {
+        "accumulation": {
+          "status": "complete",
+          "num_tasks": 74,
+          "num_bullets": 74,
+          "playbook_chars": 39511,
+          "tokens_total": {
+            "prompt_tokens": 10716093,
+            "completion_tokens": 1505867,
+            "cache_read_tokens": 7568640,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 1069422,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 3147453
+          },
+          "num_completed_calls": 1239,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        },
+        "inference": {
+          "status": "complete",
+          "num_runs": 5,
+          "num_tasks_per_run": 40,
+          "success_rate_mean": 0.465,
+          "success_rate_std": 0.04873397172404481,
+          "success_rate_per_run": [
+            0.5,
+            0.4,
+            0.5,
+            0.425,
+            0.5
+          ],
+          "tokens_total": {
+            "prompt_tokens": 28612471,
+            "completion_tokens": 2011316,
+            "cache_read_tokens": 26425664,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 1182718,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 2186807
+          },
+          "num_completed_calls": 2718,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        }
+      },
+      "ace_minus_baseline": {
+        "baseline": 0.55,
+        "memory": 0.465,
+        "delta_pp": -8.5
+      },
+      "expel": {
+        "accumulation": {
+          "status": "complete",
+          "num_tasks": 74,
+          "num_solved": 60,
+          "num_insights": 21,
+          "num_demonstrations": 60,
+          "tokens_total": {
+            "prompt_tokens": 13390333,
+            "completion_tokens": 2006439,
+            "cache_read_tokens": 10191744,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 1242271,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 3198589
+          },
+          "num_completed_calls": 2459,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        },
+        "inference": {
+          "status": "missing"
+        }
+      },
+      "expel_minus_baseline": null
+    },
+    "appworld": {
+      "generation": {
+        "status": "missing"
+      },
+      "baseline": {
+        "status": "complete",
+        "num_runs": 4,
+        "num_tasks_per_run": 168,
+        "success_rate_mean": 0.6473214285714286,
+        "success_rate_std": 0.34865492402497805,
+        "success_rate_se": 0.17432746201248903,
+        "success_rate_per_run": [
+          0.8273809523809523,
+          0.8392857142857143,
+          0.7976190476190477,
+          0.125
+        ],
+        "tokens_total": {
+          "prompt_tokens": 43578988,
+          "completion_tokens": 2949215,
+          "cache_read_tokens": 37386048,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 1402109,
+          "audio_input_tokens": 0,
+          "audio_output_tokens": 0,
+          "image_input_tokens": 0,
+          "image_output_tokens": 0,
+          "cache_details_available": true,
+          "uncached_prompt_tokens": 6192940
+        },
+        "num_completed_calls": 7686,
+        "estimated_total_cost_usd": null,
+        "cost_complete": false
+      },
+      "memory": {
+        "status": "complete",
+        "num_runs": 2,
+        "num_tasks_per_run": 168,
+        "success_rate_mean": 0.8084415584415584,
+        "success_rate_std": 0.01836640990094929,
+        "success_rate_se": 0.01298701298701299,
+        "success_rate_per_run": [
+          0.8214285714285714,
+          0.7954545454545454
+        ],
+        "tokens_total": {
+          "prompt_tokens": 26080125,
+          "completion_tokens": 3114634,
+          "cache_read_tokens": 20404544,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 1429874,
+          "audio_input_tokens": 0,
+          "audio_output_tokens": 0,
+          "image_input_tokens": 0,
+          "image_output_tokens": 0,
+          "cache_details_available": true,
+          "uncached_prompt_tokens": 5675581
+        },
+        "num_completed_calls": 2667,
+        "estimated_total_cost_usd": null,
+        "cost_complete": false
+      },
+      "memory_minus_baseline": {
+        "baseline": 0.6473214285714286,
+        "memory": 0.8084415584415584,
+        "delta_pp": 16.112
+      },
+      "ace": {
+        "accumulation": {
+          "status": "complete",
+          "num_tasks": 90,
+          "num_bullets": 211,
+          "playbook_chars": 110670,
+          "tokens_total": {
+            "prompt_tokens": 13113715,
+            "completion_tokens": 1877503,
+            "cache_read_tokens": 6817344,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 1355038,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 6296371
+          },
+          "num_completed_calls": 814,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        },
+        "inference": {
+          "status": "complete",
+          "num_runs": 5,
+          "num_tasks_per_run": 42,
+          "success_rate_mean": 0.7476190476190476,
+          "success_rate_std": 0.17850197061864395,
+          "success_rate_per_run": [
+            0.42857142857142855,
+            0.8273809523809523,
+            0.8392857142857143,
+            0.8214285714285714,
+            0.8214285714285714
+          ],
+          "tokens_total": {
+            "prompt_tokens": 119918441,
+            "completion_tokens": 7512120,
+            "cache_read_tokens": 98380992,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 4405517,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 21537449
+          },
+          "num_completed_calls": 3703,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        }
+      },
+      "ace_minus_baseline": {
+        "baseline": 0.6473214285714286,
+        "memory": 0.7476190476190476,
+        "delta_pp": 10.03
+      },
+      "expel": {
+        "accumulation": {
+          "status": "complete",
+          "num_tasks": 90,
+          "num_solved": 87,
+          "num_insights": 23,
+          "num_demonstrations": 87,
+          "tokens_total": {
+            "prompt_tokens": 11885033,
+            "completion_tokens": 1153992,
+            "cache_read_tokens": 9523456,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 676929,
+            "audio_input_tokens": 0,
+            "audio_output_tokens": 0,
+            "image_input_tokens": 0,
+            "image_output_tokens": 0,
+            "cache_details_available": true,
+            "uncached_prompt_tokens": 2361577
+          },
+          "num_completed_calls": 1882,
+          "estimated_total_cost_usd": null,
+          "cost_complete": false
+        },
+        "inference": {
+          "status": "missing"
+        }
+      },
+      "expel_minus_baseline": null
+    }
   },
-  "full_paired_evaluation": "not run",
-  "consolidation": "not run: no completed bank",
-  "ACE": "not implemented",
-  "SelfSuite": "not implemented",
-  "PredictMem_training": "not implemented",
-  "github_push": {"status": "pushed", "commit": "86526a3", "branch": "main", "token_left_in_config": false},
-  "processes": "Project relay and generation stopped; original relay untouched",
-  "cost": {"total_usd": null, "price_available": false, "note": "Unknown price is not zero dollars; tokens include cache reads and completed ledger calls only."}
+  "protocol": {
+    "generation": "official self-play, train split; HY3 for solver/explorer/judge/simulator",
+    "consolidation": "single strategy, HY3 high effort",
+    "paired_eval": "baseline (no memory) vs memory (consolidated pool), test split, 5 repetitions (pass^5)",
+    "ace": "Generator/Reflector/Curator playbook over train split (sequential, no success signal); inference injects whole playbook, single attempt, 5 runs",
+    "expel": "experience gathering + insight extraction over train split; inference injects whole insight list plus top-k similar successful trajectories",
+    "tau2_evaluator": "internal NL-assertions judge re-pointed to HY3 via explicit shim (self-evaluation arm)",
+    "price": "unknown (HY3 has no local price record); null is not zero dollars"
+  },
+  "price": "unknown (HY3 no local price record); null is not zero dollars",
+  "log_tail": "      },\n      \"ace_minus_baseline\": {\n        \"baseline\": 0.6473214285714286,\n        \"memory\": 0.7476190476190476,\n        \"delta_pp\": 10.03\n      },\n      \"expel\": {\n        \"accumulation\": {\n          \"status\": \"complete\",\n          \"num_tasks\": 90,\n          \"num_solved\": 87,\n          \"num_insights\": 23,\n          \"num_demonstrations\": 87,\n          \"tokens_total\": {\n            \"prompt_tokens\": 11885033,\n            \"completion_tokens\": 1153992,\n            \"cache_read_tokens\": 9523456,\n            \"cache_write_tokens\": 0,\n            \"reasoning_tokens\": 676929,\n            \"audio_input_tokens\": 0,\n            \"audio_output_tokens\": 0,\n            \"image_input_tokens\": 0,\n            \"image_output_tokens\": 0,\n            \"cache_details_available\": true,\n            \"uncached_prompt_tokens\": 2361577\n          },\n          \"num_completed_calls\": 1882,\n          \"estimated_total_cost_usd\": null,\n          \"cost_complete\": false\n        },\n        \"inference\": {\n          \"status\": \"missing\"\n        }\n      },\n      \"expel_minus_baseline\": null\n    }\n  }\n}\n[09:25:10] <<< DONE collect_results in 0s\n[09:25:10] ===== ALL PHASES DISPATCHED ====="
 }

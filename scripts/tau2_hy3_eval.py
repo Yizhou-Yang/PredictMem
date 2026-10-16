@@ -27,24 +27,32 @@ def _entry() -> None:
     if len(sys.argv) < 2:
         raise SystemExit(
             "usage: tau2_hy3_eval.py "
-            "{generation|inference|ace_accumulation|ace_inference} <upstream args...>"
+            "{generation|inference|<method>_accumulation|<method>_inference} <upstream args...>"
         )
     entry, rest = sys.argv[1], sys.argv[2:]
     sys.argv = [sys.argv[0], *rest]
     if entry == "generation":
         from daedalus.scripts.generation import main
         main()
-    elif entry == "inference":
+        return
+    if entry == "inference":
         from daedalus.scripts.inference import main
         main()
-    elif entry == "ace_accumulation":
-        from references.ace.accumulation import main
-        main()
-    elif entry == "ace_inference":
-        import references.ace.run as ace_run
-        ace_run.main(ace_run.METHOD)
-    else:
-        raise SystemExit(f"unknown entry point: {entry}")
+        return
+    # Reference methods (references/<method>/{accumulation,run}): dispatch generically.
+    if "_" in entry:
+        method, stage = entry.rsplit("_", 1)
+        if stage not in ("accumulation", "inference"):
+            raise SystemExit(f"unknown entry point: {entry}")
+        import importlib
+        modname = f"references.{method}.accumulation" if stage == "accumulation" else f"references.{method}.run"
+        mod = importlib.import_module(modname)
+        if stage == "accumulation":
+            mod.main()
+        else:
+            mod.main(mod.METHOD)
+        return
+    raise SystemExit(f"unknown entry point: {entry}")
 
 
 if __name__ == "__main__":

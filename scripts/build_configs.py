@@ -9,10 +9,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT / "vendor" / "daedalus"
 
-# Overnight full-benchmark concurrency. Tunable at build time without editing code;
-# defaults keep the shared HY3/taiji pool at a moderate load (see reproduction notes).
-EXPLORERS = int(os.environ.get("PREDICTMEM_EXPLORERS", "6"))
-PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "6"))
+# Overnight full-benchmark concurrency. Tunable at build time without editing code.
+# HY3 accepts high throughput, so defaults are raised above the official harness:
+# eval/inference parallel 24 (official 20) and generation explorers 12 (official
+# default 5, appworld 3). Recorded as a deviation in reproduction_protocol.json.
+EXPLORERS = int(os.environ.get("PREDICTMEM_EXPLORERS", "12"))
+PARALLEL = int(os.environ.get("PREDICTMEM_PARALLEL", "24"))
 
 
 def _reuse_coverage(benchmark: str) -> str | None:
