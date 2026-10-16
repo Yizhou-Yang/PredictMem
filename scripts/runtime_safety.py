@@ -30,6 +30,10 @@ class PoolStalledError(RuntimeError):
 
 def force_cpu():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    for key in ("OMP_NUM_THREADS", "OMP_THREAD_LIMIT", "OPENBLAS_NUM_THREADS",
+                "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS", "RAYON_NUM_THREADS"):
+        os.environ.setdefault(key, "1")
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 
 force_cpu()
@@ -215,6 +219,9 @@ def _install_trace_logger():
 
 
 def _install_sentence_transformer():
+    from embedding_preflight import prepare_embedding_runtime
+
+    prepare_embedding_runtime()
     from sentence_transformers import SentenceTransformer
 
     original = SentenceTransformer.__init__
@@ -266,6 +273,11 @@ def _cpu_dense_model(self):
 
 
 def _install_cpu_retrievers():
+    from embedding_preflight import configure_embedding_freezegun
+    from collect_verified_results import install_runtime_scoring_metadata
+
+    configure_embedding_freezegun()
+    install_runtime_scoring_metadata()
     # 仅安装工厂；不在 baseline/ACE 或无 API 测试启动时导入 torch、加载权重。
     from daedalus.core.memory import retrieval
     retrieval.DenseRetriever._load_model = _cpu_dense_model
@@ -375,6 +387,9 @@ def _guard_config(cfg, create=True):
 def install(benchmark, method=None):
     """入口和 spawn initializer 均须显式调用；无 sitecustomize 或 vendor 写入。"""
     force_cpu()
+    if benchmark == "tau2":
+        from tau2_transport_safety import install as install_tau2_transport
+        install_tau2_transport()
     if benchmark not in ("tau2", "appworld") or method not in (None, "ace", "expel"):
         raise ValueError("运行安全层仅支持当前 core、ACE、ExpeL 的 tau2/appworld 入口")
     os.environ["PREDICTMEM_RUNTIME_BENCHMARK"] = benchmark

@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "audit_status": "completed_with_findings",
+  "observation_date": "2026-10-16",
+  "remote_artifacts_observed_at": "2026-10-16T05:45:27.596320+00:00",
+  "scope": {
+    "remote_root": "any4:/data/workspace/PredictMem",
+    "vendor_root": "/data/workspace/PredictMem/vendor/daedalus",
+    "local_output": "/Users/yizhouyang/WorkBuddy/2026-10-08-16-40-15/PredictMem/results/method_fidelity_audit.json",
+    "remote_output": "/data/workspace/PredictMem/results/method_fidelity_audit.json",
+    "constraints": ["仅新增用户指定的两份审查 JSON", "不修改现有脚本、方法、配置或 bank", "不调用模型或 benchmark API", "不启动生成、评分或测试评测", "计算限于 any4 CPU，检索模型仅从离线缓存加载"],
+    "not_a_full_benchmark_reproduction": true,
+    "ssh_infrastructure_caveat": "SSH 输出曾报告加入 known_hosts；只读保证指项目源码、方法及既有实验产物，不宣称宿主系统与工具日志零副作用。"
+  },
+  "verdicts": [
+    {"id": "EXPEL_SOFT_RULE_BUDGET", "status": "pass_static_artifact_and_cpu", "finding": "AppWorld 23 条、τ² 21 条均不能仅因超过 20 判错。max_num_rules=20 控制 prompt 软预算；调用前规则数 >=20 使用 full suffix，>=25 才把 REMOVE 减分从 1 改成 3；存储和更新均无硬裁剪。"},
+    {"id": "EXPEL_TRAIN_ONLY_DEMOS", "status": "pass", "finding": "在 vendor/outputs 与 PredictMem/outputs 中找到的全部 5 份 demonstrations.json 已逐条对照官方 split：294 个非空文件条目均属于 train，非 train/test/重复 ID 均为 0；另有 1 份空 smoke 文件，train-only 通过但不能证明 k=2。"},
+    {"id": "EXPEL_TASK_START_FULL_INSIGHTS_TOP2", "status": "pass_static_and_cpu", "finding": "完整 insights 加 MPNet 按任务描述选取的 top-2 成功 trajectories，在任务开始进入 solver system prompt；并非对 insights 作 top-k，也不是逐 turn 检索。"},
+    {"id": "ACE_WHOLE_PLAYBOOK", "status": "pass_static_and_cpu", "finding": "全文直接写入独立 playbook slot，保留 8 个 section headers 与 bullet IDs；不走会重编号的 heuristics 列表。AppWorld/τ² playbook 为 211/74 bullets。"},
+    {"id": "DAEDALUS_CURRENT_INTENDED_CONFIG", "status": "pass_static_and_cpu", "finding": "当前 configs/appworld_memory.yaml 与 tau2_memory.yaml 指向 live consolidated_pool.json 且 heuristics_at_start=true；这条代码路径应注入全部 bank 并禁用 retriever。"},
+    {"id": "DAEDALUS_LEGACY_FROZEN_CONFIG", "status": "fail", "finding": "verified_20261016_1258 的两个 memory arms 均冻结 raw pool.json，未冻结 consolidated_pool.json；磁盘配置及 manifest resolved config 为 heuristics_at_start=false、BM25 top_k=5，不满足论文 full-consolidated-at-start。两 arm launch_count=0，不能声称它们已经产生了错误方法的评测分数。"},
+    {"id": "GENERATION_COMPLETENESS", "status": "partial", "finding": "AppWorld 正常 session 文件 88/90、holes=[16,62]；τ² 正常 73/74，另有 session 47 的 session_error。partial bank 的正确注入不等于完整 generation 方法复现。"},
+    {"id": "FULL_METHOD_REPRODUCTION", "status": "not_established", "finding": "本轮是方法路径、产物与无 API CPU 检查，不是完整评测。HY3 模型替换、generation 并发数差异、partial coverage、历史终止证据及 consolidation 输入快照限制均须披露。"}
+  ],
+  "paper": {
+    "path": "/Users/yizhouyang/WorkBuddy/2026-10-08-16-40-15/gaia2_failure_audit/papers/daedalus.txt",
+    "sha256": "1ad89404c3f9e70a943bd7383b886a3dd9763a7349df0e9075986fc4fd3672a8",
+    "evidence": [
+      {"lines": "251-265", "requirement": "失败后达成 Ns 连续成功才接受 heuristic；最后一个 session 后单次 consolidation，冻结结果并在测试任务开始一次注入。", "quote": "The resulting bank is frozen and injected once into the base agent’s context at the start of each test task"},
+      {"lines": "1199-1213", "requirement": "Ns=3、Nf=8、Nr=5、concurrent explorers=5。AppWorld 原实验的七个成功替换属于特殊历史 filter，不是通用方法或补洞择优授权。"},
+      {"lines": "1223-1235", "requirement": "ExpeL cap follows released code；L=3；ACE offline no-GT，每个 train task 顺序一次 rollout、ADD-only、测试开始 whole playbook。"},
+      {"lines": "1250-1274", "requirement": "ExpeL retries=3、max_pairs=3、cap=20、k=2、embedder=all-mpnet-base-v2；ACE empty 8 sections、80k token advisory budget。"},
+      {"lines": "1280-1286", "requirement": "generation 不访问 test 初始环境；AppWorld 使用 train worlds，不使用官方任务 instruction/verifier，排除 Amazon/Gmail；τ² tasks 共用 database。"}
+    ]
+  },
+  "source_integrity": {
+    "vendor_commit": "7c982bf26e6cffdc0ba0fde99aecde95f10ba7a1",
+    "vendor_git_status": "?? experiments/",
+    "tracked_source_clean_not_entire_tree_clean": true,
+    "legacy_launch_snapshot": "/data/workspace/PredictMem/outputs/verified_20261016_1258/launch_source_archive/launch_snapshot.json",
+    "legacy_relevant_vendor_files_compared": 57,
+    "legacy_relevant_vendor_hash_differences": [],
+    "legacy_all_arm_config_hashes_match_manifest": true,
+    "legacy_all_six_frozen_bank_hash_sets_match_manifest": true,
+    "current_wrapper_does_not_retroactively_validate_legacy_config": true,
+    "wrapper_sha256": {
+      "scripts/run_verified_reproduction.py": "121d9a6c751608cd64abda3a206f2b0d16a34fbf932c7ff1530d6478129bbcbb",
+      "scripts/runtime_safety.py": "bf8d571cc37a00e2127884310e0f13760765f993697b83bcf98af27723496ae7",
+      "scripts/embedding_preflight.py": "14162f0b34c3ce06fdcff3dcce0c58f41eb113e9fc309dfc9ff7013483a79c12"
+    },
+    "vendor_file_sha256": {
+      "references/expel/config.py": "538469936ebbc93a29fb06e96b025ac2556faf3fdaa5439c0444e29dfe6687f6",
+      "references/expel/insights.py": "553f2e5b6781e384118ab6be3c2d640fbead4ecbf41a2ac438af3ece866d0983",
+      "references/expel/extraction.py": "690f16a9cba3251bd207fc87b382ce17b7ae4ce490d1979033ee487e6022a14a",
+      "references/expel/retrieval.py": "f63d1ae24779de8b60d7433fb41dec577ded8901dcbf51109e436370dc71ff5f",
+      "references/expel/agents/base.py": "511f0b471b1a407d5daedc5eabb75aef5e00eb6ea771862b379f80b73a1e5504",
+      "references/expel/agents/appworld.py": "723ec4b3430c9e88af8401b93734cd9ec3c6a042bd6df6ff16b28fe18b7087dc",
+      "references/expel/agents/tau2.py": "a26550d44d292e3519221bb1344bcad27fc2375e4fbfb8d057ba78e16118c0a2",
+      "references/expel/accumulation.py": "c5f4efe8927d605de2a4e95d5949b1788fac71d075384e4603be0ad8089854cd",
+      "references/common/experience.py": "1ced23a959d87879b8d80782cd1b37785501adf6b810b482b4e6576f0ca081ef",
+      "references/ace/agents/base.py": "959c098656fddeb0aeb39a37cd7194a135d2a1b33640b83778cd58d89d8b94a0",
+      "references/ace/accumulation.py": "7aeaddca8ee6680e3871de31c11979e737eac78c28e5274200d08851b5ffa81e",
+      "references/ace/playbook.py": "1a69534fff4c9ddfcaeb6d1426d852bec3c322e878e4d29669fd80a6156064fe",
+      "daedalus/benchmarks/appworld/agent.py": "b754fe1a25e88d18333f8a256128c08d5272e9a0a487cd198dbb1701028c17e3",
+      "daedalus/benchmarks/appworld/memory_agent.py": "c0695e9a9554c5964ba8b0ee69c75717ca49c3a12ae3570ed7d46fd02bac0f4d",
+      "daedalus/benchmarks/tau2/runner.py": "ca3275a2d5fb5bf40b96ee34405f5f1a62d7b1cdbb1fe80ab8c366bdb9018e59",
+      "daedalus/core/prompts/agent/solver_system.txt": "22805993ceff6e370e65fde23d3928a089278522660c1f8f177c8e792b4e4f7c",
+      "daedalus/core/agents/memory.py": "e8d1e18a1045356bf045fedcd42429bd5e1394871e824e907e7f0276e47b82b3",
+      "daedalus/core/generation/pipeline.py": "26652c6e8e8efbeb9de6698732a7aa1ed60428133ce4bb02b698ff4cfc5302e3",
+      "daedalus/scripts/consolidate.py": "89189f1f0370cbede5d61bcf69d6adb5678c7b079846c9a878551cf07793f513",
+      "daedalus/core/resources.py": "72749e8340ee31630e82f1464e7b5c4872dca302353a0d331b36a438dc84fbf3",
+      "daedalus/core/memory/pool.py": "d701904bb4eeb16d866cccbafb31621dc4479614c161663f42c9e18d2e2568f0"
+    }
+  },
+  "official_splits": {
+    "appworld": {"train_count": 90, "test_normal_count": 168, "overlap": [], "train_path": "data/datasets/train.txt", "train_sha256": "93d9fe71e7a2e3b7529803d4a20b604f4ebf5ae806f321081140238068189d37", "test_normal_path": "data/datasets/test_normal.txt", "test_normal_sha256": "c3af41497b6f2f0860a2ff8c09b335dca527e2cf48e59b4aabdb301b6b68db8f"},
+    "tau2": {"train_count": 74, "test_count": 40, "overlap": [], "path": "benchmarks/tau2-bench/data/tau2/domains/retail/split_tasks.json", "sha256": "ed0580ec52575b63fbf76568af42490da6ee7783ecb4aa81af46961291358f20"},
+    "normalization": "AppWorld 去空行并取冒号前 ID；τ² 将官方 split 中 ID 转成字符串。"
+  },
+  "expel": {
+    "configuration": {"max_num_rules": 20, "fewshot_k": 2, "embedder": "sentence-transformers/all-mpnet-base-v2", "success_batch_size": 3, "max_retries": 3, "max_pairs_per_task": 3, "seed": 42},
+    "soft_budget": {
+      "full_prompt_suffix_threshold": 20,
+      "remove_weight_3_threshold_before_call": 25,
+      "remove_weight_below_25": 1,
+      "hard_truncation": false,
+      "operation_order": ["REMOVE", "AGREE", "EDIT", "ADD"],
+      "add_count": 2,
+      "agree_edit_increment": 1,
+      "drop_rule_condition": "count <= 0",
+      "storage_order": "importance count 降序，不限制条数",
+      "evidence": ["references/expel/extraction.py:118", "references/expel/extraction.py:160", "references/expel/insights.py:63", "references/expel/insights.py:89", "references/expel/insights.py:108", "references/expel/insights.py:111"]
+    },
+    "banks": {
+      "appworld": {"insights": 23, "importance_counts": [19,18,13,8,6,6,5,5,4,4,3,3,3,3,3,2,2,2,2,2,2,2,1], "demonstrations": 87, "pool_sha256": "c263b3dd7610775591c9056751915f9cb8408e2bdcb519c885c4eaca6ebf66b5", "demonstrations_sha256": "127306a6267a1ff28fab30531826510995e2016f390d46bdfeabe5b2858c9e80", "live_frozen_bytes_identical": true},
+      "tau2": {"insights": 21, "importance_counts": [17,17,14,13,10,10,4,4,3,3,3,3,2,2,2,2,2,1,1,1,1], "demonstrations": 60, "pool_sha256": "6076d49e35cd23bd341b7aed504f478be080a702e5558ea3ef54ef7fe8b98d73", "demonstrations_sha256": "edb10d4b4d822453816e190a6e22caa0cccd2a95952042c9aab9b21961899747", "live_frozen_bytes_identical": true}
+    },
+    "all_demonstration_files": [
+      {"path": "outputs/verified_20261016_1258/frozen_banks/appworld_expel/demonstrations.json", "benchmark": "appworld", "count": 87, "unique_ids": 87, "non_train_ids": [], "test_overlap": [], "duplicates": {}, "empty_task": 0, "empty_trajectory": 0},
+      {"path": "outputs/verified_20261016_1258/frozen_banks/tau2_expel/demonstrations.json", "benchmark": "tau2", "count": 60, "unique_ids": 60, "non_train_ids": [], "test_overlap": [], "duplicates": {}, "empty_task": 0, "empty_trajectory": 0},
+      {"path": "vendor/daedalus/outputs/baselines/expel/memory/hy3_appworld/demonstrations.json", "benchmark": "appworld", "count": 87, "unique_ids": 87, "non_train_ids": [], "test_overlap": [], "duplicates": {}, "empty_task": 0, "empty_trajectory": 0},
+      {"path": "vendor/daedalus/outputs/baselines/expel/memory/hy3_tau2/demonstrations.json", "benchmark": "tau2", "count": 60, "unique_ids": 60, "non_train_ids": [], "test_overlap": [], "duplicates": {}, "empty_task": 0, "empty_trajectory": 0},
+      {"path": "vendor/daedalus/outputs/baselines/expel/memory/hy3_tau2_smoke/demonstrations.json", "benchmark": "tau2", "count": 0, "unique_ids": 0, "non_train_ids": [], "test_overlap": [], "duplicates": {}, "sha256": "8251b0d8bc38591d721f5d83980def4e63193da135cb03ef39424824ac458c7e", "k2_evidence": "不适用：空 smoke bank"}
+    ],
+    "demonstration_provenance": {"appworld_experience_checkpoints": 90, "tau2_experience_checkpoints": 74, "every_live_demo_task_and_trajectory_equals_first_successful_experience": true, "mismatch_ids": [], "every_live_demo_summary_final_outcome_success": true, "success_is_checkpoint_label_not_rescored": true, "evidence": ["references/expel/accumulation.py:199", "references/common/experience.py:188"]},
+    "actual_injection_path": {
+      "shared": ["references/expel/agents/base.py:25 同目录 demonstrations.json", "references/expel/agents/base.py:37 加载全 insights、按 k=2 创建并预热 retriever", "references/expel/agents/base.py:55 rules block 先于 selected fewshots block", "references/expel/extraction.py:97 全规则逐条渲染", "references/expel/extraction.py:105 拼接选中 trajectories 全文", "daedalus/core/prompts/agent/solver_system.txt:11 heuristics 列表进入 system prompt"],
+      "appworld": ["references/expel/agents/appworld.py:20 用 task.instruction 查询", "daedalus/benchmarks/appworld/agent.py:138 _build_initial_messages", "daedalus/benchmarks/appworld/agent.py:159 render_prompt"],
+      "tau2": ["references/expel/agents/tau2.py:26 solve_task 起始 recall", "references/expel/agents/tau2.py:43 用 str(task.user_scenario) 查询并填 _start_heuristics", "daedalus/benchmarks/tau2/runner.py:234 heuristics + _start_heuristics", "daedalus/benchmarks/tau2/runner.py:140 _render_system_prompt", "daedalus/benchmarks/tau2/runner.py:240 HarnessTau2Agent(system_prompt=...)"],
+      "ranking": "encode demonstration.task 与 query，normalize_embeddings=True；矩阵内积；np.argsort(scores)[::-1][:min(k,len(demos))]；注入 selected demonstration.trajectory 而非描述本身。",
+      "retrieval_not_per_turn": true,
+      "full_insights_not_retrieved_subset": true,
+      "test_time_reflexion_retries": false,
+      "information_boundary_caveat": "τ² conversational solver 不直接接收完整 user_scenario，但检索器读取它，因此 few-shot 选择是 task-description-conditioned，应在比较协议中明确披露。"
+    }
+  },
+  "ace": {
+    "appworld": {"train_task_summaries": 90, "missing_train_ids": [], "non_train_ids": [], "run_parallel": 1, "attempts_per_task": [1,1], "applied_operations": {"ADD": 211}, "curator_errors": 1, "final_bullets": 211, "playbook_chars": 110670, "playbook_sha256": "065a44581722046f25f407f2d8b831143625635ddcabec3c199a24ee9fba0186", "summary_set_sha256": "471aa45593fd68188ae1d7295a5a030d90cb816da0e256685316d79857097d7d"},
+    "tau2": {"train_task_summaries": 74, "missing_train_ids": [], "non_train_ids": [], "run_parallel": 1, "attempts_per_task": [1,1], "applied_operations": {"ADD": 74}, "curator_errors": 0, "final_bullets": 74, "playbook_chars": 39511, "playbook_sha256": "cab0e32bce6975dc8f6f7a99942b1c810d7f03546c3e806e3ff45fbf6ecbd918", "summary_set_sha256": "5619c9699ba4f959c26bc4299026f88224d3be61dfd1ec1e039a1380a35aeaf9"},
+    "no_ground_truth_update_path": {"finding": "success/env_outcome 仅记录在 summary，不作为 reflect/curate 参数或是否更新的条件。两个函数只接收 trajectory、playbook、reflection、instruction 等。轨迹 renderer 不含 benchmark 总评测结果；代码/工具自身 execution_success 不等于 task ground truth。", "evidence": ["references/ace/accumulation.py:84", "references/ace/accumulation.py:90", "references/ace/accumulation.py:118", "references/ace/curation.py:45", "references/ace/curation.py:81", "references/ace/curation.py:109", "daedalus/benchmarks/tau2/runner.py:517"]},
+    "whole_playbook_path": ["references/ace/agents/base.py:49 required inference 时拒绝缺失或无 bullets", "references/ace/agents/base.py:86 初始化 solver_playbook 全文", "daedalus/benchmarks/appworld/agent.py:165 playbook=self.solver_playbook", "daedalus/benchmarks/tau2/runner.py:151 playbook=self.solver_playbook", "daedalus/core/prompts/agent/solver_system.txt:18 独立 slot 原样展开"],
+    "sequential_add_only_evidence": ["references/ace/accumulation.py:288 wave_size=1", "references/ace/accumulation.py:324 每个 wave 前重建当前 playbook", "references/ace/playbook.py:140 只允许 ADD"],
+    "history_limit": "train summaries 覆盖、配置与 operations 与方法一致，但非本轮重放训练，也未逐个证明历史 worker 正常终止。PlaybookRecord 仅大小/section 统计，不能等同实际历史发送 prompt 全文。"
+  },
+  "daedalus": {
+    "correct_path_evidence": ["daedalus/benchmarks/appworld/memory_agent.py:50", "daedalus/benchmarks/appworld/memory_agent.py:65", "daedalus/benchmarks/tau2/runner.py:118", "daedalus/benchmarks/tau2/runner.py:234", "daedalus/core/agents/memory.py:80"],
+    "current_intended_configs": [
+      {"path": "configs/appworld_memory.yaml", "pool_path": "outputs/daedalus/hy3_appworld_generation/consolidated_pool.json", "heuristics_at_start": true},
+      {"path": "configs/tau2_memory.yaml", "pool_path": "outputs/daedalus/hy3_tau2_generation/consolidated_pool.json", "heuristics_at_start": true}
+    ],
+    "live_banks": {
+      "appworld": {"raw_count": 44, "raw_sha256": "bc01809a159a277b3fd9861f9c9d1052b6b05b55b9bb1c72be3799da383ad8a3", "consolidated_count": 46, "consolidated_sha256": "a742d89cd34cd9500e4efeb8bc513a82a5c567a5847aa8a72f39b03410c43cae", "consolidated_source_tag": "consolidate:hy3_appworld_generation", "consolidation_completed_events": 1, "event_id": "3858a774265640228b7f34f72ed74e52", "event_timestamp": "2026-10-16T00:30:52.339288+00:00"},
+      "tau2": {"raw_count": 48, "raw_sha256": "a8bcbe0fc0369ae154927ce72fbd0ba2975244ecc66df04e5cf9b231cef433ba", "consolidated_count": 23, "consolidated_sha256": "e13824ffd33971cdf9dff4d261c3e47740cf45d577e84e1c3c1b9ca7255d5f34", "consolidated_source_tag": "consolidate:hy3_tau2_generation", "consolidation_completed_events": 1, "event_id": "baff28573bb1428a932edaa7d181ade8", "event_timestamp": "2026-10-15T18:46:01.999433+00:00"}
+    },
+    "consolidation_limit": "文件结构、source tags 与 completed consolidation ledger 相符；default single 源码处理全部 notes，但 ledger 未绑定输入 bank SHA256 或保存完整 request。不能仅凭文件名/条数证明当时输入恰好等于当前全部 raw bank。44 个多条 note 拆成 46 个 consolidated items 不构成数量异常。",
+    "consolidation_source_evidence": ["daedalus/scripts/consolidate.py:92", "daedalus/scripts/consolidate.py:164", "daedalus/scripts/consolidate.py:173"],
+    "legacy_namespace": {
+      "name": "verified_20261016_1258",
+      "manifest": "outputs/verified_20261016_1258/manifest.json",
+      "appworld_memory": {"state_recorded": "planned", "launch_count": 0, "pool_path": "/data/workspace/PredictMem/outputs/verified_20261016_1258/frozen_banks/appworld_memory/pool.json", "frozen_count": 44, "consolidated_pool_present": false, "heuristics_at_start": false, "retriever_type": "bm25", "top_k": 5},
+      "tau2_memory": {"state_recorded": "blocked_compatibility", "launch_count": 0, "pool_path": "/data/workspace/PredictMem/outputs/verified_20261016_1258/frozen_banks/tau2_memory/pool.json", "frozen_count": 48, "consolidated_pool_present": false, "heuristics_at_start": false, "retriever_type": "bm25", "top_k": 5},
+      "decision": "这些冻结/configured memory arms 不具论文方法忠实度；不修改旧 namespace，不给尚未启动 arm 归因评测分数。",
+      "current_wrapper_evidence": "scripts/run_verified_reproduction.py:205 现版本要求 consolidated_pool.json；make_config 现版本要求 heuristics_at_start=true。不能把后来检查套用于旧 prepare。"
+    },
+    "witness_limit": "injected_heuristics_record 给 count/chars/文本 SHA256 前16位/pool_path；记录的是加载 bank，不独立证明最终 prompt 确实含全 bank，特别不能替代 heuristics_at_start 分支核查。"
+  },
+  "generation_audit": {
+    "appworld": {
+      "expected_session_ids": "0..89",
+      "session_files": 88,
+      "normal_terminal_records": 88,
+      "missing_session_ids": [16,62],
+      "session_error_ids": [],
+      "normal_results": {"banked": 47, "too_easy": 22, "too_hard": 1, "no_task": 12, "near_duplicate": 6},
+      "accepted_task_records": 47,
+      "contributing_heuristic_sessions": 44,
+      "failure_then_at_least_3_final_consecutive_successes_violations": [],
+      "missing_attempt_evidence_for_contributors": [],
+      "sandbox_non_train_ids": [],
+      "screened_heuristic_session_ids": [9,44,72],
+      "screen_reason": "names held-out app(s) ['gmail']",
+      "next_session_claim_counter": 90,
+      "run_summary_present": false,
+      "num_explorers": 12,
+      "coverage_tags": 14,
+      "guidelines": 4,
+      "generation_status": "partial_missing_terminal_evidence"
+    },
+    "tau2": {
+      "expected_session_ids": "0..73",
+      "session_files": 74,
+      "normal_terminal_records": 73,
+      "missing_session_ids": [],
+      "session_error_ids": [47],
+      "normal_results": {"banked": 48, "too_easy": 7, "too_hard": 11, "no_task": 7},
+      "session_47": {"kind": "session_error", "sandbox_id": "retail", "stage": "daedalus", "error": "ValueError: UserMessage must have either content or tool_calls. Got UserMessage\nis_final_chunk: True"},
+      "accepted_task_records": 48,
+      "contributing_heuristic_sessions": 48,
+      "failure_then_at_least_3_final_consecutive_successes_violations": [],
+      "missing_attempt_evidence_for_contributors": [],
+      "next_session_claim_counter": 74,
+      "run_summary_present": true,
+      "num_explorers": 6,
+      "coverage_tags": 8,
+      "guidelines": 3,
+      "generation_status": "partial_one_error"
+    },
+    "common_config": {"num_success_to_continue": 3, "max_failures": 8, "max_refinements": 5, "paper_num_explorers": 5},
+    "valid_terminal_not_holes": ["too_easy", "too_hard", "no_task", "near_duplicate", "invalid_spec", "excluded_app", "正常结束但未产出 heuristic", "成功通过验证但 heuristic 被预设 admissibility screen 拒绝"],
+    "source_evidence": ["daedalus/core/generation/pipeline.py:192", "daedalus/core/generation/pipeline.py:305", "daedalus/core/generation/pipeline.py:380", "daedalus/core/generation/pipeline.py:553", "daedalus/core/generation/pipeline.py:563"],
+    "checkpoint_not_process_attestation": "session JSON 证明源码正常分支已保存，不能自动证明整个 generation supervisor 正常返回。run_summary 存在也不保证每个 worker 无异常。"
+  },
+  "partial_generation_non_cherry_picked_completion": {
+    "no_completion_executed": true,
+    "current_method_resume_semantics": {
+      "start_next": "max(saved numeric session ID)+1；不取最小缺失 ID，也不检查 session_error。",
+      "target_total": "start_next + generation.num_sessions",
+      "appworld_current_next": 90,
+      "tau2_current_next": 74,
+      "ordinary_resume_fills_internal_holes": false,
+      "ordinary_resume_retries_saved_errors": false,
+      "evidence": ["daedalus/core/generation/pipeline.py:153", "daedalus/core/generation/pipeline.py:732", "daedalus/core/generation/pipeline.py:748"]
+    },
+    "eligible_only_after_forensics": ["AppWorld 16、62 缺终止文件：须先区分未开始、执行中断、fatal error、已提交 bank 但未写 session", "τ² 47 已记录异常：不能伪装成缺失或正常失败；须确认异常阶段和是否已提交共享状态"],
+    "required_conditions": [
+      "先冻结并哈希旧 bank/tasks/config/session/trace/usage/source/splits；补洞只在新 namespace，旧产物保持不变。",
+      "在观察新结果前登记固定 eligible ID 清单、原因、代码/模型/seed/预算、attempt 上限与停止规则；不能按成功率或 heuristic 收益决定重试。",
+      "只补可证实的基础设施中断或未执行工作；正常失败、too_easy/too_hard/no_task/near_duplicate 及预设筛选拒绝均保留，不补到规定 accepted heuristics 数。",
+      "源码先写 pool/tasks、更新 guidelines 后才写 session；检查缺失/异常 session 的 trace 与 ledger 以及 bank/task 匹配，避免重复计入部分提交。",
+      "如重放中断 session，恢复并验证当时 sandbox/初始环境、已消耗预算、已有成功/失败和 heuristic/refinement 状态；不能重置已正常失败的预算。",
+      "prior_tasks、covered_paths、guidelines 和 coverage_tally 随并发更新；用最终共享状态重新运行不是原 session 精确续跑。缺原快照时必须披露为预登记的新续跑协议，而非原轨迹等价补洞。",
+      "补跑 attempt 有固定上限且全量保留成功、失败、异常日志；不能多个候选取最高分、重复直到成功或根据 test 分数挑 bank。",
+      "只有预登记补跑全部终止后，按同一 admissibility 和接受规则合并全部合法贡献，并重新 consolidation 全部 accepted bank；绑定 raw/consolidated 输入输出哈希、call/source/model 与时间，随后冻结。",
+      "评测使用新的冻结 full consolidated bank，任务开始完整一次注入；旧 partial 与新 completed 结果分开汇报，禁止混合择优。",
+      "普通 --resume 不提供显式内部 hole/error ID 调度。在不改方法前提下，不能声称现有 CLI 能精确补 16/62/47；若另设受控调度属于需明确批准和披露的新恢复协议。"
+    ],
+    "safest_unmodified_method_alternative": "预先固定预算/seed/config，在全新 namespace 完整生成并保留全部正常与异常 session；不挑出多个 run 中的最好 bank。仍须报告失败和覆盖，不保证原论文路径或分数复现。",
+    "do_not_copy_paper_special_filter": "论文 AppWorld 七个 successful replacement sessions 是特殊历史处理，原文明示非通用方法；不作为选择性补跑授权。"
+  },
+  "cpu_no_api_validation": {
+    "status": "passed",
+    "execution_exit_code": 0,
+    "execution_location": "any4 锁定 vendor .venv Python，前台标准输入执行，不创建测试脚本",
+    "safety": {"PYTHONDONTWRITEBYTECODE": "1", "CUDA_VISIBLE_DEVICES": "-1", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "local_files_only": true, "torch_intraop_threads": 1, "torch_interop_threads": 1, "network_and_file_write_python_audit_guard": true, "device": "cpu", "API_calls": 0, "file_writes": 0, "blocked_attempts_in_successful_execution": [], "existing_directory_mkdir_calls_only": ["/data/tmp/torchinductor_root"]},
+    "runtime_only_import_adjustments": ["ctypes.util.find_library('dl') 直接返回已 ls 核实的 /lib64/libdl.so.2，避免动态库查找创建临时文件；其他名称保留原实现", "tempfile.tempdir=/data/tmp，TORCHINDUCTOR_CACHE_DIR=/data/tmp/torchinductor_root 指向已有目录", "audit hook 只允许对已存在目录调用 mkdir，系统返回 EEXIST 并由 exist_ok 处理；禁止所有新目录及文件写入", "真实 MPNet(device='cpu', local_files_only=True) 放入 reference 进程内模型缓存；不改 tokenizer、weights、normalize 或排序"],
+    "diagnostic_failures_not_benchmark_retries": [
+      {"stage": "后台结果收集", "error": "TaskOutput 对 xzjufl 返回 No task found；未把该后台 attempt 计为通过证据，改前台收集。"},
+      {"stage": "首个前台严格保护", "error": "torch 导入通过 ctypes.util.find_library('dl') 尝试创建 temporary file，被保护拦截，最终 No usable temporary directory；未允许写入。"},
+      {"stage": "动态库只读查找后", "error": "torch._dynamo import 触发 os.makedirs cache_dir 被严格保护拦截；随后改用已有 cache dir，并仅允许 EEXIST 无变更调用。"}
+    ],
+    "versions": {"torch": "2.14.1", "transformers": "5.20.0", "sentence-transformers": "6.1.0", "freezegun": "1.5.1", "numpy": "2.5.0", "jinja2": "3.1.6"},
+    "offline_model": {"name": "sentence-transformers/all-mpnet-base-v2", "snapshot": "e8c3b32edf5434bc2275fc9bab85f82640a19130", "model_safetensors_bytes": 437971872, "model_safetensors_sha256": "78c0197b6159d92658e319bc1d72e4c73a9a03dd03815e70e555c5ef05615658", "config_json_sha256": "d46a3e04ded82bba22528424480697d394eeda6a27484e08c5bb2bdf5906cfa0", "tokenizer_json_sha256": "b8be2c30ba5dd723a6d5ee26d013da103d5408d92ddcb23747622f9e48f1d842"},
+    "soft_budget_actual_critique_with_stub_llm_tests": [
+      {"before": 19, "after": 20, "remove_weight": 1, "suffix_full": false},
+      {"before": 20, "after": 21, "remove_weight": 1, "suffix_full": true},
+      {"before": 21, "after": 22, "remove_weight": 1, "suffix_full": true},
+      {"before": 23, "after": 24, "remove_weight": 1, "suffix_full": true},
+      {"before": 24, "after": 25, "remove_weight": 1, "suffix_full": true},
+      {"before": 25, "after": 26, "remove_weight": 3, "suffix_full": true}
+    ],
+    "soft_budget_test_note": "每条初始 count=5；stub 返回一条 REMOVE 与一条 ADD。规则数仍可在 full 模式增加，to_pool 不硬裁剪；测试使用真实 critique_compare/parser/apply_operations。",
+    "actual_prompt_builder_tests": [
+      {"benchmark": "appworld", "method": "expel", "query": "Find the most-liked song in my Spotify playlists.", "insights": 23, "selected_ids": ["82e2fac_1", "82e2fac_3"], "scores": [0.82743901014328, 0.7300432920455933], "all_insights_present": true, "full_selected_trajectories_present": true, "matrix_shape": [87,768], "matrix_sha256": "4192b1177be2a819faab3e49f86682e1b9955662b151a3463e5b820edffc333f", "prompt_sha256": "3422b01a8afce2c71e4d1c6a752cee4cbdfadf0530758beb7ee9314f2f8eeffa", "prompt_chars": 30853},
+      {"benchmark": "appworld", "method": "ace", "full_playbook_exact_substring": true, "bullet_count": 211, "playbook_chars": 110670, "prompt_sha256": "16e4d79f6ad57bbaf8aef19e4516788946545675abdb555cb57033f37269ad26", "prompt_chars": 113515},
+      {"benchmark": "appworld", "method": "daedalus", "all_pool_texts_present": true, "pool_count": 46, "no_retriever": true, "prompt_sha256": "f3b1f5d31aec2892d6f9f83b9126ca77e6102f04b31e13f96f4a463daa5bfe18", "prompt_chars": 14465, "uses": "live consolidated bank 的正确配置路径，不是旧 frozen memory arm"},
+      {"benchmark": "tau2", "method": "expel", "query": "I want to return a delivered backpack and get a refund to the original payment method.", "insights": 21, "selected_ids": ["28", "46"], "scores": [0.5887409448623657, 0.5844789743423462], "all_insights_present": true, "full_selected_trajectories_present": true, "matrix_shape": [60,768], "matrix_sha256": "289b65e16da542a8dba3577845594d6ca1883e05d7231ab87967b238ca2b1cfc", "prompt_sha256": "1e288213b13cf3197fcb75f9e847fd1986fc59786c6c2b786aac547bce5c9689", "prompt_chars": 35948},
+      {"benchmark": "tau2", "method": "ace", "full_playbook_exact_substring": true, "bullet_count": 74, "playbook_chars": 39511, "prompt_sha256": "f9da1c7b68097acbed112a8f6898d9a6bf318b9d2893ca4ed5f8f27da8b139e8", "prompt_chars": 40967},
+      {"benchmark": "tau2", "method": "daedalus", "all_pool_texts_present": true, "pool_count": 23, "no_retriever": true, "prompt_sha256": "0e723c2a698ea7774c503bee75362ba3b49ddfac33bf0849bf520ee0f142ddb5", "prompt_chars": 8279, "uses": "真实 tau2 renderer，列表取自 live consolidated bank；init 全 bank 路径由源码核查，未运行真实环境构造器"}
+    ],
+    "ranking_independent_check": "对同一真实 MPNet matrix/query 另行计算归一化内积与 np.argsort，确认真实 DemonstrationRetriever.select 返回同样两条 ID；不是独立重训或第二种检索算法。",
+    "evidence_boundary": "真实 cached MPNet + 真实 select/critique/render 方法；agent 构造器用 __new__ 绕过，world/policy 是最小测试元数据，τ² 父 solve 在内存替换为 prompt 边界 stub 后恢复。无真实 AppWorld/Orchestrator/LLM/评分，不把此证据写成历史实际网络 request。ACE builder 测试加载真实 playbook 后调用继承的 benchmark builder；DAEDALUS tau2 测试真实 renderer 与全 bank 文本，构造器分支只作静态证据。"
+  },
+  "limitations": [
+    "不输出 benchmark 分数，也不把路径通过升级为完整方法复现。",
+    "HY3 替换论文 solver/auxiliary/τ² user simulator 与部分 evaluator；原论文模型绝对分数不可宣称复现。",
+    "train-only 结论针对本轮枚举得到的 5 份 demonstration 文件与指定官方 train/test split；未来新增文件须重新验证。",
+    "ExpeL demo 全文指持久化成功 trajectory 字符串全文；其共享 AppWorld trajectory renderer 在构建经验时可能截断 observation，不等同原始环境 output 的所有字节。",
+    "ACE 历史 summaries/ADD 与配置通过，不代表重新执行或验证所有历史 API calls。",
+    "consolidated 文件和 completed ledger 不提供严格当时输入 bank digest；partial generation 加上实时共享状态使原 session 逐字等价恢复尚未证实。",
+    "本轮没有修改现有 wrapper 或 vendor，也没有启动/停止原运行中的其他任务；manifest running 字段只作读取时快照，不视为存活进程证明。"
+  ],
+  "delivery": {"only_requested_json_files": true, "remote_copy_status": "completed", "local_remote_byte_identity_verified": true, "creation_policy": "远端使用 exclusive xb，不覆盖既有文件；交付命令在写后逐字节及 SHA256 核验。文件自身 SHA256 由终端及最终回复提供，避免自引用。"}
+}
