@@ -138,6 +138,29 @@ class VerifiedTests(unittest.TestCase):
         self.mutate_usage(lambda rows: rows[0].update(status="error", error_type="Timeout"))
         self.assert_invalid()
 
+    def _insert_retried_failure(self, rows):
+        for row in rows:
+            row.setdefault("launch_id", "launch"); row.setdefault("worker_id", "worker")
+        base = next(r for r in rows if r["event_id"] == "event_0_task_a")
+        failed = {k: v for k, v in base.items()}
+        failed.update({"event_id": "event_retry_0_task_a", "status": "failed_without_usage",
+                       "error_type": "BadGatewayError", "returned_model": "", "request_id": "", "tokens": None})
+        rows.insert(next(i for i, r in enumerate(rows) if r["event_id"] == "event_0_task_a"), failed)
+
+    def test_usage_failed_attempt_retried_to_completion_accepted(self):
+        self.mutate_usage(self._insert_retried_failure)
+        result = audit_arm(self.arm)
+        self.assertTrue(result["execution_verified"], result["issues"])
+        self.assertEqual(result["retried_attempt_count"], 1)
+        self.assertTrue(result["retried_attempts"][0]["retried_to_completion"])
+        self.assertEqual(result["retried_attempts"][0]["error_type"], "BadGatewayError")
+
+    def test_usage_failed_attempt_without_retry_still_invalid(self):
+        self.mutate_usage(lambda rows: rows.append({**rows[0], "event_id": "event_orphan_fail",
+            "status": "failed_without_usage", "error_type": "BadGatewayError", "tokens": None,
+            "request_id": "", "returned_model": ""}))
+        self.assert_invalid()
+
     def test_usage_task_mismatch(self):
         self.mutate_usage(lambda rows: rows[0].update(task_id="task_b"))
         self.assert_invalid()

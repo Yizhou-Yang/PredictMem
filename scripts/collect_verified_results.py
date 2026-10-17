@@ -121,12 +121,22 @@ def audit_arm(arm, require_finished=True, evaluation_path=None):
         except (OSError, ValueError, TypeError) as exc:
             issues.append(f"usage_provenance 无效 {path.name}: {exc}")
     completed = {eid: e for eid, e in events.items() if e.get("status") == "completed"}
+    # v2 传输重试规则（reproduction_protocol.json acceptance_amendment_2026_10_17_transport_retries）：
+    # 同会话(launch/worker/task/run)内，未完成尝试之后若存在 completed 尝试，则不判失败（协议已记载官方客户端
+    # 会重试歧义计费请求）；全部披露、计入 retried_attempts。无后续 completed 的未完成尝试仍判失败。
+    ordered = list(events.values())
+    completion_positions = {}
+    for pos, event in enumerate(ordered):
+        if event.get("status") == "completed":
+            key = (event.get("launch_id"), event.get("worker_id"), str(event.get("task_id")), event.get("run_idx"))
+            completion_positions.setdefault(key, []).append(pos)
     observed_models = Counter()
     tokens_total = 0
     token_counts = Counter()
     cache_details_available = False
     by_task = Counter()
-    for eid, event in events.items():
+    retried_attempts = []
+    for pos, (eid, event) in enumerate(events.items()):
         if event.get("requested_model") != "openai/hy3":
             issues.append(f"非 HY3 请求: {eid}")
         if event.get("benchmark") != arm["benchmark"] or event.get("experiment_name") != arm["experiment_name"]:
@@ -136,7 +146,14 @@ def audit_arm(arm, require_finished=True, evaluation_path=None):
         if event.get("role") not in arm["active_roles"]:
             issues.append(f"未声明模型角色: {eid}")
         if event.get("status") != "completed":
-            issues.append(f"API 调用未正常完成: {eid} {event.get('error_type', '')}")
+            key = (event.get("launch_id"), event.get("worker_id"), str(event.get("task_id")), event.get("run_idx"))
+            positions = completion_positions.get(key, [])
+            retried = bool(positions) and positions[-1] > pos
+            retried_attempts.append({"event_id": eid, "task_id": event.get("task_id"), "run_idx": event.get("run_idx"),
+                                     "status": event.get("status"), "error_type": event.get("error_type"),
+                                     "retried_to_completion": retried})
+            if not retried:
+                issues.append(f"API 调用未正常完成且无后续成功重试: {eid} {event.get('error_type', '')}")
             continue
         returned, request_id = event.get("returned_model"), event.get("request_id")
         side = provenance.get(eid)
@@ -270,6 +287,9 @@ def audit_arm(arm, require_finished=True, evaluation_path=None):
             "observed_returned_models": dict(observed_models), "ledger_hashes": {str(p): sha(p) for p in usage_files},
             "usage_timestamp_note": "AppWorld 冻结世界时间可能进入 ledger；墙钟以 supervisor manifest 为准",
             "estimated_total_cost_usd": summary_usage.get("estimated_total_cost_usd") if summary_usage.get("cost_complete") else None,
+            "retried_attempts": retried_attempts, "retried_attempt_count": len(retried_attempts),
+            "acceptance_transport_rule": "v2: 未完成尝试若同会话(launch/worker/task/run)后续存在 completed 则不判失败，全部披露；无后续 completed 仍判失败",
+            "acceptance_transport_rule_registered": "reproduction_protocol.json acceptance_amendment_2026_10_17_transport_retries",
             "success_rate_per_run": rates if not issues else None,
             "MSR": statistics.mean(rates) if not issues else None,
             "pass_pow_5": len(set.intersection(*success_sets))/len(expected) if accepted and arm["num_runs"] == 5 else None,
