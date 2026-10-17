@@ -133,6 +133,44 @@ class StallTests(unittest.TestCase):
         future.set_result(1)
         self.assertEqual(list(safety.completed_without_stall([future, future], 0.01)), [future])
 
+    def test_ledger_progress_extends_window_for_slow_tail_task(self):
+        # 尾部单任务比窗口慢，但每个窗口内都有新 LLM 尝试落 ledger → 不是 stall。
+        ticks = iter(range(100))
+        with ThreadPoolExecutor(1) as executor:
+            future = executor.submit(time.sleep, 0.12)
+            got = list(safety.completed_without_stall([future], 0.03, lambda: next(ticks)))
+        self.assertEqual(got, [future])
+
+    def test_unchanged_ledger_is_still_a_stall(self):
+        with self.assertRaises(safety.PoolStalledError):
+            list(safety.completed_without_stall([Future()], 0.02, lambda: (3, 120)))
+
+    def test_ledger_progress_counts_only_appended_jsonl(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "usage"
+            self.assertEqual(safety.ledger_progress(root), (0, 0))
+            (root / "launch").mkdir(parents=True)
+            ledger = root / "launch" / "worker_1.jsonl"
+            ledger.write_text('{"status": "completed"}\n')
+            first = safety.ledger_progress(root)
+            (root / "launch" / "notes.txt").write_text("ignored")
+            self.assertEqual(safety.ledger_progress(root), first)
+            with ledger.open("a") as stream:
+                stream.write('{"status": "failed"}\n')
+            self.assertNotEqual(safety.ledger_progress(root), first)
+            self.assertIsNone(safety.ledger_progress(None))
+
+    def test_ledger_root_matches_usage_ledger_layout(self):
+        from daedalus.core.config import experiment_dir
+        cfg = SimpleNamespace(cost_accounting=SimpleNamespace(enabled=True, ledger_dir=""))
+        with patch("daedalus.core.config.experiment_dir", return_value=Path("/x/exp")):
+            self.assertEqual(safety._ledger_root(cfg), Path("/x/exp/usage"))
+        cfg.cost_accounting.ledger_dir = "/y/w0"
+        self.assertEqual(safety._ledger_root(cfg), Path("/y/w0/usage"))
+        cfg.cost_accounting.enabled = False
+        self.assertIsNone(safety._ledger_root(cfg))
+        self.assertTrue(callable(experiment_dir))
+
 
 class PoolBoundaryTests(unittest.TestCase):
     def run_pool(self, outcomes):

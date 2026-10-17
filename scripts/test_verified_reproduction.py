@@ -156,6 +156,45 @@ class VerifiedTests(unittest.TestCase):
         self.usage.unlink()
         self.assert_invalid()
 
+    def as_user_simulator(self, rows):
+        # 上游 record_external 的真实形态：returned_model=请求模型、无 request_id。
+        self.arm["active_roles"]["user_simulator"] = {"model": "openai/hy3"}
+        rows[0].update(role="user_simulator", returned_model="openai/hy3", request_id="")
+
+    def write_provenance(self, rows):
+        path = self.directory / "usage_provenance/worker_1.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+    def test_user_simulator_without_provenance_rejected(self):
+        self.mutate_usage(self.as_user_simulator)
+        self.assert_invalid()
+
+    def test_user_simulator_verified_provenance_accepted(self):
+        self.mutate_usage(self.as_user_simulator)
+        self.write_provenance([{"event_id": "event_0_task_a", "role": "user_simulator", "returned_model": "hy3",
+                                "request_id": "up-1", "verified": True}])
+        result = audit_arm(self.arm)
+        self.assertTrue(result["execution_verified"], result["issues"])
+
+    def test_user_simulator_unverified_or_wrong_model_rejected(self):
+        self.mutate_usage(self.as_user_simulator)
+        for row in ({"verified": False, "returned_model": "hy3", "request_id": "up-1"},
+                    {"verified": True, "returned_model": "gpt-4.1", "request_id": "up-1"},
+                    {"verified": True, "returned_model": "hy3", "request_id": ""}):
+            self.write_provenance([{"event_id": "event_0_task_a", "role": "user_simulator", **row}])
+            self.assert_invalid()
+
+    def test_provenance_cannot_rescue_solver_or_duplicate(self):
+        self.mutate_usage(lambda rows: rows[0].update(request_id=""))
+        self.write_provenance([{"event_id": "event_0_task_a", "role": "user_simulator", "returned_model": "hy3",
+                                "request_id": "up-1", "verified": True}])
+        self.assert_invalid()  # solver 事件必须自带 request_id
+        self.mutate_usage(self.as_user_simulator)
+        row = {"event_id": "event_0_task_a", "role": "user_simulator", "returned_model": "hy3", "request_id": "up-1", "verified": True}
+        self.write_provenance([row, row])
+        self.assert_invalid()
+
     def test_process_failure_not_accepted(self):
         self.arm["exit_code"] = 7
         self.assert_invalid()

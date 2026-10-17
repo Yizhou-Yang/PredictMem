@@ -1,0 +1,38 @@
+{
+  "schema": "predictmem.stall_diagnosis.v1",
+  "date": "2026-10-17",
+  "arm": "verified_20261016_1258_appworld_ace",
+  "status": "root_cause_mechanism_confirmed_offline; upstream_latency_of_the_specific_call_unobserved",
+  "api_calls_made_for_diagnosis": 0,
+  "observed": {
+    "run_counts_terminal": [168, 167, 0, 0, 0],
+    "stuck_task": "6b6ca61_2 (run_1)",
+    "started_marker_without_done_marker": ["run_1/6b6ca61_2.json"],
+    "last_done_marker_mtime_local": "2026-10-16 14:59",
+    "stuck_trace_last_save_local": "2026-10-16 15:06:28",
+    "pool_stalled_error_local": "2026-10-16 15:24:27 (= last completion + 1500 s)",
+    "trace_turns_saved": 7,
+    "usage_ledger_events_for_task_run1": {"completed": 7, "failed": 0},
+    "eighth_solver_call": "outstanding for >= 1079 s with neither a completed nor a failed ledger event",
+    "prompt_tokens_last_completed_call": 101693,
+    "completion_tokens_turn0": 45660,
+    "max_tokens_configured": null,
+    "relay_log": "empty (log_level=warning); no per-request timing was recorded"
+  },
+  "code_facts": {
+    "daedalus_llm_client_timeout_s": 600,
+    "daedalus_llm_client_max_attempts": 6,
+    "daedalus_failure_ledger": "every failed attempt is recorded and flushed before retry",
+    "litellm_openai_sdk_max_retries_default": 2,
+    "offline_proof": "scripts/test_llm_transport.py: loopback fake upstream returning 500 receives 3 requests for one litellm.completion call by default, 1 after the safety patch"
+  },
+  "root_cause": "Each harness attempt hid up to two extra OpenAI-SDK retries (worst case ~3 x 600 s plus backoff) that were neither counted by the harness retry loop nor written to the usage ledger. One slow/long HY3 call on a ~100k-token context therefore produced no observable event for longer than the 1500 s pool-stall window, and the pool-level detector (task completion only) aborted the whole arm. Whether the upstream call was a runaway generation or a transport hang cannot be determined from the retained artifacts.",
+  "fix": {
+    "runtime_safety._install_llm_transport": "force litellm max_retries=0 so the harness's own 6-attempt loop is the only retry authority and every attempt is ledgered (also re-bound for tau2's `from litellm import completion`; tau2's own num_retries=3 protocol unchanged)",
+    "runtime_safety.completed_without_stall(progress=...)": "a window with no task completion is not a stall if the usage ledger (append-only *.jsonl) grew; no completion AND no ledgered attempt in 1500 s is still fatal",
+    "relay audit log": "logs/relay_audit.jsonl: prompt-free, secret-free start/latency/status/usage/finish_reason per request"
+  },
+  "protocol_deviation": "Transport-level retry policy differs from an unpatched upstream harness: SDK-internal retries disabled; harness-level retries (max 6, recorded) unchanged. No change to prompts, models, max_tokens, temperature, task set, or memory.",
+  "consequence_for_results": "The 1258 ACE arm stays failed and is not resumed or merged. ACE, baseline and ExpeL must be re-run as five complete runs in a fresh namespace from one frozen source; no test-outcome-based selection.",
+  "regression": "any4 CPU, no API: 101 passed (test_llm_transport, test_relay, test_runtime_safety, test_tau2_transport_safety, test_embedding_preflight with real MPNet proof, test_verified_reproduction)"
+}

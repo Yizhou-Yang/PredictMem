@@ -8,6 +8,8 @@ sleep 1
 export HY3_UPSTREAM_URL="http://api.taiji.woa.com/openapi/v2/chat/completions"
 export HY3_KEY_FILE="/data/workspace/g2audit/.taiji_key"
 export HY3_RELAY_PORT=8743
+# Prompt-free, secret-free per-request timing/status/usage log (append-only).
+export HY3_RELAY_AUDIT_LOG="${HY3_RELAY_AUDIT_LOG:-/data/workspace/PredictMem/logs/relay_audit.jsonl}"
 setsid nohup vendor/daedalus/.venv/bin/python scripts/relay.py > logs/relay.log 2>&1 < /dev/null &
 sleep 3
 if curl -sf -m 5 http://127.0.0.1:8743/health > /dev/null; then

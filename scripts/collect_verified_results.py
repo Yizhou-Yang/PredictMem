@@ -109,6 +109,17 @@ def audit_arm(arm, require_finished=True, evaluation_path=None):
                 events[eid] = event
         except (OSError, ValueError, TypeError) as exc:
             issues.append(f"usage 无效 {path.name}: {exc}")
+    # user_simulator 旁证：上游 record_external 不保存真实返回模型/request_id。
+    provenance = {}
+    for path in sorted((directory / "usage_provenance").rglob("*.jsonl")):
+        try:
+            for line in path.read_text().splitlines():
+                row = json.loads(line)
+                if row.get("event_id") in provenance:
+                    raise ValueError("provenance event_id 重复")
+                provenance[row.get("event_id")] = row
+        except (OSError, ValueError, TypeError) as exc:
+            issues.append(f"usage_provenance 无效 {path.name}: {exc}")
     completed = {eid: e for eid, e in events.items() if e.get("status") == "completed"}
     observed_models = Counter()
     tokens_total = 0
@@ -127,9 +138,13 @@ def audit_arm(arm, require_finished=True, evaluation_path=None):
         if event.get("status") != "completed":
             issues.append(f"API 调用未正常完成: {eid} {event.get('error_type', '')}")
             continue
-        returned = event.get("returned_model")
+        returned, request_id = event.get("returned_model"), event.get("request_id")
+        side = provenance.get(eid)
+        if not request_id and event.get("role") == "user_simulator" and side is not None:
+            if side.get("verified") is True and side.get("role") == "user_simulator":
+                returned, request_id = side.get("returned_model"), side.get("request_id")
         observed_models[str(returned)] += 1
-        if returned not in ("hy3", "openai/hy3") or not event.get("request_id"):
+        if returned not in ("hy3", "openai/hy3") or not request_id:
             issues.append(f"真实返回模型/request_id 未验证: {eid}")
         tokens = event.get("tokens", {})
         if any(type(tokens.get(k)) is not int or tokens[k] < 0 for k in ("prompt_tokens", "completion_tokens")):

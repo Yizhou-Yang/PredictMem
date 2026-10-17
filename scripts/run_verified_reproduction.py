@@ -93,7 +93,8 @@ def source_snapshot():
             if name and path.is_file():
                 files[str(path)] = sha(path)
     optional_missing = []
-    for name in ("run.py", "runtime_safety.py", "run_verified_reproduction.py", "collect_verified_results.py", "test_verified_reproduction.py", "embedding_preflight.py", "test_embedding_preflight.py", "tau2_transport_safety.py", "tau2_hy3_eval.py"):
+    for name in ("run.py", "runtime_safety.py", "run_verified_reproduction.py", "collect_verified_results.py", "test_verified_reproduction.py", "embedding_preflight.py", "test_embedding_preflight.py", "tau2_transport_safety.py", "tau2_hy3_eval.py",
+                 "relay.py", "test_llm_transport.py", "test_runtime_safety.py", "test_relay.py"):
         path = ROOT / "scripts" / name
         if path.exists():
             files[str(path)] = sha(path)

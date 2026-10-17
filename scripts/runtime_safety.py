@@ -285,13 +285,121 @@ def _install_cpu_retrievers():
     expel._embedder = _cpu_expel_embedder
 
 
-def completed_without_stall(futures, timeout=STALL_TIMEOUT_S):
-    """每次完成重新开始等待，绝非整个 iterator 的总时间预算。"""
+def _install_llm_transport():
+    """关闭 litellm/OpenAI SDK 的隐藏重试（默认 2 次），让每次 HY3 尝试都落 ledger。
+
+    ACE 1258 run_1 的 6b6ca61_2 在第 8 次调用上 ≥1079s 既无 completed 也无 failed 事件：
+    客户端 timeout=600s 且 SDK 内部会对超时/5xx 静默重试 2 次（最坏 ~1800s），这些尝试
+    既不进入 harness 的 6 次重试计数，也不写 usage ledger（可能已计费）。重试权归 harness。
+    """
+    import litellm
+
+    original = litellm.completion
+    if getattr(original, "_runtime_safety", False):
+        return
+
+    @wraps(original)
+    def completion(*args, **kwargs):
+        kwargs["max_retries"] = 0
+        return original(*args, **kwargs)
+
+    completion._runtime_safety = True
+    litellm.completion = completion
+
+
+def _install_tau2_llm_transport():
+    """tau2 以 `from litellm import completion` 绑定名字；同样关闭 SDK 隐藏重试。
+
+    tau2 自身协议的 litellm num_retries=3 保持不变（上游原协议），只去掉其下方再叠加的
+    OpenAI SDK 2 次静默重试。
+    """
+    import litellm
+    from tau2.utils import llm_utils
+
+    llm_utils.completion = litellm.completion
+
+
+PROVENANCE_DIR = "usage_provenance"  # 不在 usage/ 下：不改上游 ledger，也不计入 stall 心跳
+
+
+def _install_tau2_user_provenance():
+    """为上游 user_simulator 用量事件补充“真实返回模型/request_id”旁证。
+
+    上游 `_record_user_simulator_usage` 经 record_external 记账，returned_model 直接写成
+    请求模型、request_id 为空；但 tau2 的每条 UserMessage.raw_data 保留了上游响应的
+    model 与 id。这里不改写任何 ledger 事件，只把 (event_id → raw_data.model/id) 按上游
+    同一顺序追加到实验目录的 usage_provenance/worker_<pid>.jsonl；对不上即标 unverified。
+    """
+    from daedalus.benchmarks.tau2 import runner
+
+    cls = runner.Tau2TaskRunner
+    original = cls._record_user_simulator_usage
+    if getattr(original, "_runtime_safety", False):
+        return
+
+    @wraps(original)
+    def record(self, logger, sim, messages):
+        from tau2.data_model.message import UserMessage
+
+        before = len(logger.trace.usage_event_ids)
+        result = original(self, logger, sim, messages)
+        new_ids = [e for e in logger.trace.usage_event_ids[before:] if e]
+        billed = [m for m in messages if isinstance(m, UserMessage) and getattr(m, "usage", None)]
+        rows = []
+        aligned = len(new_ids) == len(billed)
+        for index, event_id in enumerate(new_ids):
+            raw = (getattr(billed[index], "raw_data", None) or {}) if aligned else {}
+            model, request_id = raw.get("model"), raw.get("id")
+            rows.append({"event_id": event_id, "role": "user_simulator",
+                         "returned_model": model, "request_id": request_id,
+                         "source": "tau2 UserMessage.raw_data (upstream response)",
+                         "verified": bool(aligned and model in ("hy3", "openai/hy3") and request_id)})
+        if rows:
+            directory = Path(logger.trace_dir).parent / PROVENANCE_DIR
+            directory.mkdir(parents=True, exist_ok=True)
+            with (directory / f"worker_{os.getpid()}.jsonl").open("a", encoding="utf-8") as stream:
+                for row in rows:
+                    stream.write(json.dumps(row, sort_keys=True) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        return result
+
+    record._runtime_safety = True
+    cls._record_user_simulator_usage = record
+
+
+def ledger_progress(root):
+    """usage ledger 只追加：(文件数, 总字节) 变化即代表有 LLM 尝试结束（成功或失败）。"""
+    if root is None:
+        return None
+    root = Path(root)
+    files = [p for p in root.rglob("*.jsonl") if p.is_file()] if root.exists() else []
+    return (len(files), sum(p.stat().st_size for p in files))
+
+
+def _progress_probe(root):
+    if root is None:
+        return None
+    return lambda: ledger_progress(root)
+
+
+def completed_without_stall(futures, timeout=STALL_TIMEOUT_S, progress=None):
+    """每次完成重新开始等待，绝非整个 iterator 的总时间预算。
+
+    progress（可选）：返回可比较的进度令牌；窗口内无 task 完成但令牌变化（有 LLM 尝试
+    落 ledger）则继续等待。窗口内既无完成也无已记录尝试才判定 stall。
+    """
     pending = set(futures)
+    last = progress() if progress is not None else None
     while pending:
         done, pending = wait(pending, timeout=timeout, return_when=FIRST_COMPLETED)
         if not done:
-            raise PoolStalledError(f"连续 {timeout} 秒没有 task 完成，剩余 {len(pending)} 项")
+            current = progress() if progress is not None else None
+            if progress is not None and current != last:
+                last = current
+                continue
+            raise PoolStalledError(
+                f"连续 {timeout} 秒没有 task 完成且没有新的 LLM ledger 事件，剩余 {len(pending)} 项")
         for future in done:
             yield future
 
@@ -320,7 +428,8 @@ def solve_tasks_parallel(agent, task_ids, num_workers, run_ids=None):
                    for idx, tid in pairs}
         bar = console.progress_bar(len(task_ids), desc="solving")
         n_ok = 0
-        for future in completed_without_stall(futures, pool._STALL_TIMEOUT_S):
+        progress = _progress_probe(_ledger_root(agent.cfg))
+        for future in completed_without_stall(futures, pool._STALL_TIMEOUT_S, progress):
             result = future.result()  # worker 的任何异常直接传播，不能伪装成 {}。
             results.append(result)
             success = bool(result.get("success", False))
@@ -358,7 +467,8 @@ def run_reference_tasks(worker, jobs, args_of, max_workers):
     pool._install_sigterm_reaper(executor)
     try:
         futures = [executor.submit(worker, *args_of(index, tid)) for index, tid in jobs]
-        results = [f.result() for f in completed_without_stall(futures, pool._STALL_TIMEOUT_S)]
+        progress = _progress_probe(os.environ.get("PREDICTMEM_LEDGER_ROOT") or None)
+        results = [f.result() for f in completed_without_stall(futures, pool._STALL_TIMEOUT_S, progress)]
         return sorted(results, key=lambda r: r[0])
     finally:
         try:
@@ -367,9 +477,25 @@ def run_reference_tasks(worker, jobs, args_of, max_workers):
             _restore_signals(handlers)
 
 
+def _ledger_root(cfg):
+    """与 UsageLedger 相同的落盘位置：<ledger_dir 或 experiment_dir>/usage。"""
+    try:
+        from daedalus.core.config import experiment_dir
+        accounting = getattr(cfg, "cost_accounting", None)
+        if accounting is None or not getattr(accounting, "enabled", False):
+            return None
+        base = Path(accounting.ledger_dir) if accounting.ledger_dir else experiment_dir(cfg)
+        return base / "usage"
+    except Exception:  # noqa: BLE001 —— 探针缺失只退化为“仅按完成计时”，不放宽判据
+        return None
+
+
 def _guard_config(cfg, create=True):
     from daedalus.core.config import experiment_dir, resolve_trace_dir
 
+    root = _ledger_root(cfg)
+    if root is not None:
+        os.environ["PREDICTMEM_LEDGER_ROOT"] = str(root)
     directories = [experiment_dir(cfg)]
     if cfg.logging.trace_dir:
         directories.append(Path(cfg.logging.trace_dir))
@@ -397,6 +523,9 @@ def install(benchmark, method=None):
     key = (benchmark, method)
     if key in _INSTALLED:
         return
+    _install_llm_transport()
+    if benchmark == "tau2":
+        _install_tau2_llm_transport()
     _install_cpu_retrievers()
     _install_trace_logger()
     from daedalus.core.agents import task_pool
@@ -417,6 +546,8 @@ def install(benchmark, method=None):
     module = importlib.import_module(f"daedalus.benchmarks.{benchmark}.{'runner' if benchmark == 'tau2' else 'agent'}")
     module.solve_tasks_parallel = solve_tasks_parallel
     wrap_solver_class(module.Tau2TaskRunner if benchmark == "tau2" else module.ReActAgent)
+    if benchmark == "tau2":
+        _install_tau2_user_provenance()
     if method:
         common = importlib.import_module("references.common.run")
         common.is_run_complete = is_run_complete
