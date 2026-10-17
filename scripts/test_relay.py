@@ -37,3 +37,18 @@ def test_audit_record_has_no_prompt_or_secret():
 def test_streaming_fails_explicitly():
     with pytest.raises(ValueError, match="Streaming"):
         payload({"messages": [], "stream": True})
+
+
+def test_transport_error_is_not_classified_fatal_by_daedalus():
+    """Regression: 'billing unknown' matched DAEDALUS's spend words and killed all arms."""
+    from relay import TRANSPORT_ERROR_MESSAGE
+    import litellm
+    from daedalus.core.llm.client import _SPEND_REFUSED, _is_fatal_provider_error
+
+    msg = TRANSPORT_ERROR_MESSAGE.format("ReadTimeout")
+    assert not any(word in msg.lower() for word in _SPEND_REFUSED)
+    exc = litellm.BadGatewayError(message=msg, model="hy3", llm_provider="openai")
+    assert not _is_fatal_provider_error(exc)
+    old = litellm.BadGatewayError(message="Upstream transport failure; billing unknown",
+                                  model="hy3", llm_provider="openai")
+    assert _is_fatal_provider_error(old)  # documents the original failure mode

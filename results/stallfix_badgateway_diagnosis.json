@@ -1,0 +1,35 @@
+{
+  "namespace": "verified_20261017_stallfix",
+  "diagnosed_at": "2026-10-17T11:35:00+08:00",
+  "observed": {
+    "appworld_baseline": "failed exit=1 at 10:53:59 CST, progress 407/840 at failure",
+    "appworld_ace": "failed exit=1 at 10:56:54 CST, run_0 165/168 at failure",
+    "appworld_expel": "failed exit=1 at 10:23:35 CST, run_0 22/168 at failure",
+    "error_all_arms": "daedalus.core.llm.client.FatalLLMError: ... BadGatewayError: OpenAIException - Upstream transport failure; billing unknown",
+    "relay_audit": {
+      "total_records": 14876,
+      "non_200": 3,
+      "non_200_detail": [
+        {"started": "10:13:16", "status": 502, "error_type": "ReadTimeout", "latency_s": 600.01},
+        {"started": "10:43:42", "status": 502, "error_type": "ReadTimeout", "latency_s": 600.009},
+        {"started": "10:46:36", "status": 502, "error_type": "ReadTimeout", "latency_s": 600.014}
+      ],
+      "status_200_latency_s": {"n": 7435, "p50": 3.297, "p99": 77.866, "max": 495.51}
+    }
+  },
+  "root_cause": "relay.py returned the 502 body text 'Upstream transport failure; billing unknown'. DAEDALUS _is_fatal_provider_error() matches the substring 'billing' (in _SPEND_REFUSED) and classifies the error as a permanent spend refusal, raising FatalLLMError on the first occurrence; pools re-raise it, so each single 600 s upstream ReadTimeout killed a whole arm instead of being retried (max_attempts=6).",
+  "not_the_cause": [
+    "key/spend: subsequent calls returned 200 (last 200 at 10:55:06; route check 11:35:17 returned hy3)",
+    "hidden SDK retries: max_retries=0 fix verified in effect (one relay record per client attempt)"
+  ],
+  "fix": {
+    "file": "scripts/relay.py",
+    "change": "TRANSPORT_ERROR_MESSAGE = 'Upstream transport failure ({exc_type}); usage unknown' — contains no DAEDALUS spend words; still 502; unknown usage is recorded by DAEDALUS as an unknown-cost attempt",
+    "regression_test": "scripts/test_relay.py::test_transport_error_is_not_classified_fatal_by_daedalus (new message not fatal; old message fatal)",
+    "no_api_regression": "logs/no_api_regression_20261017_relayfix.log: 119 passed",
+    "relay_restarted_pid": 2130102,
+    "route_check": "results/hy3_route_check_20261017_relayfix.json"
+  },
+  "consequence": "verified_20261017_stallfix AppWorld test arms are failed and preserved as-is; no trace reuse, no partial scores reported. All three arms are re-registered in a new namespace with the same frozen banks.",
+  "deltas_reported": null
+}

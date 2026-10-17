@@ -19,6 +19,10 @@ app = FastAPI()
 ALLOWED = {"model", "messages", "tools", "tool_choice", "temperature", "top_p",
            "max_tokens", "max_completion_tokens", "reasoning_effort", "seed",
            "parallel_tool_calls", "response_format", "stop", "stream"}
+# Transient relay->upstream failure. Must not contain DAEDALUS spend words
+# (see daedalus.core.llm.client._SPEND_REFUSED); usage of the failed call is unknown,
+# which DAEDALUS records on its own as an unknown-cost attempt.
+TRANSPORT_ERROR_MESSAGE = "Upstream transport failure ({}); usage unknown"
 
 
 def payload(body):
@@ -87,7 +91,10 @@ async def chat(req: Request):
         return JSONResponse(data, status_code=response.status_code)
     except (httpx.HTTPError, ValueError) as exc:
         _audit(audit_record(relay_id, started, 502, error=type(exc).__name__, request=out))
-        return JSONResponse({"error": {"message": "Upstream transport failure; billing unknown",
+        # Wording matters: DAEDALUS treats any error text containing spend words
+        # ("billing", "budget", "quota", "credit") as a permanent refusal and kills the
+        # whole arm. A transport timeout is transient and must stay retryable.
+        return JSONResponse({"error": {"message": TRANSPORT_ERROR_MESSAGE.format(type(exc).__name__),
                                        "type": "upstream_error"}}, 502)
 
 
