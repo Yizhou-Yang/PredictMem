@@ -91,3 +91,16 @@ done
 Artifacts: `outputs/inference/appworld/predictmem/pm_appworld_ctrl7/evaluation.json`,
 `outputs/inference/tau2/predictmem/pm_tau2_t*/evaluation.json`,
 `/data/pier/jobs/pm-deepswe-113f/*/result.json` (any2).
+
+## Addendum — 22:40 CST
+
+- **τ² no-injection control** (`predictmem.top_k=0`, 10 concurrent, per-task):
+  **13/39 tasks complete, partial MSR 0.3692**. The subset differs from the 39-task 0.4308,
+  so this is not a like-for-like comparison yet; on the completed subset, removing injection
+  does **not** improve the score. The "injection pollution" hypothesis is therefore not
+  supported so far.
+- **DeepSWE 113f**: 3/113 results, 2 solved (33 and 65 steps). Containers run 250-step
+  episodes at ~50 s/step (~3.5 h per task); 8 workers cannot finish 113 tasks in this session.
+- **AppWorld resume**: stalled again at 256/504 (`ok=74`); the available AppWorld number
+  remains the 3-run **80.06**.
+- No benchmark currently beats its baseline. The claim "SOTA" is not supported by these runs.

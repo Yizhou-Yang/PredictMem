@@ -68,7 +68,9 @@ retrieval `EffectGate`:
 | τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
 | DeepSWE `pm-deepswe-113f` | first 3: **2 solved** (33, 65 steps), 1 failed | 250 steps, 8 workers; run continues |
 
-Negative-result evidence: AppWorld gate blocked **0/2624** events; memory injection is the
-likely cause of the τ² drop and of the 29% resumed AppWorld rate. See
-`results/CONTROLLER_RUN_2026-10-21.md` for the full bug log (control_eps, risk calibration,
-`Prediction` scoping, JSON observations, Docker network exhaustion, τ² NL judge model).
+Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no-injection control**
+(`top_k=0`) reached **13/39 tasks, partial 0.3692** — on that subset it did not improve over the
+39-task 0.4308, so the "injection pollution" hypothesis is not supported. Current numbers do not
+support a SOTA claim on any benchmark. See `results/CONTROLLER_RUN_2026-10-21.md` for the full bug
+log (control_eps, risk calibration, `Prediction` scoping, JSON observations, Docker network
+exhaustion, τ² NL judge model).
