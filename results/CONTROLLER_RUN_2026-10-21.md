@@ -36,8 +36,8 @@ Comparison (HY3): no-memory **51.50**, ExpeL **57.50†**, ACE **44.00†**.
 
 - Job `pm-deepswe-113f`, 8 workers, `PIER_PREDICTMEM=1`,
   `model.model_class=predictmem_pier.model.PredictMemModel`.
-- First 3 results: **2 solved (reward 1; 33 and 65 steps), 1 failed (68 steps)**.
-  Sample is too small for a rate; the run continues.
+- First 6 results: **4 solved (reward 1; 33, 65, 87, 102 steps), 2 failed (46, 68 steps)**.
+  These are the earliest (easier) tasks; 4/6 is a pilot, not a rate. The run continues.
 - Earlier `pm-deepswe-113e` produced **113/113 infra failures**: Docker had 34 stale networks
   and could not allocate an IPv4 pool. Pruned to 4 and relaunched as 113f.
 - Base mini-swe-agent reference: **17/113 = 15.04%** at 100 steps, N=1, lower bound (54 empty
@@ -99,8 +99,10 @@ Artifacts: `outputs/inference/appworld/predictmem/pm_appworld_ctrl7/evaluation.j
   so this is not a like-for-like comparison yet; on the completed subset, removing injection
   does **not** improve the score. The "injection pollution" hypothesis is therefore not
   supported so far.
-- **DeepSWE 113f**: 3/113 results, 2 solved (33 and 65 steps). Containers run 250-step
-  episodes at ~50 s/step (~3.5 h per task); 8 workers cannot finish 113 tasks in this session.
+- **DeepSWE 113f**: **6/113 results, 4 solved** (reward 1 at 33, 65, 87, 102 steps; two failures at
+  46 and 68 steps). The six are the earliest (easier) tasks, so 4/6 is a pilot, not a rate.
+  Containers run 250-step episodes at ~50 s/step (~3.5 h per task); 8 workers cannot finish 113
+  tasks in this session.
 - **AppWorld resume**: stalled again at 256/504 (`ok=74`); the available AppWorld number
   remains the 3-run **80.06**.
 - No benchmark currently beats its baseline. The claim "SOTA" is not supported by these runs.

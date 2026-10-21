@@ -66,7 +66,7 @@ retrieval `EffectGate`:
 |---|---|---|
 | AppWorld `pm_appworld_ctrl7` | **80.06 MSR** (3 runs; pass^3 0.619, pass@3 0.923) | below DAEDALUS 84.88; resume of runs 3–4 dropped to ~29% and is not used |
 | τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
-| DeepSWE `pm-deepswe-113f` | first 3: **2 solved** (33, 65 steps), 1 failed | 250 steps, 8 workers; run continues |
+| DeepSWE `pm-deepswe-113f` | first 6: **4 solved** (33, 65, 87, 102 steps), 2 failed | 250 steps, 8 workers; earliest/easiest tasks, pilot only |
 
 Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no-injection control**
 (`top_k=0`) reached **13/39 tasks, partial 0.3692** — on that subset it did not improve over the
@@ -74,3 +74,33 @@ Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no
 support a SOTA claim on any benchmark. See `results/CONTROLLER_RUN_2026-10-21.md` for the full bug
 log (control_eps, risk calibration, `Prediction` scoping, JSON observations, Docker network
 exhaustion, τ² NL judge model).
+
+## Handoff — 2026-10-21 (goal rounds exhausted)
+
+**Completed**
+
+- AppWorld PredictMem controller: 3 runs × ~168 tasks (partial evaluation 80.06).
+- τ² PredictMem: 39/39 tasks × 5 runs (43.08); task 70 excluded as a harness failure.
+- τ² no-injection control: 13/39 tasks partial (36.92), still running.
+- DeepSWE PredictMem plugin: 6/113 trials, 4 solved (pilot).
+- Full bug log and reproduction commands in `results/CONTROLLER_RUN_2026-10-21.md`.
+
+**Not completed**
+
+- AppWorld 5-run evaluation (stall detector ended runs 3–4; resume stalls).
+- τ² DAEDALUS 5×40, TB4 63 tasks, ablations (no predictor / admit-all / no versioning /
+  no gate), DeepSWE 113 full, τ² no-injection 39/39.
+
+**Next minimal experiments (in order)**
+
+1. Run AppWorld with a per-task/per-run outer loop (one process per batch of 8 tasks) and a
+   longer stall budget, so runs 3–4 finish without a 90-minute global stall.
+2. τ² no-injection 39/39 to settle the injection question on a matched subset.
+3. Ablations on the τ² 39-task set (cheap) before AppWorld, to see whether any component moves
+   the score at all.
+4. DAEDALUS τ² 5×39 with the same per-task isolation and `openai/hy3` NL judge.
+5. DeepSWE 113: run in shards of ~20 tasks per 12-hour window at 8 workers; 250 steps is
+   ~3.5 h/task.
+
+**Bottom line:** the controller is implemented and reproducible, but no benchmark currently
+beats its baseline. Treat the current numbers as preliminary/negative, not SOTA.
