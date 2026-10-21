@@ -56,3 +56,19 @@ PredictMem: not implemented for τ² yet.
 - `harness/INTEGRATION.md` — exact patches to the vendored harness
 - `docs/PREDICTMEM_ARM_DESIGN.md` — design spec
 - PredictMem vendor commit on experiment host: `d1a687e`
+
+## Controller run — 2026-10-21 (HY3)
+
+First runs with `PredictiveController` (cost + chance constraint + fallback) replacing the
+retrieval `EffectGate`:
+
+| Arm | Result | Status |
+|---|---|---|
+| AppWorld `pm_appworld_ctrl7` | **80.06 MSR** (3 runs; pass^3 0.619, pass@3 0.923) | below DAEDALUS 84.88; resume of runs 3–4 dropped to ~29% and is not used |
+| τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
+| DeepSWE `pm-deepswe-113f` | first 3: **2 solved** (33, 65 steps), 1 failed | 250 steps, 8 workers; run continues |
+
+Negative-result evidence: AppWorld gate blocked **0/2624** events; memory injection is the
+likely cause of the τ² drop and of the 29% resumed AppWorld rate. See
+`results/CONTROLLER_RUN_2026-10-21.md` for the full bug log (control_eps, risk calibration,
+`Prediction` scoping, JSON observations, Docker network exhaustion, τ² NL judge model).
