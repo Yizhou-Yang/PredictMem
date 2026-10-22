@@ -64,13 +64,13 @@ retrieval `EffectGate`:
 
 | Arm | Result | Status |
 |---|---|---|
-| AppWorld `pm_appworld_ctrl7` | **80.06 MSR** (3 runs; pass^3 0.619, pass@3 0.923) | below DAEDALUS 84.88; resume of runs 3–4 dropped to ~29% and is not used |
+| AppWorld `pm_appworld_ctrl7` | **80.71 MSR** (5 runs, 168 each; pass^5 0.518, pass@5 0.946) | below no-memory 82.62 and DAEDALUS 84.88 |
 | τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
-| DeepSWE `pm-deepswe-113f` | first 6: **4 solved** (33, 65, 87, 102 steps), 2 failed | 250 steps, 8 workers; earliest/easiest tasks, pilot only |
+| DeepSWE `pm-deepswe-113f` | **80/113, 22 solved (27.5%)**; 5 infra, 0 empty patches | base 17/113 at 100 steps; 250-step base control still needed |
 
 Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no-injection control**
-(`top_k=0`) reached **13/39 tasks, partial 0.3692** — on that subset it did not improve over the
-39-task 0.4308, so the "injection pollution" hypothesis is not supported. Current numbers do not
+(`top_k=0`) reached **38/39 tasks, MSR 0.4368** — slightly above the injected 0.4308 and still
+below no-memory 51.50, so the "injection pollution" hypothesis is not supported. Current numbers do not
 support a SOTA claim on any benchmark. See `results/CONTROLLER_RUN_2026-10-21.md` for the full bug
 log (control_eps, risk calibration, `Prediction` scoping, JSON observations, Docker network
 exhaustion, τ² NL judge model).

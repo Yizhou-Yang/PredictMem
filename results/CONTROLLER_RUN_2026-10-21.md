@@ -9,15 +9,14 @@ ones. Nothing here uses task reward, verifier output, or gold data inside the lo
 
 - Harness: DAEDALUS vendored, HY3 relay, `control_eps=0.25`, `horizon=1`, memory off, PredictMem on.
 - 24 workers, 5 runs intended.
-- **Partial evaluation (3 runs): MSR 0.8006, pass^3 0.619, pass@3 0.923**
-  (tasks per run: `[168, 168, 166]`).
-- The launch was ended by the 90-minute stall detector ("no task finished in 90 min with 365
-  outstanding"). Runs 3–4 were resumed with the same experiment name; at 22:18 CST the resume
-  had 251/504 completed with `ok=72` (**29%**), which is far below the 80% of runs 0–2.
-  The resumed portion is **not** used as a result until the cause is understood.
+- **Final evaluation (5 runs, 168 tasks each): MSR 0.8071 ± 0.015**
+  (per run 85.1 / 79.8 / 76.2 / 79.8 / 82.7; **pass^5 0.518, pass@5 0.946**).
+- The first launch was ended by the 90-minute stall detector; a resume finished runs 3–4
+  overnight. The resumed `ok` counter (~29%) was counting only retried tasks; the final
+  per-run evaluation above is the usable number.
 
 Comparison (HY3, 5 runs unless noted): no-memory **82.62**, DAEDALUS memory **84.88**,
-ACE **82.62†**, ExpeL **71.07†**. The 3-run 80.06 is below DAEDALUS.
+ACE **82.62†**, ExpeL **71.07†**. The final 80.71 is below both no-memory and DAEDALUS.
 
 ## τ² retail — per-task isolation, 39/39
 
@@ -95,14 +94,12 @@ Artifacts: `outputs/inference/appworld/predictmem/pm_appworld_ctrl7/evaluation.j
 ## Addendum — 22:40 CST
 
 - **τ² no-injection control** (`predictmem.top_k=0`, 10 concurrent, per-task):
-  **13/39 tasks complete, partial MSR 0.3692**. The subset differs from the 39-task 0.4308,
-  so this is not a like-for-like comparison yet; on the completed subset, removing injection
-  does **not** improve the score. The "injection pollution" hypothesis is therefore not
-  supported so far.
-- **DeepSWE 113f**: **6/113 results, 4 solved** (reward 1 at 33, 65, 87, 102 steps; two failures at
-  46 and 68 steps). The six are the earliest (easier) tasks, so 4/6 is a pilot, not a rate.
-  Containers run 250-step episodes at ~50 s/step (~3.5 h per task); 8 workers cannot finish 113
-  tasks in this session.
-- **AppWorld resume**: stalled again at 256/504 (`ok=74`); the available AppWorld number
-  remains the 3-run **80.06**.
+  **38/39 tasks complete, MSR 0.4368**. This is slightly above the injected 0.4308 and still
+  below no-memory (51.50); removing injection does not recover the gap. The "injection
+  pollution" hypothesis is not supported.
+- **DeepSWE 113f**: **80/113 results, 22 solved (27.5%)**, 57 failed, 1 pending; 5 infra errors,
+  **0 empty patches, 0 hit the 250-step cap**. The reference is base mini-swe **17/113 (15.0%)**
+  at 100 steps with 54 empty patches — not apples-to-apples (step limit and collect hook differ),
+  so a 250-step base control is still required before claiming a gain.
+- **AppWorld**: the 5-run final is **80.71** (see above).
 - No benchmark currently beats its baseline. The claim "SOTA" is not supported by these runs.
