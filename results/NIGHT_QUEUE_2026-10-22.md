@@ -70,3 +70,17 @@ Controls now running:
 
 - **v17**: same code, `top_k=0` (no injection) on the same 39 retail tasks. If v17 ≈ 43.6,
   the drop is caused by injection content, not by the extra predictor calls.
+
+## 03:00 update (2026-10-23)
+
+No-injection control **v17** (`top_k=0`, predictor kept, gate kept):
+
+- 38/39 tasks ×5 runs: **26.8%** (baseline 43.6%, injection v16 29.2%)
+- Event audit: 2047 events, 87% predictor-skipped (read-only), **103 blocks (5%)**
+  from `memory_failure` (repeat-action blocking), 15 medium-risk predictions.
+- → The 14–17 point drop is not caused by injection content: it is caused by **blocking
+  repeated actions**, which τ² needs (e.g. multiple `get_`/`update_` turns).
+
+Control **v18** launched: same code, `top_k=0`, `ablation.no_gate=true` (no blocking,
+no injection; predictor calls still happen). Expected to land near 43.6 if the only harm is
+the gate; if it is still ~27, the extra predictor call/context itself is the problem.
