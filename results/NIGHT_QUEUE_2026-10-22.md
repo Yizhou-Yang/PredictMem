@@ -123,3 +123,19 @@ hurt. The old “+5.1” was a stale-baseline artifact, not a method effect.
 
 All τ² airline/telecom baselines must be re-run with the current code before any paper table
 is written. The same applies to any earlier comparison produced before 2026-10-22 13:00.
+
+## 07:55 update (2026-10-23) — current-code 3-domain paired result
+
+PM v20 (`pm_tau2v20_*`, injection + gate) vs baseline b20 (`base_tau2v20_*`), same code,
+same tasks, 5 runs each, partial (53/99 common tasks so far):
+
+| | PM | baseline | diff | SE |
+|---|---|---|---|---|
+| 53 paired tasks | **38.5%** | **52.8%** | **−14.3** | 4.2 |
+
+This is **significantly worse** (|t| ≈ 3.4). The earlier “PM ≈ baseline” was retail-only;
+across airline/telecom the injection + gate degrade the solver substantially.
+
+Implication: the current memory/gate design is not neutral — it actively hurts on τ². The
+paper cannot report a gain from this configuration; either the memory content/format is wrong
+or the intervention must be removed. Runs continue to 99 tasks for the final table.
