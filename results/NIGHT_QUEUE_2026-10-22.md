@@ -35,3 +35,19 @@ Paper suite (all official harness/evaluator):
 - If τ² v13 > baseline: fix the config and run all 99 tasks + 5 runs.
 - If not: keep retrieval injection but drop the gate claim; run a no-injection ablation for the paper.
 - Replace ScienceWorld policy with a stronger planner before using it as a main column.
+
+## 22:25 update
+
+- τ² v13/v14/v15 all failed at runtime due to two wiring bugs introduced when adding
+  retrieval: (a) the tail of `__init__` (`_store`, `_seen`, `_turn`) was accidentally placed
+  inside `_retrieve_pm` after `return out`; (b) `_READONLY` regex was referenced but not
+  defined in `tau2_agent.py`. Both are fixed; **v16** is running and its children are
+  progressing through run_3 with no errors.
+- ALFWorld rerank: **10/32 = 31%**, below the no-memory baseline 40.8%; stopped. Rerank is
+  not helping on this policy.
+- ScienceWorld v4: PM 0/78, baseline 3/84 — still ~1–4%; the policy cannot finish tasks, so
+  the column remains non-discriminative.
+- BFCL official remains 59.50%.
+
+Morning decision unchanged: use τ² v16 (real injection) if it beats the 94-task baseline;
+otherwise report the negative result with the wiring audit.
