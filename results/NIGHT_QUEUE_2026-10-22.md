@@ -100,3 +100,26 @@ This means the drop is **not** explained by gate blocking or injection content. 
 **base19** launched: same current vendor code, `predictmem.enabled=false`, 39 retail tasks ×5.
 If base19 ≈43.6, the wrapper is the harm; if base19 ≈29, the old baseline is stale and all
 previous PM-vs-baseline comparisons on τ² must be recomputed.
+
+## 05:45 update (2026-10-23)
+
+**base19** (current vendor code, `predictmem.enabled=false`, 39 retail tasks ×5):
+
+- **29.2%** — essentially identical to v16 (29.2), v17 (26.8), v18 (29.5).
+
+Therefore the earlier baseline **43.6% is stale**. It came from an earlier harness/model
+state and is not comparable with the current code. Under the current code:
+
+| Arm | τ² retail (39×5) |
+|---|---|
+| baseline (base19) | **29.2%** |
+| PM no-gate/no-injection (v18) | 29.5% |
+| PM no-injection + gate (v17) | 26.8% |
+| PM injection + gate (v16) | 29.2% |
+
+**Conclusion:** on τ² retail with the current harness, PredictMem is statistically
+indistinguishable from the baseline; the gate/injection do not help and (for v17) slightly
+hurt. The old “+5.1” was a stale-baseline artifact, not a method effect.
+
+All τ² airline/telecom baselines must be re-run with the current code before any paper table
+is written. The same applies to any earlier comparison produced before 2026-10-22 13:00.
