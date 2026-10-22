@@ -31,7 +31,7 @@ ACE **82.62†**, ExpeL **71.07†**. The final 80.71 is below both no-memory an
 Comparison (HY3): no-memory **51.50**, ExpeL **57.50†**, ACE **44.00†**.
 **PredictMem 0.4308 is below no-memory.**
 
-## DeepSWE v1.1 — 250 steps, PredictMem plugin
+## Appendix — DeepSWE v1.1 250-step pilot (not main)
 
 - Job `pm-deepswe-113f`, 8 workers, `PIER_PREDICTMEM=1`,
   `model.model_class=predictmem_pier.model.PredictMemModel`.

@@ -66,7 +66,12 @@ retrieval `EffectGate`:
 |---|---|---|
 | AppWorld `pm_appworld_ctrl7` | **80.71 MSR** (5 runs, 168 each; pass^5 0.518, pass@5 0.946) | below no-memory 82.62 and DAEDALUS 84.88 |
 | τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
-| DeepSWE `pm-deepswe-113f` | **80/113, 22 solved (27.5%)**; 5 infra, 0 empty patches | base 17/113 at 100 steps; 250-step base control still needed |
+
+### Appendix / pilot (not main table)
+
+| Arm | Result | Note |
+|---|---|---|
+| DeepSWE `pm-deepswe-113f` | 80/113, 22 solved (27.5%); 5 infra, 0 empty patches | heavy Docker benchmark; moved out of the main suite; 250-step base control still missing |
 
 Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no-injection control**
 (`top_k=0`) reached **38/39 tasks, MSR 0.4368** — slightly above the injected 0.4308 and still
