@@ -51,3 +51,22 @@ Paper suite (all official harness/evaluator):
 
 Morning decision unchanged: use τ² v16 (real injection) if it beats the 94-task baseline;
 otherwise report the negative result with the wiring audit.
+
+## 00:40 update (2026-10-23)
+
+First **real** memory-injection run (v16, after fixing both wiring bugs):
+
+- τ² retail, 39 tasks × 5 runs: **29.2%**
+- no-memory baseline, same 39 tasks: **43.6%**
+- → injection **hurts** by 14.4 points. The previous v3 “+5.1” was never injected memory
+  (the retrieval hook was not wired), so it was run variance.
+
+ScienceWorld v4 (official `lastStepScore`, stronger prompt):
+
+- PredictMem 2/150 completed; baseline 5/150 — still ~1–3% for both, policy-limited and
+  non-discriminative.
+
+Controls now running:
+
+- **v17**: same code, `top_k=0` (no injection) on the same 39 retail tasks. If v17 ≈ 43.6,
+  the drop is caused by injection content, not by the extra predictor calls.
