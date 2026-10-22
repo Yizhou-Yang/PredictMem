@@ -84,3 +84,19 @@ No-injection control **v17** (`top_k=0`, predictor kept, gate kept):
 Control **v18** launched: same code, `top_k=0`, `ablation.no_gate=true` (no blocking,
 no injection; predictor calls still happen). Expected to land near 43.6 if the only harm is
 the gate; if it is still ~27, the extra predictor call/context itself is the problem.
+
+## 04:35 update (2026-10-23)
+
+Control **v18** (`top_k=0`, `no_gate=true`; predictor still called for non-read-only actions):
+
+- 38/39 tasks ×5 runs: **29.5%**
+- No gate blocks, no injection — yet still ~14 points below the recorded baseline 43.6.
+
+This means the drop is **not** explained by gate blocking or injection content. Two hypotheses:
+
+1. the PM wrapper / predictor call itself perturbs the tau2 conversation, or
+2. the recorded baseline 43.6 came from an older harness state and is not comparable.
+
+**base19** launched: same current vendor code, `predictmem.enabled=false`, 39 retail tasks ×5.
+If base19 ≈43.6, the wrapper is the harm; if base19 ≈29, the old baseline is stale and all
+previous PM-vs-baseline comparisons on τ² must be recomputed.
