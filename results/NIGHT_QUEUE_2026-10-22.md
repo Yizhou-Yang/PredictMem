@@ -203,3 +203,20 @@ No component is individually significant (all |t| < 1.7). The signs are informat
 removing the predictor or the gate *increases* success, i.e. those two components are, if
 anything, mildly harmful; admission/versioning are neutral. This is consistent with the
 earlier full-run result (PM below no-memory). Runs continue to 39 tasks for the final table.
+
+## 15:35 update — final component ablation (38 common tasks, 5 runs)
+
+| Arm | Mean | Δ vs full | SE | |t| | Significant? |
+|---|---|---|---|---|---|
+| full (v22) | 28.9% | — | — | — | — |
+| no predictor | **33.7%** | **+4.7** | 3.4 | 1.4 | **no** |
+| no gate | **33.7%** | **+4.7** | 3.7 | 1.3 | **no** |
+| admit-all | 27.6% | −2.2 | 3.5 | 0.6 | no |
+| no versioning | 26.3% | −2.6 | 3.2 | 0.8 | no |
+
+Baseline (no memory) on the same code: 30.0%.
+
+**No component is individually significant.** Removing the predictor or the gate trends +4.7
+points (still ns), i.e. those two components are, if anything, mildly harmful; admission and
+versioning are neutral. Component-level significance is therefore **not established** for the
+current design, and the paper cannot claim it.
