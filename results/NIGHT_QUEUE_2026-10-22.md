@@ -177,3 +177,14 @@ State of the four-benchmark suite:
 | ALFWorld | baseline 40.8, PM 39.7 (old per-turn) | needs rerun with stuck-only |
 | ScienceWorld | 0 vs 0 | policy-limited |
 | BFCL | 59.50% official | capability column |
+
+### v22 final paired check
+
+38 common tasks (5 runs each):
+
+| | PM v22 | baseline base19 | diff | SE |
+|---|---|---|---|---|
+| τ² retail | **28.9%** | **30.0%** | **−1.1** | 3.5 |
+
+Neutral (|t| ≈ 0.3). Confirms the strict stuck-only memory neither helps nor hurts; the
+component ablation on this design would only show null effects.
