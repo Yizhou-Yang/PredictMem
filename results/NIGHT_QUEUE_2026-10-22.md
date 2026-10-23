@@ -139,3 +139,18 @@ across airline/telecom the injection + gate degrade the solver substantially.
 Implication: the current memory/gate design is not neutral — it actively hurts on τ². The
 paper cannot report a gain from this configuration; either the memory content/format is wrong
 or the intervention must be removed. Runs continue to 99 tasks for the final table.
+
+## 08:55 update (2026-10-23) — final trend
+
+PM v20 72 tasks, baseline b20 98 tasks, 72 paired:
+
+| | PM | baseline | diff | SE |
+|---|---|---|---|---|
+| 72 paired | **50.6%** | **62.5%** | **−11.9** | 3.4 |
+
+Still significantly negative (t ≈ 3.5). The direction is stable across the partial
+(53 tasks: −14.3; 72 tasks: −11.9), so this is not a small-sample artefact.
+
+Decision: treat “inject effect records into the conversation + gate” as a **failed design**
+on τ². Do not report it as a gain. The next iteration must remove context injection and use
+memory only as a decision-time filter/reranker (or drop memory from the main claim).
