@@ -249,3 +249,12 @@ message with the returned call. First 6 traces: guard fired 16 times; run in pro
 Single-candidate verify-and-repair is neutral-to-negative (|t| ≈ 0.9). The verifier agrees
 with the solver and does not catch the actual failure mode (text termination). v26 tests the
 forced-tool-call guard instead.
+
+## 17:05 — ALFWorld stuck-only (partial)
+
+| Arm | wins/games | rate |
+|---|---|---|
+| PM pmv6 | 11/39 | 28.2% |
+| baseline basev6 | 14/46 | 30.4% |
+
+Partial and slightly negative; the stuck-only memory does not help ALFWorld either. Runs continue.
