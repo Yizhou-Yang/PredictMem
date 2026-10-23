@@ -220,3 +220,20 @@ Baseline (no memory) on the same code: 30.0%.
 points (still ns), i.e. those two components are, if anything, mildly harmful; admission and
 versioning are neutral. Component-level significance is therefore **not established** for the
 current design, and the paper cannot claim it.
+
+## 17:00 update — root cause of tau2 failures (trace analysis)
+
+Parsed all run_0 traces of the current-code runs:
+
+| Run | traces | success | fail: no tool call at end | fail: other |
+|---|---|---|---|---|
+| PM v22 | 39 | 16 | **23** | 0 |
+| baseline base19 | 39 | 10 | **29** | 0 |
+
+**Every τ² failure ends on a turn with no tool call** — the agent writes a summary or asks the
+user to confirm ("Nothing will be done until you reply yes") and the episode terminates
+unresolved. This is not a bad-action problem; it is a *termination* problem.
+
+Fix (`v26`): `_ensure_tool_call` — if the assistant message has no tool call, re-prompt once
+with "Do not end with a question/confirmation; issue the next tool call now" and replace the
+message with the returned call. First 6 traces: guard fired 16 times; run in progress.
