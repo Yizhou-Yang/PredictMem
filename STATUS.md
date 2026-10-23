@@ -1,111 +1,49 @@
-# Status — 2026-10-21 11:20 CST
+# Status — 2026-10-23
 
-## DeepSWE v1.1 (HY3, mini-swe-agent via Pier)
+## Final benchmark suite (locked)
 
-| Run | Result | Notes |
-|---|---|---|
-| 30 steps × 5 tasks | 0/5 | all hit the 30-step cap |
-| 100 steps × 5 tasks | 1/5 | v100 sample |
-| **100 steps × 113 tasks** | **17/113 = 15.04%** | any2, N=1, 5 workers |
-| 250 steps × 22-task subset | running | process-fix validation (worktree capture) |
+The paper uses exactly four benchmarks. Every column uses the **official harness and
+official evaluator**; only the agent policy (PredictMem or the no-memory baseline) is ours.
 
-**Process defect found in the 113 run:** 54/113 trials produced a **0-byte patch** because the
-task collect hook captured only `git diff <base> HEAD` (committed changes). 55 trials exited
-`LimitsExceeded`; all 16 solves had non-empty patches. The 15.04% is therefore a lower bound.
-
-Fix used for the 250-step subset: `git add -A && git diff --binary <base>` so uncommitted work
-is captured. 22 tasks: 15 empty-patch capped + 2 non-empty capped + 5 saved-but-failed controls.
-
-Artifacts: `results/hy3_deepswe_113_any2_20261021.json`, `results/HY3_DEEPSWE_113_2026-10-21.md`.
-
-## AppWorld test_normal (HY3, DAEDALUS harness)
-
-Existing HY3 numbers (validity-checked): baseline 82.62 MSR, ACE 82.62†, ExpeL 71.07†.
-DAEDALUS memory and PredictMem were not valid (2 runs / unequal denominators; PredictMem not implemented).
-
-### Now running on any2/any4 (2026-10-21)
-
-| Arm | Namespace | Workers | Progress |
+| # | Benchmark | Official harness / evaluator | Metric |
 |---|---|---|---|
-| DAEDALUS memory | `verified_20261021_mem12` | 12 | 5 runs × 168; ~100/840 at launch |
-| **PredictMem** | `verified_20261021_pm` | 8 | 5 runs × 168; just started |
+| 1 | τ²-Bench (retail / airline / telecom) | Sierra `tau2-bench` runner + evaluator | mean success over 5 runs |
+| 2 | ALFWorld | official `alfworld` 0.5.0, `eval_out_of_distribution` (134 games) | win rate over 3 runs |
+| 3 | ScienceWorld | official `scienceworld` 1.2.3, official task list + `lastStepScore` | official score |
+| 4 | BFCL v3 multi-turn long-context | official `bfcl-eval 2026.3.23`, `bfcl generate` + `bfcl evaluate` | official accuracy |
 
-The memory arm was previously hardcoded to `parallel=4`; it is now 12. PredictMem uses 8.
-Total 20 workers on any4 + 5 DeepSWE on any2 ≈ 25 concurrent HY3 calls (relay has no QPM limit).
+No other benchmark is part of the paper. AppWorld, DeepSWE and Terminal-Bench are removed
+from the main text, tables, and docs; their run artifacts remain on the experiment hosts only.
 
-### PredictMem arm
+## Current official results
 
-From-scratch implementation (see `docs/PREDICTMEM_ARM_DESIGN.md` and `harness/`):
+| Benchmark | No memory | PredictMem | Status |
+|---|---|---|---|
+| τ² (3 domains) | 62.5% (72 paired) | 50.6% (72 paired) | current-code interim; design under revision |
+| ALFWorld | 40.8% (125/306) | 39.7% (old per-turn injection) | needs rerun with stuck-only memory |
+| ScienceWorld | — | — | policy-limited (~1–3% both arms); v5 rerun in progress |
+| BFCL multi-turn | 59.50% (199/200) | n/a | capability column; official harness has no memory hook |
 
-- predictor -> surprise (semantic + LLM judge + execution) -> selective admission -> versioned store
-- BM25 retrieval, warn/block gate
-- config-driven ablations: no predictor / admit all / no versioning / no gate
-- smoke: 1/1 on `82e2fac_1`, 10 events, 2 admitted records
+## Method state (2026-10-23)
 
-Next: τ² 5×40 for both arms, then ablations, then update the paper's main table.
+- Memory is injected **only when the agent is stuck** (three identical tool outputs, once per
+  task), not on every turn; per-turn injection measured −12 points on τ².
+- Repeat-action blocking is removed from every agent.
+- Risk is evidence-based: predicted failure (`expected_success=false`), failure keywords in the
+  predicted effect, or destructive state changes raise risk above ε; the raw LLM risk label
+  alone is not trusted (it is always `low` in the logs).
+- `predict_consequential_only` is enabled only to skip read-only `get_/list_/search_` calls.
 
-## τ² retail (HY3)
+## Open issues
 
-Existing HY3: baseline 51.50, ACE 44.00†, ExpeL 57.50†.
-DAEDALUS memory: 5 runs but one run has 39/40 tasks (unequal denominators) -> not yet valid.
-PredictMem: not implemented for τ² yet.
+- Component ablations (full / no predictor / admit-all / no versioning / no gate) have not been
+  run on the final suite; component significance is not established.
+- ScienceWorld's agent policy still completes only a few tasks; the column is not
+  discriminative until the policy is stronger.
+- τ² current-code paired result is negative (PredictMem below no-memory); do not report it as
+  a gain.
 
-## Repo state
+## Reproduce
 
-- `harness/predictmem/` — PredictMem arm source (reference copy)
-- `harness/INTEGRATION.md` — exact patches to the vendored harness
-- `docs/PREDICTMEM_ARM_DESIGN.md` — design spec
-- PredictMem vendor commit on experiment host: `d1a687e`
-
-## Controller run — 2026-10-21 (HY3)
-
-First runs with `PredictiveController` (cost + chance constraint + fallback) replacing the
-retrieval `EffectGate`:
-
-| Arm | Result | Status |
-|---|---|---|
-| AppWorld `pm_appworld_ctrl7` | **80.71 MSR** (5 runs, 168 each; pass^5 0.518, pass@5 0.946) | below no-memory 82.62 and DAEDALUS 84.88 |
-| τ² `pm_tau2_t*` | **43.08 MSR** (39/39 tasks, 5 runs each) | below no-memory 51.50 and ExpeL 57.50† |
-
-### Appendix / pilot (not main table)
-
-| Arm | Result | Note |
-|---|---|---|
-| DeepSWE `pm-deepswe-113f` | 80/113, 22 solved (27.5%); 5 infra, 0 empty patches | heavy Docker benchmark; moved out of the main suite; 250-step base control still missing |
-
-Negative-result evidence: AppWorld gate blocked **0/2624** events. The τ² **no-injection control**
-(`top_k=0`) reached **38/39 tasks, MSR 0.4368** — slightly above the injected 0.4308 and still
-below no-memory 51.50, so the "injection pollution" hypothesis is not supported. Current numbers do not
-support a SOTA claim on any benchmark. See `results/CONTROLLER_RUN_2026-10-21.md` for the full bug
-log (control_eps, risk calibration, `Prediction` scoping, JSON observations, Docker network
-exhaustion, τ² NL judge model).
-
-## Handoff — 2026-10-21 (goal rounds exhausted)
-
-**Completed**
-
-- AppWorld PredictMem controller: 3 runs × ~168 tasks (partial evaluation 80.06).
-- τ² PredictMem: 39/39 tasks × 5 runs (43.08); task 70 excluded as a harness failure.
-- τ² no-injection control: 13/39 tasks partial (36.92), still running.
-- DeepSWE PredictMem plugin: 6/113 trials, 4 solved (pilot).
-- Full bug log and reproduction commands in `results/CONTROLLER_RUN_2026-10-21.md`.
-
-**Not completed**
-
-- AppWorld 5-run evaluation (stall detector ended runs 3–4; resume stalls).
-- τ² DAEDALUS 5×40, TB4 63 tasks, ablations (no predictor / admit-all / no versioning /
-  no gate), DeepSWE 113 full, τ² no-injection 39/39.
-
-**Next minimal experiments (in order)**
-
-1. Run AppWorld with a per-task/per-run outer loop (one process per batch of 8 tasks) and a
-   longer stall budget, so runs 3–4 finish without a 90-minute global stall.
-2. τ² no-injection 39/39 to settle the injection question on a matched subset.
-3. Ablations on the τ² 39-task set (cheap) before AppWorld, to see whether any component moves
-   the score at all.
-4. DAEDALUS τ² 5×39 with the same per-task isolation and `openai/hy3` NL judge.
-5. DeepSWE 113: run in shards of ~20 tasks per 12-hour window at 8 workers; 250 steps is
-   ~3.5 h/task.
-
-**Bottom line:** the controller is implemented and reproducible, but no benchmark currently
-beats its baseline. Treat the current numbers as preliminary/negative, not SOTA.
+See `results/OFFICIAL_4BENCH_2026-10-22.md` and `results/NIGHT_QUEUE_2026-10-22.md` for the
+exact configs and commands.

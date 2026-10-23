@@ -10,8 +10,7 @@ only the agent policy is ours (PredictMem or the no-memory baseline).
 | 3 | ScienceWorld | official `scienceworld` 1.2.3, official task list + `lastStepScore` | ~2h | action–effect |
 | 4 | BFCL v3 multi-turn long-context | official `bfcl-eval 2026.3.23`, `bfcl generate` + `bfcl evaluate` | done | tool calling / long context |
 
-AppWorld, DeepSWE and Terminal-Bench are appendix only (too heavy once the predictor runs;
-AppWorld ≈23 h/round after real integration).
+AppWorld, DeepSWE and Terminal-Bench are not part of the paper.
 
 ## Results so far
 
@@ -25,7 +24,7 @@ AppWorld ≈23 h/round after real integration).
 | overall | 99 | — | — | **+1.6** (sd 0.246) |
 
 Not significant. These numbers were produced **before** the memory-retrieval hook was wired
-(`_get_retrieved_memories` was defined but never called in AppWorld/τ²), so they are effectively
+(`_get_retrieved_memories` was defined but never called in the tool agents), so they are effectively
 baseline + no-op predictor calls and should be treated as run-variance, not a method result.
 
 ### ALFWorld
