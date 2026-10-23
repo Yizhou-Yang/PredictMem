@@ -154,3 +154,26 @@ Still significantly negative (t ≈ 3.5). The direction is stable across the par
 Decision: treat “inject effect records into the conversation + gate” as a **failed design**
 on τ². Do not report it as a gain. The next iteration must remove context injection and use
 memory only as a decision-time filter/reranker (or drop memory from the main claim).
+
+## 12:30 update (2026-10-23)
+
+**v22** (strict stuck-only injection: 3 identical outputs, once per task, no repeat blocking):
+
+- 38/39 retail tasks ×5: **29.0%**
+- baseline base19: **29.2%**
+- → statistically indistinguishable. The stuck-only memory neither helps nor hurts;
+  the earlier −12/−14 points came from per-turn injection + repeat-action blocking, both removed.
+
+**ScienceWorld v5** (relevance-filtered actions, 100 steps):
+
+- PM 0/102, baseline 0/96 — still no completed tasks; the policy, not the memory, is the
+  bottleneck. This column cannot support a method claim yet.
+
+State of the four-benchmark suite:
+
+| Benchmark | Result | Meaning |
+|---|---|---|
+| τ² (3 domains) | PM ≈ baseline (retail 29.0 vs 29.2) | no method effect under current design |
+| ALFWorld | baseline 40.8, PM 39.7 (old per-turn) | needs rerun with stuck-only |
+| ScienceWorld | 0 vs 0 | policy-limited |
+| BFCL | 59.50% official | capability column |
