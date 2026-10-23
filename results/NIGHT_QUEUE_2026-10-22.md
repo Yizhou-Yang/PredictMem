@@ -188,3 +188,18 @@ State of the four-benchmark suite:
 
 Neutral (|t| ≈ 0.3). Confirms the strict stuck-only memory neither helps nor hurts; the
 component ablation on this design would only show null effects.
+
+## 14:35 update — ablation (partial, 33–34 common tasks)
+
+| Arm | Mean | Δ vs full | SE | Verdict |
+|---|---|---|---|---|
+| full (v22) | 31.2% | — | — | reference |
+| no predictor | **36.5%** | **+5.3** | 3.7 | ns; removing it trends better |
+| no gate | **37.6%** | **+6.5** | 4.0 | ns; removing it trends better |
+| admit-all | 28.8% | −2.4 | 3.8 | ns |
+| no versioning | 29.4% | −1.8 | 3.5 | ns |
+
+No component is individually significant (all |t| < 1.7). The signs are informative:
+removing the predictor or the gate *increases* success, i.e. those two components are, if
+anything, mildly harmful; admission/versioning are neutral. This is consistent with the
+earlier full-run result (PM below no-memory). Runs continue to 39 tasks for the final table.
