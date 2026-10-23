@@ -237,3 +237,15 @@ unresolved. This is not a bad-action problem; it is a *termination* problem.
 Fix (`v26`): `_ensure_tool_call` — if the assistant message has no tool call, re-prompt once
 with "Do not end with a question/confirmation; issue the next tool call now" and replace the
 message with the returned call. First 6 traces: guard fired 16 times; run in progress.
+
+## 17:00 — v25 (verify-and-repair) final
+
+33 common tasks, 5 runs:
+
+| | v25 | baseline base19 | diff | SE |
+|---|---|---|---|---|
+| τ² retail | 29.7% | 32.7% | **−3.0** | 3.4 |
+
+Single-candidate verify-and-repair is neutral-to-negative (|t| ≈ 0.9). The verifier agrees
+with the solver and does not catch the actual failure mode (text termination). v26 tests the
+forced-tool-call guard instead.
