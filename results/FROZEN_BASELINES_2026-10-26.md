@@ -91,3 +91,14 @@ progress with 8 threads.
 Still 0/150 for both arms. The environment is fine (gold sequence completes `boil` at
 score 100), but the zero-shot policy cannot act in the 417-way syntactic action space.
 Not usable as a significance column.
+
+## 16:47 — v37 partial, stopped
+
+18 retail tasks (termination verifier, 1 retry):
+
+| PM | baseline | diff | SE |
+|---|---|---|---|
+| 47.8% | 42.2% | +5.6 | 7.7 |
+
+Not significant; v37 was stopped to free capacity for the 20-task fast round (v38), which
+tests the same mechanism in a bounded <1h budget.
