@@ -301,3 +301,23 @@ An earlier run gave 38.5%; the verifier is noisy, so the gain is +5–8 points, 
 The v26/v27 selection run stalled (judge calls too slow) and was stopped. Next step is to make
 the verifier deterministic/self-consistent (3 judges, majority) before treating best-of-N as a
 method component.
+
+## 14:10 — full 99-task paired result (contemporaneous)
+
+PM v28 vs baseline b21, launched together, 99 common tasks ×5 runs:
+
+| | PM | baseline | diff | SE |
+|---|---|---|---|---|
+| overall | **59.4%** | **63.6%** | **−4.2** | 3.2 |
+| retail (39) | 35.9% | 49.2% | **−13.3** | 6.1 |
+| airline (20) | 55.0% | 63.0% | −8.0 | 6.2 |
+| telecom (40) | **84.5%** | 78.0% | **+6.5** | 3.4 |
+
+Retail is significantly worse (t ≈ 2.2); telecom trends better (t ≈ 1.9). Overall ns.
+
+**Important:** the retail baseline moved from 29–30% (base19, Oct 23) to 49.2% (b21, Oct 26)
+with the same config — the HY3 endpoint/model behaviour drifted. Only contemporaneous pairs
+are valid; all older PM-vs-baseline comparisons are void.
+
+Control v29 (same day, same tasks, top_k=0 + no_gate, PM wrapper) is running to separate
+"memory hurts" from "wrapper hurts".
