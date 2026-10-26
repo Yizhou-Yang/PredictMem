@@ -70,3 +70,24 @@ ALFWorld v7: PM 11/32 so far.
 
 No arm currently beats the frozen baseline. The remaining positive-looking signal (v34) is
 too slow and too small to trust.
+
+## 16:45 — LoCoMo
+
+Parser bug fixed: `conversation` is a dict keyed `session_1..N`, not a list; the first pilot
+produced empty contexts and F1≈0.
+
+50-question pilot after fix:
+
+| Arm | token F1 |
+|---|---|
+| full context | 0.0718 |
+| retrieval memory | **0.0907** |
+
+Retrieval memory is +1.9 F1 over full context on the pilot; full 2000-question run is in
+progress with 8 threads.
+
+## ScienceWorld
+
+Still 0/150 for both arms. The environment is fine (gold sequence completes `boil` at
+score 100), but the zero-shot policy cannot act in the 417-way syntactic action space.
+Not usable as a significance column.
