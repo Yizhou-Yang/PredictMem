@@ -58,3 +58,15 @@ not significant. The termination-verifier mechanism is not strong enough on its 
 
 v40: reflection fired 18 times, +3.0 ns.
 v42: 544 candidate-selection events; +5.9 partial, still not significant.
+
+## 21:50 — v43 (MPC + termination) partial final
+
+18/20 tasks:
+
+| PM | baseline | diff | SE | t |
+|---|---|---|---|---|
+| 48.9% | 41.1% | +7.8 | 9.4 | 0.82 |
+
+The early +25 (n=8) again shrank with the remaining tasks: completion-order bias. Still not
+significant. v44 raises the candidate count from 3 to 5 to see whether execution-feedback
+selection quality improves.
