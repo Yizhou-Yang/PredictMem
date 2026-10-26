@@ -26,3 +26,13 @@ All subsets use the official harness/evaluator and the same HY3 endpoint.
    SE small enough to be meaningful before it is scaled.
 3. After the fast protocol passes, run the full suite once for PM and once for the baseline,
    on the same day.
+
+## 17:46 — τ² fast (v38) partial
+
+14/20 tasks done (termination verifier + no-gate + memory):
+
+| PM | baseline (same tasks) | diff | SE |
+|---|---|---|---|
+| 48.6% | 37.1% | **+11.4** | 9.0 |
+
+Positive trend, not yet significant (t≈1.3); 6 tasks still running.
