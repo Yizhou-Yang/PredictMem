@@ -258,3 +258,37 @@ forced-tool-call guard instead.
 | baseline basev6 | 14/46 | 30.4% |
 
 Partial and slightly negative; the stuck-only memory does not help ALFWorld either. Runs continue.
+
+## Weekend results (2026-10-26)
+
+### ALFWorld stuck-only — final (402 paired game-runs)
+
+| | PM pmv6 | baseline basev6 | diff | SE |
+|---|---|---|---|---|
+| win rate | **47.3%** | **45.5%** | **+1.7** | 1.7 |
+
+First positive direction on ALFWorld, but t ≈ 1.0, not significant.
+
+### τ² action-guard arms — negative
+
+| Arm | evals | mean |
+|---|---|---|
+| v26 (force tool call, 1 retry) | 31 | 23.9% |
+| v27 (act-until-done prompt + 3 retries) | 38 | 19.5% |
+| baseline | 39 | 30.0% |
+
+Forcing the agent to keep acting makes τ² worse; the model's text terminations are often
+the only sensible endpoint it can produce.
+
+### Best-of-N trajectory selection (verifier, no reward)
+
+On existing traces (39 tasks × 5 runs), a completion verifier selects one trajectory per task:
+
+| Trace set | mean success | selected success |
+|---|---|---|
+| PM v22 | 30.8% | **38.5%** |
+| baseline base19 | 29.2% | 20.5% |
+
+Selection helps PM traces (+7.7) and hurts baseline traces (−8.7): the verifier is fooled by
+baseline text-terminations, while PM traces contain actual tool actions. Re-running selection
+across v26/v27 is in progress to test whether action-complete traces are the key.
