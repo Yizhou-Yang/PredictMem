@@ -70,3 +70,21 @@ v42: 544 candidate-selection events; +5.9 partial, still not significant.
 The early +25 (n=8) again shrank with the remaining tasks: completion-order bias. Still not
 significant. v44 raises the candidate count from 3 to 5 to see whether execution-feedback
 selection quality improves.
+
+## 23:32 — v44 (5-candidate MPC + termination) final
+
+| n | PM | baseline | diff | SE | t |
+|---|---|---|---|---|---|
+| 20 | 49.0% | 42.0% | **+7.0** | 6.8 | 1.03 |
+
+Not significant. Per the pre-registered rule (diff > 8 to scale), the τ² mechanism iteration
+stops here. Best τ² arms:
+
+| Arm | diff | t |
+|---|---|---|
+| v44 5-cand MPC + termination | +7.0 | 1.0 |
+| v43 MPC + termination | +7.8 | 0.8 |
+| v42 MPC | +4.0 | 0.7 |
+| v40 Reflexion | +3.0 | 0.4 |
+
+No τ² arm reaches significance; the effect is consistently +4..+8 with SE 6-9.
