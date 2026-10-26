@@ -59,3 +59,14 @@ wrapper and memory are neutral (v32/v35 ≈ baseline). The best current arm is v
 (termination verifier) but only 4 tasks are evaluated; v36 (predictor off) is +1.7 ns.
 
 ALFWorld v7: PM 11/32 so far.
+
+## 15:45 update — v34 inconclusive, ALFWorld v7 negative
+
+- v34 (termination verifier): stopped after 90 min at **6/39 tasks** (processes 0.1% CPU,
+  dominated by verifier retries). Partial 6 tasks looked +28 but n is too small and the
+  remaining tasks were not completing; not usable.
+- ALFWorld v7 (admission 0.50): PM 11/37 = 29.7%, baseline v7 12/38 = 31.6% — slightly
+  negative, no improvement from the lower admission threshold.
+
+No arm currently beats the frozen baseline. The remaining positive-looking signal (v34) is
+too slow and too small to trust.
