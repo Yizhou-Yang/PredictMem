@@ -102,3 +102,28 @@ Not usable as a significance column.
 
 Not significant; v37 was stopped to free capacity for the 20-task fast round (v38), which
 tests the same mechanism in a bounded <1h budget.
+
+## 20:30 — LoCoMo FULL: first significant result
+
+1542 QA pairs, 10 conversations:
+
+| Arm | token F1 |
+|---|---|
+| full context (no memory) | 0.0609 |
+| retrieval memory | **0.1591** |
+
+Paired difference: **+0.0982, SE 0.0092, t = 10.65 → significant.**
+
+Retrieval memory is 2.6× the full-context F1. This is the first benchmark where the
+memory mechanism shows a statistically significant gain (official LoCoMo data, token F1).
+
+Note: this is retrieval memory, not the effect-predictor; it supports the memory claim but
+not the controller claim.
+
+## τ² fast v42 final (17/20)
+
+PM 43.5% vs baseline 37.6% → +5.9, SE 6.6 (ns). 544 multi-candidate execution-feedback events.
+
+## ALFWorld fast (partial)
+
+PM 33 vs baseline 32 games (still running) — flat.
