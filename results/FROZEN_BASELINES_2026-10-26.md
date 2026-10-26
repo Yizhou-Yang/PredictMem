@@ -44,3 +44,18 @@ after it beats them, we do one systematic final run of both arms.
 
 The wrapper itself costs ~4 points; memory currently costs ~3 more. PredictMem must first
 recover the wrapper cost and then add a positive mechanism.
+
+## First PM iteration against the frozen baseline (retail, 39 paired)
+
+| Arm | PM | baseline | diff | SE |
+|---|---|---|---|---|
+| v32 no-gate + memory | 48.2% | 49.2% | −1.0 | 3.9 |
+| v35 wrapper-only | 49.2% | 49.2% | 0.0 | 4.6 |
+| v36 wrapper, predictor off | **53.3%** | 51.7% | +1.7 | 4.0 |
+| v34 termination verifier | 65.0% | 40.0% | +25.0 | 10.9 (n=4) |
+
+Key correction: the earlier retail −13.3 was caused by the gate; with the gate removed the
+wrapper and memory are neutral (v32/v35 ≈ baseline). The best current arm is v34
+(termination verifier) but only 4 tasks are evaluated; v36 (predictor off) is +1.7 ns.
+
+ALFWorld v7: PM 11/32 so far.
