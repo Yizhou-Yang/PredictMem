@@ -10,7 +10,7 @@ official evaluator**; only the agent policy (PredictMem or the no-memory baselin
 | 1 | τ²-Bench (retail / airline / telecom) | Sierra `tau2-bench` runner + evaluator | mean success over 5 runs |
 | 2 | ALFWorld | official `alfworld` 0.5.0, `eval_out_of_distribution` (134 games) | win rate over 3 runs |
 | 3 | ScienceWorld | official `scienceworld` 1.2.3, official task list + `lastStepScore` | official score |
-| 4 | BFCL v3 multi-turn long-context | official `bfcl-eval 2026.3.23`, `bfcl generate` + `bfcl evaluate` | official accuracy |
+| 4 | LoCoMo long-term dialogue | official LoCoMo data (snap-research/locomo), token F1 | official F1 |
 
 No other benchmark is part of the paper. AppWorld, DeepSWE and Terminal-Bench are removed
 from the main text, tables, and docs; their run artifacts remain on the experiment hosts only.
@@ -22,7 +22,7 @@ from the main text, tables, and docs; their run artifacts remain on the experime
 | τ² (3 domains) | 62.5% (72 paired) | 50.6% (72 paired) | current-code interim; design under revision |
 | ALFWorld | 40.8% (125/306) | 39.7% (old per-turn injection) | needs rerun with stuck-only memory |
 | ScienceWorld | — | — | policy-limited (~1–3% both arms); v5 rerun in progress |
-| BFCL multi-turn | 59.50% (199/200) | n/a | capability column; official harness has no memory hook |
+| LoCoMo | — | — | runner + pilot in progress |
 
 ## Method state (2026-10-23)
 

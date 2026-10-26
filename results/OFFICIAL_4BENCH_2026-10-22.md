@@ -8,7 +8,7 @@ only the agent policy is ours (PredictMem or the no-memory baseline).
 | 1 | τ²-bench (retail/airline/telecom) | Sierra `tau2-bench` runner + evaluator (vendored) | ~5h | tool policy + control |
 | 2 | ALFWorld | official `alfworld` 0.5.0 (GitHub), `eval_out_of_distribution` 134 games | ~2h | action–effect |
 | 3 | ScienceWorld | official `scienceworld` 1.2.3, official task list + `lastStepScore` | ~2h | action–effect |
-| 4 | BFCL v3 multi-turn long-context | official `bfcl-eval 2026.3.23`, `bfcl generate` + `bfcl evaluate` | done | tool calling / long context |
+| 4 | LoCoMo long-term dialogue | official LoCoMo data, token F1 | ~2h | long-term memory |
 
 AppWorld, DeepSWE and Terminal-Bench are not part of the paper.
 
@@ -38,11 +38,11 @@ baseline + no-op predictor calls and should be treated as run-variance, not a me
 - Both ~1–2% — the policy cannot complete the tasks, so the benchmark currently has no
   discriminative power for the method. Needs a stronger policy before it can support a claim.
 
-### BFCL (official)
+### LoCoMo (official data)
 
-- `multi_turn_long_context`: **59.50%** (partial, 199/200 entries).
-- This is a model capability column, not a PredictMem-vs-baseline comparison; the official
-  harness has no memory hook.
+- Runner: full-context baseline vs retrieval memory, token F1.
+- BFCL was removed from the suite: its official harness has no memory hook, so it cannot
+  support a PredictMem-vs-baseline claim.
 
 ## Caveats
 
