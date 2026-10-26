@@ -36,3 +36,15 @@ All subsets use the official harness/evaluator and the same HY3 endpoint.
 | 48.6% | 37.1% | **+11.4** | 9.0 |
 
 Positive trend, not yet significant (t≈1.3); 6 tasks still running.
+
+## 18:42 — τ² fast (v38) final
+
+19/20 tasks (the last task was still running; 2 processes):
+
+| PM | baseline (same 19) | diff | SE |
+|---|---|---|---|
+| **45.3%** | 41.1% | **+4.2** | 8.2 |
+
+The early +11.3 shrank to +4.2 as the remaining tasks arrived: the first-completed tasks were
+easier and biased upward. Against the full fast20 baseline (42.0%) the gain is ~+3.3 points,
+not significant. The termination-verifier mechanism is not strong enough on its own.
