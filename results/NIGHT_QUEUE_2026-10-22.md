@@ -292,3 +292,12 @@ On existing traces (39 tasks × 5 runs), a completion verifier selects one traje
 Selection helps PM traces (+7.7) and hurts baseline traces (−8.7): the verifier is fooled by
 baseline text-terminations, while PM traces contain actual tool actions. Re-running selection
 across v26/v27 is in progress to test whether action-complete traces are the key.
+
+## 11:15 — best-of-N verifier (repeat)
+
+Re-running the completion verifier on PM v22 traces: mean 30.8% → **selected 35.9%** (+5.1).
+An earlier run gave 38.5%; the verifier is noisy, so the gain is +5–8 points, not stable.
+
+The v26/v27 selection run stalled (judge calls too slow) and was stopped. Next step is to make
+the verifier deterministic/self-consistent (3 judges, majority) before treating best-of-N as a
+method component.
