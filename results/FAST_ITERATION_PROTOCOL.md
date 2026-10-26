@@ -48,3 +48,13 @@ Positive trend, not yet significant (t≈1.3); 6 tasks still running.
 The early +11.3 shrank to +4.2 as the remaining tasks arrived: the first-completed tasks were
 easier and biased upward. Against the full fast20 baseline (42.0%) the gain is ~+3.3 points,
 not significant. The termination-verifier mechanism is not strong enough on its own.
+
+## 20:20 — Reflexion (v40) final + execution-feedback (v42) partial
+
+| Arm | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|
+| v40 Reflexion-lite | 20 | 45.0% | 42.0% | +3.0 | 6.7 |
+| v42 multi-candidate + exec feedback | 17 | 43.5% | 37.6% | +5.9 | 6.6 |
+
+v40: reflection fired 18 times, +3.0 ns.
+v42: 544 candidate-selection events; +5.9 partial, still not significant.
