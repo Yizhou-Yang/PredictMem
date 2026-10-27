@@ -322,3 +322,12 @@ Removed the missing `coverage_tags_path` so the pipeline generates its own cover
 
 Current state: coverage survey 1/1 exploring retail. Generation is long; it runs alongside
 the 14h watchdog (PM v54, AWM v53, ACE, ExpeL, ALF v13).
+
+## 21:02 — queue healthy
+
+- API: 4167 calls / 10 min = **417/min**, below the 600 QPM quota; no 429
+- v54 failure-memory: 3 evaluations so far (slow, 99×5)
+- v53 AWM: 2 evaluations
+- ACE / ExpeL τ²: running, 0 evaluations yet (first completes after 5 runs)
+- ALFWorld v13: 9 workers
+- DAEDALUS τ² generation: 14 workers, coverage/session attempts succeeding
