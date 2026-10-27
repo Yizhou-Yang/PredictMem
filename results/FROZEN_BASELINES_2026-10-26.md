@@ -127,3 +127,23 @@ PM 43.5% vs baseline 37.6% → +5.9, SE 6.6 (ns). 544 multi-candidate execution-
 ## ALFWorld fast (partial)
 
 PM 33 vs baseline 32 games (still running) — flat.
+
+## 2026-10-27 — LongMemEval (replaces ScienceWorld)
+
+Official cleaned S, 500 questions, hy4-preview:
+
+| Arm | token F1 |
+|---|---|
+| full context | 0.0615 |
+| retrieval memory | **0.3220** |
+
+Paired: **+0.2604, SE 0.0177, t = 14.73 → significant.**
+
+Second significant memory column. ScienceWorld removed from the suite (policy cannot complete
+it; env verified with gold at score 100).
+
+## hy4 τ² progress
+
+- b22 baseline: 34/99 tasks, mean 77.6%
+- v47 termination-only: 1 task so far (slow)
+- ALFWorld v8 (hy4) launched cleanly.
