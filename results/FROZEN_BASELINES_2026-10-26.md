@@ -312,3 +312,13 @@ All hy4; hy3 archived.
   needs `coverage_tags.txt`; neither exists. A generation pass (74 sessions, 12 explorers)
   must be run first, which does not fit the current 14h window.
 - PM v54 (failure memory), AWM v53, ALFWorld v13 continue.
+
+## 21:00 — DAEDALUS τ² generation started
+
+Removed the missing `coverage_tags_path` so the pipeline generates its own coverage survey.
+`gen_daedalus.sh` chains:
+1. `daedalus.scripts.generation --config configs/hy4_tau2_generation.yaml` (74 sessions, 12 explorers)
+2. `daedalus.scripts.inference --config configs/hy4_daedalus_tau2_retail.yaml` (pool from step 1)
+
+Current state: coverage survey 1/1 exploring retail. Generation is long; it runs alongside
+the 14h watchdog (PM v54, AWM v53, ACE, ExpeL, ALF v13).
