@@ -100,3 +100,22 @@ Root cause remains the policy: without a planner that knows the procedure (fill 
 substance → heat), the agent cannot leave score 0.
 
 Not usable as a significance column.
+
+## 2026-10-27 — overall performance + MPC log finding
+
+Confirmed results:
+
+| Benchmark | Model | Baseline | PredictMem | Significant |
+|---|---|---|---|---|
+| τ² (99) | hy3 | 63.6% | +7.0 (fast20, v44) | no |
+| τ² | hy4 | b22 running (6 tasks 76.7%) | v45 aborted | — |
+| ALFWorld (402) | hy3 | 45.5% | 47.3% | no |
+| ALFWorld fast (148) | hy3 | 40.6% | 42.6% | no |
+| LoCoMo (1542) | hy3 | 0.0609 | **0.1591** | **yes, t=10.65** |
+| ScienceWorld | hy3 | 0 | 0 | unusable |
+
+**Log finding:** the multi-candidate execution-feedback path is broken — 109 MPC events, all
+candidate scores -1.0, and 0/109 selections picked a non-original candidate. `set_state`
+replay rejects the trial calls, so v44's +7 came from the termination verifier, not MPC.
+
+Action: MPC stopped; v47 (hy4) and v48 (hy3) run the termination verifier alone to isolate it.
