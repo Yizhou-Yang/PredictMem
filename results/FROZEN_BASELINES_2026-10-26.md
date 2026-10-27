@@ -293,3 +293,11 @@ v54 (failure memory, 99×5, 28 workers) restarted with the fix.
 - restarts ALFWorld v13 (per-turn top-3 memory, PM/base) if dead
 
 All hy4; hy3 archived.
+
+## 20:45 — 14-hour queue
+
+`queue_14h.sh` (50,400 s) replaces the 8h watchdog:
+- restarts v54 (failure memory, 99×5), v53 (AWM), ALFWorld v13 every 5 min if dead
+- at +4h: LongMemEval 500 re-check
+- at +6h: LoCoMo 1542 re-check
+All hy4; hy3 archived.
