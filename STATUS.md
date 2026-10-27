@@ -9,7 +9,7 @@ official evaluator**; only the agent policy (PredictMem or the no-memory baselin
 |---|---|---|---|
 | 1 | τ²-Bench (retail / airline / telecom) | Sierra `tau2-bench` runner + evaluator | mean success over 5 runs |
 | 2 | ALFWorld | official `alfworld` 0.5.0, `eval_out_of_distribution` (134 games) | win rate over 3 runs |
-| 3 | ScienceWorld | official `scienceworld` 1.2.3, official task list + `lastStepScore` | official score |
+| 3 | LongMemEval (cleaned, S) | official `longmemeval_s_cleaned.json` (500 questions) | token F1 |
 | 4 | LoCoMo long-term dialogue | official LoCoMo data (snap-research/locomo), token F1 | official F1 |
 
 No other benchmark is part of the paper. AppWorld, DeepSWE and Terminal-Bench are removed
@@ -21,7 +21,7 @@ from the main text, tables, and docs; their run artifacts remain on the experime
 |---|---|---|---|
 | τ² (3 domains) | 62.5% (72 paired) | 50.6% (72 paired) | current-code interim; design under revision |
 | ALFWorld | 40.8% (125/306) | 39.7% (old per-turn injection) | needs rerun with stuck-only memory |
-| ScienceWorld | — | — | policy-limited (~1–3% both arms); v5 rerun in progress |
+| LongMemEval | 2.38 | **57.16** (50q pilot) | full 500 running |
 | LoCoMo | — | — | runner + pilot in progress |
 
 ## Method state (2026-10-23)
