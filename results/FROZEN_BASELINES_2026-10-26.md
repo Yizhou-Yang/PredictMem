@@ -238,3 +238,19 @@ Conclusion stands: only LongMemEval and LoCoMo are significantly better than the
 - LongMemEval and LoCoMo remain the only significant results.
 
 Status: execution feedback is now technically correct but not a viable mechanism at this cost.
+
+## 20:00 — overnight queue
+
+Best new signal: **failure memory** (avoid repeating tool calls that errored) v52, hy4 retail 19 tasks:
+
+| PM | baseline | diff | SE |
+|---|---|---|---|
+| 77.9% | 73.7% | **+4.2** | 3.5 |
+
+Positive but not yet significant; full 3-domain run (v54, 99 tasks ×5, 20 workers) launched.
+
+Overnight queue:
+1. v54 failure memory, 99×5 (running)
+2. v53 AWM workflow injection, 19 holdout tasks (running)
+3. ALFWorld v12, PM/base 134×3 (running)
+4. Morning: paired analysis, update tables/docs, push
