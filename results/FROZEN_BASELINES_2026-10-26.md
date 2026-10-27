@@ -195,3 +195,20 @@ Correct per-(run, game) aggregation for v11 (`no_think`):
 Root fixes: `reasoning_effort` must be `no_think` for hy4 (it does not support `low`); with
 `high` the response content is empty (reasoning consumes the budget). hy4 is not weaker on
 ALFWorld — the integration was wrong and my earlier aggregation was wrong.
+
+## 15:35 — v49 (hy4, termination verifier) is negative
+
+5 completed tasks paired with b22:
+
+| PM | baseline | diff | SE |
+|---|---|---|---|
+| 52.0% | 64.0% | **−12.0** | 9.1 |
+
+On hy4 the termination verifier hurts, unlike hy3 (+7 ns). Combined with ALFWorld parity,
+this means only the two memory benchmarks reach significance against their baselines:
+
+- LongMemEval +0.2604 (t=14.73)
+- LoCoMo +0.0526 (t=7.17)
+
+τ² and ALFWorld do not. Current PM mechanisms cannot deliver "significant on all four"; the
+agentic columns need a different policy, not more prompt/verifier tuning.
