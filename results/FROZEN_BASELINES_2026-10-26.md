@@ -284,3 +284,12 @@ content says "Error: ...". The +4.2 therefore cannot be attributed to failure me
 
 Fixed: treat content keywords (error/not found/invalid/failed/cannot) as failures too.
 v54 (failure memory, 99×5, 28 workers) restarted with the fix.
+
+## 20:40 — 8-hour watchdog queue
+
+`queue_8h.sh` runs for 8 hours, checking every 5 minutes:
+- restarts v54 (failure memory, 99×5, PM_FAILMEM=1, 28 workers) if dead
+- restarts v53 (AWM holdout, 20 workers) if dead
+- restarts ALFWorld v13 (per-turn top-3 memory, PM/base) if dead
+
+All hy4; hy3 archived.
