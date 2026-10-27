@@ -274,3 +274,13 @@ ALFWorld hy4 baseline continues in v12.
 - hy4 QPM quota: 600, 7-day peak 409, usage 68% → headroom exists.
 - Raised concurrency: v54 (failure memory, 99×5) to 28 workers; v53 (AWM holdout) to 20.
 - ALFWorld v12 (hy4) continues.
+
+## 20:30 — v52 result and a detection bug
+
+v52 (failure memory) 19 retail tasks: PM 77.9% vs baseline 73.7% → +4.2 (SE 3.5, ns).
+
+**But fail_memory fired 0 times**: tau2 `ToolMessage.error` is usually False even when the
+content says "Error: ...". The +4.2 therefore cannot be attributed to failure memory.
+
+Fixed: treat content keywords (error/not found/invalid/failed/cannot) as failures too.
+v54 (failure memory, 99×5, 28 workers) restarted with the fix.
