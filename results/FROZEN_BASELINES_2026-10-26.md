@@ -156,3 +156,14 @@ it; env verified with gold at score 100).
 - ALFWorld hy4 v8: launched, no completed games yet
 
 Both memory benchmarks are significant under hy4 as well; τ² remains the open column.
+
+## 14:05 — hy4 full progress / API utilisation
+
+- τ² hy4 baseline b22: **99/99 complete, 74.5%**
+- τ² hy4 v47 (termination only): 15 tasks, 50.7% (below baseline)
+- ALFWorld hy4 v8: **0 wins in 938+941 games (both arms)** — a severe regression vs hy3
+  (45.5%). hy4 emits valid ALF commands but loops (`examine bed` repeatedly), so this is a
+  policy/prompt mismatch for hy4, not a harness failure.
+- LongMemEval hy4: 0.0615 → 0.3220 (t=14.73); LoCoMo hy4: 0.0383 → 0.0909 (t=7.17)
+- Relay API usage: ~553 calls / 10 min ≈ **55 calls/min**, well below the 250–300/min seen
+  earlier; the ALFWorld and termination-verifier runs are latency-bound, not rate-limited.
