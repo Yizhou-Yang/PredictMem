@@ -1,49 +1,43 @@
-# Status — 2026-10-23
+# Status — 2026-10-28 (hy4-only)
 
-## Final benchmark suite (locked)
+## Suite
 
-The paper uses exactly four benchmarks. Every column uses the **official harness and
-official evaluator**; only the agent policy (PredictMem or the no-memory baseline) is ours.
+τ² (retail/airline/telecom), ALFWorld, LongMemEval, LoCoMo. hy3 archived; all new runs use
+`hy4-preview`.
 
-| # | Benchmark | Official harness / evaluator | Metric |
+## Results (hy4)
+
+| Benchmark | no-memory baseline | PredictMem | significant? |
 |---|---|---|---|
-| 1 | τ²-Bench (retail / airline / telecom) | Sierra `tau2-bench` runner + evaluator | mean success over 5 runs |
-| 2 | ALFWorld | official `alfworld` 0.5.0, `eval_out_of_distribution` (134 games) | win rate over 3 runs |
-| 3 | LongMemEval (cleaned, S) | official `longmemeval_s_cleaned.json` (500 questions) | token F1 |
-| 4 | LoCoMo long-term dialogue | official LoCoMo data (snap-research/locomo), token F1 | official F1 |
+| τ² retail | 74.5% (99 tasks) | 67.4% (failure memory, 19 tasks) | **no, negative** |
+| ALFWorld | 52.5% (402 games) | 49.0% (402) | **no, negative** |
+| LongMemEval | 0.0615 | **0.3220** (t=14.73) | **yes** |
+| LoCoMo | 0.0383 | **0.0909** (t=7.17) | **yes** |
 
-No other benchmark is part of the paper. AppWorld, DeepSWE and Terminal-Bench are removed
-from the main text, tables, and docs; their run artifacts remain on the experiment hosts only.
+## Competitor baselines (τ² retail, hy4, 40×5)
 
-## Current official results
+| Arm | Success |
+|---|---|
+| **ACE** | **78.0%** |
+| ExpeL | 74.5% |
+| no-memory | 74.5% |
+| DAEDALUS | pending (pool generation running; 7/12 sessions at 03:00) |
+| PredictMem | 67.4% (negative) |
 
-| Benchmark | No memory | PredictMem | Status |
-|---|---|---|---|
-| τ² (3 domains) | 62.5% (72 paired) | 50.6% (72 paired) | current-code interim; design under revision |
-| ALFWorld | 40.8% (125/306) | 39.7% (old per-turn injection) | needs rerun with stuck-only memory |
-| LongMemEval | 2.38 | **57.16** (50q pilot) | full 500 running |
-| LoCoMo | — | — | runner + pilot in progress |
+## What failed (from logs)
 
-## Method state (2026-10-23)
+- gate blocking: −13 points
+- per-turn memory injection: −12/ALF −3.5
+- termination verifier: hy4 −12
+- failure memory: −21.5 (τ²), started firing only after content-error fix
+- AWM workflow injection: −26.7 (τ² holdout)
+- execution-feedback MPC: technically fixed but too slow (4 tasks / 3h)
 
-- Memory is injected **only when the agent is stuck** (three identical tool outputs, once per
-  task), not on every turn; per-turn injection measured −12 points on τ².
-- Repeat-action blocking is removed from every agent.
-- Risk is evidence-based: predicted failure (`expected_success=false`), failure keywords in the
-  predicted effect, or destructive state changes raise risk above ε; the raw LLM risk label
-  alone is not trusted (it is always `low` in the logs).
-- `predict_consequential_only` is enabled only to skip read-only `get_/list_/search_` calls.
+Memory helps only when the task is **long-context QA** (LoCoMo, LongMemEval) where retrieval
+beats truncation. On agentic benchmarks the current memory/control layer is harmful.
 
-## Open issues
+## Next
 
-- Component ablations (full / no predictor / admit-all / no versioning / no gate) have not been
-  run on the final suite; component significance is not established.
-- ScienceWorld's agent policy still completes only a few tasks; the column is not
-  discriminative until the policy is stronger.
-- τ² current-code paired result is negative (PredictMem below no-memory); do not report it as
-  a gain.
-
-## Reproduce
-
-See `results/OFFICIAL_4BENCH_2026-10-22.md` and `results/NIGHT_QUEUE_2026-10-22.md` for the
-exact configs and commands.
+1. Let DAEDALUS generation finish (12 sessions), then memory inference.
+2. Do not scale the negative mechanisms; report them honestly.
+3. To beat ACE (78%) on τ² we need a different policy, not more memory tuning.

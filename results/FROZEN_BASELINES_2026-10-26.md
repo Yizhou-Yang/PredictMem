@@ -354,3 +354,15 @@ pool would not exist within 14h. Restarted fresh with **12 sessions** (old parti
 `hy4_tau2_generation_v1`), then the chained memory inference runs automatically.
 
 ACE 78.0 / ExpeL 74.5 / no-memory 74.5 / PM 67.4 remain the current τ² ranking.
+
+## 03:00 morning summary
+
+| Experiment | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|
+| v54 failure memory (retail) | 27 | 58.5% | 80.0% | **−21.5** | 5.8 |
+| v53 AWM holdout | 12 | 50.0% | 76.7% | **−26.7** | 11.4 |
+
+ALFWorld v13 complete: PM 197/402 = 49.0%, baseline 211/402 = 52.5% (−3.5).
+
+Both new mechanisms are significantly **negative**; stopped them and the watchdog to free the
+API for DAEDALUS generation. DAEDALUS: 7/12 sessions generated at 03:00.
