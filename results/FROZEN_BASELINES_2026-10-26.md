@@ -301,3 +301,14 @@ All hy4; hy3 archived.
 - at +4h: LongMemEval 500 re-check
 - at +6h: LoCoMo 1542 re-check
 All hy4; hy3 archived.
+
+## 20:55 — competitor runs in the 14h queue
+
+- **ACE τ² retail**: launched, hy4, 39 tasks ×5 (frozen playbook bank exists)
+- **ExpeL τ² retail**: launched, hy4, 39 tasks ×5 (frozen demonstrations/pool exists)
+- Both added to the 14h watchdog restart list.
+- **DAEDALUS τ²: blocked** — `tau2_memory.yaml` needs
+  `outputs/daedalus/hy3_tau2_generation/consolidated_pool.json` and `tau2_generation.yaml`
+  needs `coverage_tags.txt`; neither exists. A generation pass (74 sessions, 12 explorers)
+  must be run first, which does not fit the current 14h window.
+- PM v54 (failure memory), AWM v53, ALFWorld v13 continue.
