@@ -179,3 +179,19 @@ agentic weakness on ALFWorld, not a harness/format bug.
 
 Conclusion: use hy3 for the agentic columns (τ², ALFWorld); use hy4 for the memory columns
 (LoCoMo, LongMemEval), where it is significant.
+
+## 15:20 — correction: hy4 ALFWorld is NOT 0.6%
+
+The earlier 0.6% was my aggregation bug: I counted **step rows** (655) as games and ignored
+that a winning game contributes one `won=True` row among many steps.
+
+Correct per-(run, game) aggregation for v11 (`no_think`):
+
+| Arm | games | wins | rate |
+|---|---|---|---|
+| pmv11 | 28 | 12 | **42.9%** |
+| basev11 | 28 | 12 | 42.9% |
+
+Root fixes: `reasoning_effort` must be `no_think` for hy4 (it does not support `low`); with
+`high` the response content is empty (reasoning consumes the budget). hy4 is not weaker on
+ALFWorld — the integration was wrong and my earlier aggregation was wrong.
