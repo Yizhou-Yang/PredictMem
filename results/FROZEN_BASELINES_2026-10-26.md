@@ -227,3 +227,14 @@ selected (50%) is still far below baseline selected (84%). Test-time selection i
 component but cannot make the current τ² PM beat the no-memory baseline.
 
 Conclusion stands: only LongMemEval and LoCoMo are significantly better than their baselines.
+
+## 19:00 — MPC works but is impractical; ALF run killed
+
+- Fixed MPC (`set_state` replay) now executes candidates: scores 1.0–2.0 instead of −1.
+- v50 (MPC K=2, fast20): only **4 tasks** completed after 3h; on those, PM 90% vs baseline 100%
+  (−10, SE 8.7). The execution-feedback overhead (reset + replay + trial per step) makes the
+  run too slow to scale.
+- ALFWorld v11 processes were **Killed** (resource pressure); partial 28 games: PM 12, base 12.
+- LongMemEval and LoCoMo remain the only significant results.
+
+Status: execution feedback is now technically correct but not a viable mechanism at this cost.
