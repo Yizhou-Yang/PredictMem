@@ -254,3 +254,15 @@ Overnight queue:
 2. v53 AWM workflow injection, 19 holdout tasks (running)
 3. ALFWorld v12, PM/base 134×3 (running)
 4. Morning: paired analysis, update tables/docs, push
+
+## 20:10 — baseline matrix and missing runs
+
+| Benchmark | hy3 baseline | hy4 baseline |
+|---|---|---|
+| τ² | b21, 99 tasks ✅ | b22, 99 tasks ✅ |
+| ALFWorld | basev6, 402 games ✅ | basev12, 161/402 (running) |
+| LongMemEval | **missing → launched (500 q)** | 500 q ✅ |
+| LoCoMo | 1542 q ✅ | 1542 q ✅ |
+
+Priority: LongMemEval hy3 had no data; launched now (full-context + retrieval, same run).
+ALFWorld hy4 baseline continues in v12.
