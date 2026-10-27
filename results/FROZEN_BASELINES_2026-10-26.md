@@ -212,3 +212,18 @@ this means only the two memory benchmarks reach significance against their basel
 
 τ² and ALFWorld do not. Current PM mechanisms cannot deliver "significant on all four"; the
 agentic columns need a different policy, not more prompt/verifier tuning.
+
+## 15:45 — best-of-5 selection (offline, hy4)
+
+LLM completion judge over existing 5 runs per task:
+
+| Run | tasks | mean | selected |
+|---|---|---|---|
+| b22 baseline | 95 | 74.8% | **84.2%** |
+| v47 PM | 20 | 41.7% | 50.0% |
+
+Selection adds ~+8–9 points to **both** arms, so it does not close the PM-vs-baseline gap; PM
+selected (50%) is still far below baseline selected (84%). Test-time selection is a real
+component but cannot make the current τ² PM beat the no-memory baseline.
+
+Conclusion stands: only LongMemEval and LoCoMo are significantly better than their baselines.
