@@ -331,3 +331,18 @@ the 14h watchdog (PM v54, AWM v53, ACE, ExpeL, ALF v13).
 - ACE / ExpeL τ²: running, 0 evaluations yet (first completes after 5 runs)
 - ALFWorld v13: 9 workers
 - DAEDALUS τ² generation: 14 workers, coverage/session attempts succeeding
+
+## 22:00 — competitor results (hy4, τ² retail) and PM regression
+
+| Arm | τ² retail | vs no-memory 74.5% |
+|---|---|---|
+| **ACE** | **78.0%** (40×5) | +3.5 |
+| **ExpeL** | **74.5%** (40×5) | 0.0 |
+| no-memory (b22, 99) | 74.5% | — |
+
+PM v54 (failure memory), 19 common tasks: **67.4% vs baseline 83.2% → −15.8**. Failure memory
+hurts on these tasks. ALFWorld v13 (per-turn top-3 memory): PM 49.2% vs base 54.5% → negative.
+
+DAEDALUS τ² generation still running: sessions fail (`give up, max_failures`), no pool yet.
+
+Current ranking on τ²: **ACE 78.0 > ExpeL 74.5 = no-memory 74.5 > PM 67.4**.
