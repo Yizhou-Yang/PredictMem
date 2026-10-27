@@ -167,3 +167,15 @@ Both memory benchmarks are significant under hy4 as well; τ² remains the open 
 - LongMemEval hy4: 0.0615 → 0.3220 (t=14.73); LoCoMo hy4: 0.0383 → 0.0909 (t=7.17)
 - Relay API usage: ~553 calls / 10 min ≈ **55 calls/min**, well below the 250–300/min seen
   earlier; the ALFWorld and termination-verifier runs are latency-bound, not rate-limited.
+
+## 15:05 — hy4 ALFWorld diagnosis
+
+Fixes tried: parser now matches admissible commands inside free text; program-level anti-repeat;
+`reasoning_effort` switched from `low` (unsupported by hy4) to `no_think`.
+
+Result: hy4 still **4 wins / 655 games (0.6%)**, vs hy3 45.5%. Actions are valid ALFWorld
+commands, but hy4 loops on `examine` and does not pursue the task. This is a model-level
+agentic weakness on ALFWorld, not a harness/format bug.
+
+Conclusion: use hy3 for the agentic columns (τ², ALFWorld); use hy4 for the memory columns
+(LoCoMo, LongMemEval), where it is significant.
