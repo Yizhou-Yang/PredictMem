@@ -147,3 +147,12 @@ it; env verified with gold at score 100).
 - b22 baseline: 34/99 tasks, mean 77.6%
 - v47 termination-only: 1 task so far (slow)
 - ALFWorld v8 (hy4) launched cleanly.
+
+## 2026-10-27 12:20 — hy4 progress
+
+- LoCoMo hy4 (1542 QA): full 0.0383, retrieval 0.0909 → **+0.0526, SE 0.0073, t=7.17 (significant)**
+- τ² hy4 baseline b22: 55/99 tasks, mean 81.5%
+- τ² hy4 termination-only v47: 3 tasks (slow)
+- ALFWorld hy4 v8: launched, no completed games yet
+
+Both memory benchmarks are significant under hy4 as well; τ² remains the open column.
