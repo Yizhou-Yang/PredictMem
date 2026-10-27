@@ -88,3 +88,15 @@ stops here. Best τ² arms:
 | v40 Reflexion | +3.0 | 0.4 |
 
 No τ² arm reaches significance; the effect is consistently +4..+8 with SE 6-9.
+
+## ScienceWorld stabilization attempt (2026-10-27)
+
+Changes: banned all `focus on` trap actions, added a two-repeat loop breaker, removed the
+invalid `--max-games` flag, ran 1 run × 50 steps for baseline and PM.
+
+Observed: runs are stable (no crash), but the first task (`boil`) consumes all 27+ steps at
+score 0 and each step costs ~20s; 30 tasks would take ~8h and still produce 0 completions.
+Root cause remains the policy: without a planner that knows the procedure (fill pot → focus
+substance → heat), the agent cannot leave score 0.
+
+Not usable as a significance column.
