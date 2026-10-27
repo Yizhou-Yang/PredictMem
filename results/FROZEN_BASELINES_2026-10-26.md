@@ -346,3 +346,11 @@ hurts on these tasks. ALFWorld v13 (per-turn top-3 memory): PM 49.2% vs base 54.
 DAEDALUS τ² generation still running: sessions fail (`give up, max_failures`), no pool yet.
 
 Current ranking on τ²: **ACE 78.0 > ExpeL 74.5 = no-memory 74.5 > PM 67.4**.
+
+## 22:30 — DAEDALUS generation reduced to 12 sessions
+
+At 74 sessions the run produced only 3 sessions in 1.5h (many `max_failures` give-ups); the
+pool would not exist within 14h. Restarted fresh with **12 sessions** (old partial run kept as
+`hy4_tau2_generation_v1`), then the chained memory inference runs automatically.
+
+ACE 78.0 / ExpeL 74.5 / no-memory 74.5 / PM 67.4 remain the current τ² ranking.
