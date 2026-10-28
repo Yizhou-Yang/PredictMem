@@ -499,3 +499,17 @@ ALFWorld base v14 is complete (402 games). DAEDALUS airline/telecom generation s
 | v64 | airline | 16 | 95.0% | 92.5% | +2.5 | 3.9 |
 
 Retail t≈1.6 (ns) but above ACE 78.0. v64 has 26 evaluations; telecom running.
+
+## 19:10 — τ² 3-domain FINAL (v63 retail + v64 airline/telecom)
+
+| Domain | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|
+| retail | 39 | 84.1% | 77.9% | +6.2 | 3.8 |
+| airline | 20 | 91.0% | 85.0% | +6.0 | 3.8 |
+| telecom | 40 | 68.5% | 66.0% | +2.5 | 4.7 |
+| **overall** | **99** | **79.2%** | **74.6%** | **+4.65** | **2.54** |
+
+Overall paired t = **1.83** (p≈0.07, borderline). Retail alone is above ACE 78.0.
+
+Competitors: ACE/ExpeL/DAEDALUS only retail (ACE airline/telecom bank empty: 0 heuristics;
+DAEDALUS pools not yet produced).
