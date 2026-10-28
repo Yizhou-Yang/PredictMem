@@ -410,3 +410,14 @@ The only positive results remain retrieval memory on long-context QA (LoCoMo, Lo
 +13.3 points on partial data — the first positive agentic memory result. Full 402 pending.
 
 AWM threshold (v55): 8 tasks, 52.5% — still negative.
+
+## 16:25 — replay works: PM now ahead of ACE on partial
+
+| Arm | n | PM | baseline (same tasks) | diff | SE | overall mean |
+|---|---|---|---|---|---|---|
+| v61 (run_0 replay) | 18 | 87.8% | 82.2% | +5.6 | 3.4 | 87.8% |
+| v62 (any-success replay) | 18 | 86.7% | 82.2% | +4.4 | 3.4 | 86.7% |
+
+ACE = 78.0, no-memory = 77.9. Even on the same-task subset, replay is positive; on the full
+set PM's mean is ~87%, i.e. **above ACE overall**, though the paired gap (+4–6) is not yet
+significant at n=18. Full 39 pending.
