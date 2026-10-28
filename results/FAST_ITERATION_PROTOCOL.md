@@ -119,3 +119,15 @@ candidate scores -1.0, and 0/109 selections picked a non-original candidate. `se
 replay rejects the trial calls, so v44's +7 came from the termination verifier, not MPC.
 
 Action: MPC stopped; v47 (hy4) and v48 (hy3) run the termination verifier alone to isolate it.
+
+## 15:50 — fast10 results
+
+| Arm | fast10 | vs baseline 62% |
+|---|---|---|
+| v58 same-task successful replay | **63.3%** | +1.3 (ns) |
+| v59 ACE playbook top-5 | 55.6% | **−6.4** |
+| v60 narrow gate | running | — |
+
+Absorbing ACE's playbook verbatim into PM's prompt hurts, even though ACE itself scores 78%:
+the rules help ACE's own scaffold, not ours. Same-task replay is the only non-negative
+content so far, but the gain is small.
