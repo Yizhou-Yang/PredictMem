@@ -432,3 +432,13 @@ significant at n=18. Full 39 pending.
 ALFWorld v14: PM 240/388 = 61.9%, baseline 177/346 = 51.2% (+10.7, partial).
 
 Both mechanisms remain positive as samples grow; full sets still running.
+
+## 16:55 — FULL RESULTS (hy4)
+
+τ² retail (39×5): PM v62 **80.0%**, baseline **77.9%**, diff **+2.1**, SE 3.1 (ns). Overall
+above ACE 78.0.
+ALFWorld (402 games; paired 395): PM **61.5%**, baseline **49.4%**, diff **+12.2**, SE 2.4,
+**t ≈ 5.1 → significant**.
+LoCoMo: +0.0526, t=7.17 significant. LongMemEval: +0.2604, t=14.73 significant.
+
+Three of four benchmarks are now significant; τ² is +2.1 (ns) but ahead of ACE.

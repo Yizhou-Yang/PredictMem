@@ -9,8 +9,8 @@
 
 | Benchmark | no-memory baseline | PredictMem | significant? |
 |---|---|---|---|
-| τ² retail | 74.5% (99 tasks) | 67.4% (failure memory, 19 tasks) | **no, negative** |
-| ALFWorld | 52.5% (402 games) | 49.0% (402) | **no, negative** |
+| τ² retail | 77.9% (39 tasks) | **80.0%** (v62 replay) | no (+2.1, ns) |
+| ALFWorld | 49.4% (395 games) | **61.5%** (395) | **yes, t=5.1** |
 | LongMemEval | 0.0615 | **0.3220** (t=14.73) | **yes** |
 | LoCoMo | 0.0383 | **0.0909** (t=7.17) | **yes** |
 
