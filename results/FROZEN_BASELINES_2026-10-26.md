@@ -399,3 +399,14 @@ All content formats now tested and negative on agentic τ²:
 - per-turn memory (ALF): −3.5
 
 The only positive results remain retrieval memory on long-context QA (LoCoMo, LongMemEval).
+
+## 16:10 — ALFWorld v14 (gated memory) is strongly positive
+
+| Arm | games | wins | rate |
+|---|---|---|---|
+| PM v14 (BM25 score≥1, top-3 action→effect) | 358 | 226 | **63.1%** |
+| baseline v14 | 297 | 148 | 49.8% |
+
++13.3 points on partial data — the first positive agentic memory result. Full 402 pending.
+
+AWM threshold (v55): 8 tasks, 52.5% — still negative.
