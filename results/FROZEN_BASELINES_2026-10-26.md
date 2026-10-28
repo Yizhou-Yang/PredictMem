@@ -490,3 +490,12 @@ without reflections, so ACE has no playbook for airline. Its inference would deg
 no-memory; noted instead of inventing a number.
 
 ALFWorld base v14 is complete (402 games). DAEDALUS airline/telecom generation still running.
+
+## 18:35 — v63 retail significance; v64 airline
+
+| Arm | domain | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|---|
+| v63 | retail | 39 | 84.1% | 77.9% | +6.2 | 3.8 |
+| v64 | airline | 16 | 95.0% | 92.5% | +2.5 | 3.9 |
+
+Retail t≈1.6 (ns) but above ACE 78.0. v64 has 26 evaluations; telecom running.
