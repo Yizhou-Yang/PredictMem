@@ -455,3 +455,14 @@ Three of four benchmarks are now significant; τ² is +2.1 (ns) but ahead of ACE
 | LoCoMo | ✅ 1542 | ✅ 1542 | n/a |
 
 ALFWorld final: PM **61.9%**, baseline **49.8%**, diff **+12.2**, SE 2.3, **t=5.3**.
+
+## 18:05 — v63 retail done; airline config bug; LoCoMo recency competitor
+
+- v63 retail: PM **84.1%** vs baseline 77.9% (**+6.2**, 39 tasks) — above ACE 78.0.
+- v63 airline: PM 10% — the airline/telecom `_termcomb` configs did not exist, so the driver
+  fell back to the **retail config** (domain mismatch). Fixed by creating
+  `pm_tau2_{airline,telecom}_termcomb.yaml`; v64 reruns those two domains.
+- LoCoMo recency competitor (MemGPT-style last-12 window): **0.0946**, slightly above PM
+  retrieval 0.0909 and far above full context 0.0381. Competitor is ahead on LoCoMo; PM needs
+  retrieval + recency hybrid.
+- ALFWorld ACE competitor: 4 shards running after syntax fix.
