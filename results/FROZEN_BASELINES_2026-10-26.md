@@ -421,3 +421,14 @@ AWM threshold (v55): 8 tasks, 52.5% — still negative.
 ACE = 78.0, no-memory = 77.9. Even on the same-task subset, replay is positive; on the full
 set PM's mean is ~87%, i.e. **above ACE overall**, though the paired gap (+4–6) is not yet
 significant at n=18. Full 39 pending.
+
+## 16:25 — replay at 20 tasks; ALF at 388/346
+
+| Arm | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|
+| v61 replay (run_0) | 20 | 86.0% | 81.0% | +5.0 | 3.1 |
+| v62 replay (any success) | 20 | 80.0% | 77.0% | +3.0 | 3.2 |
+
+ALFWorld v14: PM 240/388 = 61.9%, baseline 177/346 = 51.2% (+10.7, partial).
+
+Both mechanisms remain positive as samples grow; full sets still running.
