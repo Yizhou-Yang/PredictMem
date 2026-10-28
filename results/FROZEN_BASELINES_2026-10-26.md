@@ -366,3 +366,18 @@ ALFWorld v13 complete: PM 197/402 = 49.0%, baseline 211/402 = 52.5% (−3.5).
 
 Both new mechanisms are significantly **negative**; stopped them and the watchdog to free the
 API for DAEDALUS generation. DAEDALUS: 7/12 sessions generated at 03:00.
+
+## 2026-10-28 15:00 — DAEDALUS done; fast loop
+
+τ² retail, hy4, 40×5:
+
+| Arm | Success |
+|---|---|
+| **ACE** | **78.0%** |
+| ExpeL | 74.5% |
+| no-memory (b22, 39 tasks) | 77.9% |
+| **DAEDALUS** | **71.0%** (SE 2.0) |
+| PM (failure memory) | 67.4% |
+
+Fast iteration: v56 = 10 tasks × 3 runs, 10 workers → **10 evaluations in ~30 min**, PM 60%
+vs baseline 62% on the same 10 tasks. This is now the default iteration loop before scaling.
