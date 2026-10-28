@@ -527,3 +527,20 @@ LongMemEval adapted: ACE 0.2313, ExpeL 0.2716, DAEDALUS 0.2404; PM 0.3220.
 LoCoMo adapted DAEDALUS: **0.2594** (778 test) — far above PM retrieval 0.0909. This is a real
 gap. Fix in progress: PM switched from utterance-level to **session-level retrieval**
 (top-3 whole sessions).
+
+## 2026-10-29 03:35 — τ² competitor matrix complete
+
+| Domain | baseline | PM | ACE | ExpeL | DAEDALUS |
+|---|---|---|---|---|---|
+| retail | 77.9 | **84.1** | 78.0 | 74.5 | 71.0 |
+| airline | 85.0 | **91.0** | 78.0 | pending | 78.0 |
+| telecom | 66.0 | **68.5** | 67.5 | pending | 65.0 |
+
+PM beats every available competitor on every domain. ExpeL airline/telecom banks are still
+minimal (1 heuristic), keeping those two cells open.
+
+LoCoMo adapted competitors (778 test): ACE 0.2449, ExpeL **0.2862**, DAEDALUS 0.2528.
+PM session-level retrieval still running; utterance-level PM is 0.0909, so this column is
+the remaining risk.
+
+ALFWorld holdout: ACE 48.3%, ExpeL 55.7%, DAEDALUS 41.8%; PM full 61.9%.
