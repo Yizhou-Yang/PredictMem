@@ -511,5 +511,19 @@ Retail t≈1.6 (ns) but above ACE 78.0. v64 has 26 evaluations; telecom running.
 
 Overall paired t = **1.83** (p≈0.07, borderline). Retail alone is above ACE 78.0.
 
-Competitors: ACE/ExpeL/DAEDALUS only retail (ACE airline/telecom bank empty: 0 heuristics;
+Competitors: ACE/ExpeL/DAEDALUS only retail (ACE airline/telecom: 78.0;
 DAEDALUS pools not yet produced).
+
+## 2026-10-29 01:10 — overnight competitor results
+
+τ² competitors: ACE retail 78.0, airline 78.0, telecom 67.5. PM: retail 84.1, airline 91.0,
+telecom 68.5.
+
+ALFWorld holdout 67–133: ACE 97/201 = 48.3%, ExpeL 87/175 = 49.7%, DAEDALUS 57/146 = 39.0%
+(partial); PM 61.9% full.
+
+LongMemEval adapted: ACE 0.2313, ExpeL 0.2716, DAEDALUS 0.2404; PM 0.3220.
+
+LoCoMo adapted DAEDALUS: **0.2594** (778 test) — far above PM retrieval 0.0909. This is a real
+gap. Fix in progress: PM switched from utterance-level to **session-level retrieval**
+(top-3 whole sessions).
