@@ -381,3 +381,21 @@ API for DAEDALUS generation. DAEDALUS: 7/12 sessions generated at 03:00.
 
 Fast iteration: v56 = 10 tasks × 3 runs, 10 workers → **10 evaluations in ~30 min**, PM 60%
 vs baseline 62% on the same 10 tasks. This is now the default iteration loop before scaling.
+
+## 15:15 — rule injection (v57) also negative
+
+Fast10 ×3, rules induced from non-fast successful traces, top-3 injected at task start:
+
+| PM | baseline (same 10) | diff |
+|---|---|---|
+| 56.7% | 62.0% | **−5.3** |
+
+All content formats now tested and negative on agentic τ²:
+- raw effect records (v32/v35): ≈0
+- failure memory: −21.5
+- workflow (AWM): −26.7
+- heuristic rules (v57): −5.3
+- termination verifier: −12/17
+- per-turn memory (ALF): −3.5
+
+The only positive results remain retrieval memory on long-context QA (LoCoMo, LongMemEval).
