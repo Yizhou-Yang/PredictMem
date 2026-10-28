@@ -466,3 +466,17 @@ ALFWorld final: PM **61.9%**, baseline **49.8%**, diff **+12.2**, SE 2.3, **t=5.
   retrieval 0.0909 and far above full context 0.0381. Competitor is ahead on LoCoMo; PM needs
   retrieval + recency hybrid.
 - ALFWorld ACE competitor: 4 shards running after syntax fix.
+
+## 18:25 — ALFWorld ACE competitor
+
+Holdout games 67–133, 3 runs:
+
+| Arm | games | win rate |
+|---|---|---|
+| ACE playbook (12 rule blocks induced from games 0–66) | 117 | **41.9%** |
+| no-memory baseline | 117 | 44.4% |
+
+ACE is **−2.6** vs baseline on ALFWorld, i.e. the playbook does not transfer to this
+benchmark. PredictMem's thresholded memory is 61.9% on the full set, far above both.
+
+v64 (airline/telecom) has 14 evaluations so far.
