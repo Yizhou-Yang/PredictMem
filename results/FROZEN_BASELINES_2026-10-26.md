@@ -480,3 +480,13 @@ ACE is **−2.6** vs baseline on ALFWorld, i.e. the playbook does not transfer t
 benchmark. PredictMem's thresholded memory is 61.9% on the full set, far above both.
 
 v64 (airline/telecom) has 14 evaluations so far.
+
+## 18:30 — v64 partial + ACE bank issue
+
+τ² airline (14 tasks): PM 94.3%, baseline 92.9% (+1.4). telecom (3 tasks): 100% both.
+
+ACE airline accumulation finished with **0 banked heuristics** — the train tasks were solved
+without reflections, so ACE has no playbook for airline. Its inference would degenerate to
+no-memory; noted instead of inventing a number.
+
+ALFWorld base v14 is complete (402 games). DAEDALUS airline/telecom generation still running.
