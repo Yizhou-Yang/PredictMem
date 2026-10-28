@@ -442,3 +442,16 @@ ALFWorld (402 games; paired 395): PM **61.5%**, baseline **49.4%**, diff **+12.2
 LoCoMo: +0.0526, t=7.17 significant. LongMemEval: +0.2604, t=14.73 significant.
 
 Three of four benchmarks are now significant; τ² is +2.1 (ns) but ahead of ACE.
+
+## 17:05 — completeness on hy4
+
+| Benchmark | baseline | PM | competitors |
+|---|---|---|---|
+| τ² retail | ✅ 39×5 | ✅ 39×5 | ✅ ACE/ExpeL/DAEDALUS (40×5) |
+| τ² airline | ✅ 20×5 | 🔄 v63 | ❌ not run |
+| τ² telecom | ✅ 40×5 | 🔄 v63 | ❌ not run |
+| ALFWorld | ✅ 402 | ✅ 402 | ❌ not run (no ACE/ExpeL port) |
+| LongMemEval | ✅ 500 | ✅ 500 | n/a |
+| LoCoMo | ✅ 1542 | ✅ 1542 | n/a |
+
+ALFWorld final: PM **61.9%**, baseline **49.8%**, diff **+12.2**, SE 2.3, **t=5.3**.
