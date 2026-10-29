@@ -51,3 +51,12 @@ hybrid retrieval variants are being tried.
 - ALFWorld: PM highest (60.2), ExpeL close (59.2).
 - LongMemEval: PM highest (0.3016).
 - LoCoMo: PM behind ExpeL/DAEDALUS/ACE — reported honestly.
+
+## Update 2026-10-29 15:05
+
+LoCoMo: PredictMem note-based memory (top-5 session notes) reaches **0.2714** on the
+competitor test split (778 QA), still behind adapted ExpeL **0.2920**. Hybrid (notes +
+utterances) gave 0.2684, no gain. LoCoMo remains the one column where PredictMem trails.
+
+τ² ablation (hy4, retail, all 39 tasks): `replay_only` **83.6% vs baseline 78.2% (+5.5, SE 4.5)**
+on 33 tasks so far; `full` and `gate_pred` still running.
