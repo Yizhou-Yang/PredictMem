@@ -131,3 +131,14 @@ Action: MPC stopped; v47 (hy4) and v48 (hy3) run the termination verifier alone 
 Absorbing ACE's playbook verbatim into PM's prompt hurts, even though ACE itself scores 78%:
 the rules help ACE's own scaffold, not ours. Same-task replay is the only non-negative
 content so far, but the gain is small.
+
+## 2026-10-29 15:55 — hy4 τ² ablation (hy4, retail, 39 tasks)
+
+| Arm | n | PM | baseline | diff | SE |
+|---|---|---|---|---|---|
+| replay_only | 39 | 83.6% | 77.9% | +5.6 | 3.8 |
+| full (predictor+gate+memory+replay) | 8 | 82.5% | 75.0% | +7.5 | 7.0 |
+| gate_pred (no replay) | 8 | 85.0% | 75.0% | +10.0 | 9.4 |
+
+replay-only is complete on 39 tasks. full/gate_pred are still running (predictor+gate make
+them much slower); their partial numbers are not comparable yet.
