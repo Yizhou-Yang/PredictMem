@@ -544,3 +544,17 @@ PM session-level retrieval still running; utterance-level PM is 0.0909, so this 
 the remaining risk.
 
 ALFWorld holdout: ACE 48.3%, ExpeL 55.7%, DAEDALUS 41.8%; PM full 61.9%.
+
+## 2026-10-29 10:05 — LoCoMo still the gap
+
+| Arm | F1 |
+|---|---|
+| ExpeL (adapted, two runs) | 0.2961 / 0.2882 |
+| DAEDALUS (two runs) | 0.2540 / 0.2556 |
+| ACE (two runs) | 0.2373 / 0.2419 |
+| PM utterance retrieval | 0.0909 |
+| PM session retrieval | **0.1115** |
+
+Session-level retrieval improves PM but still trails the adapted competitors. Note-based PM
+(session summaries -> retrieve -> answer) is running now; this is the last lever on this column.
+τ²: PM beats ACE/DAEDALUS on all three domains; ExpeL airline/telecom cells still open.
