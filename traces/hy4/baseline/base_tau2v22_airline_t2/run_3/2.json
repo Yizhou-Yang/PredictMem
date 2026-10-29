@@ -1,0 +1,483 @@
+{
+  "task_id": "2",
+  "experiment_name": "base_tau2v22_airline_t2",
+  "config": {
+    "agent": {
+      "model": "openai/hy4-preview",
+      "max_turns": 30,
+      "temperature": 1.0,
+      "reasoning_effort": "high"
+    },
+    "appworld": {
+      "dataset": "dev",
+      "task_ids": null,
+      "experiment_name": "baseline"
+    },
+    "tau2": {
+      "domain": "airline",
+      "task_split": "test",
+      "task_ids": [
+        "2"
+      ],
+      "solver_mode": null,
+      "user_llm": "openai/hy4-preview",
+      "user_llm_args": {
+        "temperature": 0.0,
+        "reasoning_effort": "high"
+      },
+      "max_steps": 100,
+      "max_errors": 10,
+      "seed": 42
+    },
+    "automationbench": {
+      "domains": [
+        "operations"
+      ],
+      "task_ids": null,
+      "split_file": null,
+      "split": null,
+      "repo_root": null,
+      "max_steps": 50,
+      "seed": 42
+    },
+    "memory": {
+      "enabled": false,
+      "pool_path": null,
+      "heuristics_at_start": false,
+      "retrieval_mode": "pre_generation",
+      "retriever": {
+        "type": "bm25",
+        "model_name": null,
+        "top_k": 5,
+        "seed": 0,
+        "base_url": null
+      },
+      "injection": {
+        "policy": "cumulative_dedup"
+      }
+    },
+    "predictmem": {
+      "enabled": false,
+      "predictor_model": "openai/hy4-preview",
+      "predictor_reasoning_effort": "high",
+      "predictor_temperature": 0.0,
+      "judge_model": "openai/hy4-preview",
+      "judge_temperature": 0.0,
+      "context_turns": 3,
+      "tau_admit": 0.55,
+      "weights": {
+        "semantic": 0.3,
+        "judge": 0.5,
+        "execution": 0.2
+      },
+      "retriever": "bm25",
+      "top_k": 5,
+      "max_records": 200,
+      "shared_bank": false,
+      "control_eps": 0.25,
+      "predict_consequential_only": true,
+      "horizon": 1,
+      "beam": 1,
+      "gamma": 0.9,
+      "gate": {
+        "enabled": true,
+        "tau_warn": 0.45,
+        "tau_block": 0.75
+      },
+      "ablation": {
+        "no_predictor": false,
+        "admit_all": false,
+        "no_versioning": false,
+        "no_gate": false
+      }
+    },
+    "logging": {
+      "trace_dir": "",
+      "save_every_turn": true,
+      "verbose": false
+    },
+    "accumulation": {
+      "max_failures": 8,
+      "num_success_to_continue": 3,
+      "extraction_model": "gpt-5.4",
+      "extraction_reasoning_effort": null,
+      "save_traces": true
+    },
+    "generation": {
+      "stage": "daedalus",
+      "sandbox_dataset": "train",
+      "explorer_model": "gpt-5.4",
+      "explorer_reasoning_effort": "high",
+      "explorer_max_turns": 40,
+      "explorer_last_turn_grace": 10,
+      "explorer_turn_steering": false,
+      "judge_model": "gpt-5.4",
+      "judge_reasoning_effort": "high",
+      "num_sessions": 90,
+      "num_explorers": 5,
+      "coverage_tags": true,
+      "coverage_tags_path": null,
+      "coverage_tags_max_turns": 100,
+      "coverage_escalate_after": 0.5,
+      "coverage_escalate_ratio": 0.5,
+      "explorer_guidelines": true,
+      "max_refinements": 5,
+      "min_novelty": -1.0,
+      "excluded_apps": [],
+      "spec_max_rejections": 3,
+      "reject_multi_item_exchange": false,
+      "withhold_discoverable_ids": false
+    },
+    "run": {
+      "max_tasks": null,
+      "parallel": 1,
+      "force": false,
+      "num_runs": 5
+    },
+    "cost_accounting": {
+      "enabled": true,
+      "ledger_dir": "",
+      "price_snapshot": "",
+      "require_complete_estimates": false,
+      "launch_id": "20261027T033224Z_1868246_0cda5d"
+    },
+    "provider_routing": {
+      "order": [],
+      "only": [],
+      "ignore": [],
+      "quantizations": [],
+      "sort": "",
+      "allow_fallbacks": true
+    },
+    "benchmark": "tau2",
+    "experiment_name": "base_tau2v22_airline_t2",
+    "kind": "inference",
+    "category": "predictmem",
+    "setup": "daedalus"
+  },
+  "task_instruction": "Instructions:\n\tDomain: airline\n\tReason for call:\n\t\tFirst, try to book a flight from sf to ny. \n\n\t\tYou will have 3 passengers.\n\n\t\tHalfway through the book flight process, abruptly mention that you would like to talk about something else by saying that you are frustrated with the delayed flight in your most recent reservation.\n\tKnown info:\n\t\tYou are Noah Muller.\n\t\tYour user id is noah_muller_9847.\n\tTask instructions:\n\t\tIf the service agent asks for the reservation number of the delayed flight, say that it is the last reservation you made but don't remember what it was.\n\n\t\tIf the service agent asks how many passenger were in that reservation, say that there are 3. \n\n\t\tThis is incorrect, but is meant to test the service agent to get the correct number of passengers.\n\n\t\tYou are willing to admit that you are wrong if the agent corrects you.\n\n\t\tDon't ask for compensation right away. First complain. Try to get the agent to be the one offering the compensation. If the agent doesn't after a few exchanges, ask explicitly.\n\n\t\tIf the agent asks if you want to continue with your initial reservation of a sf to ny flight, say that you will call back later.\n\n\t\tYou will never change or cancel the reservation.",
+  "timestamp": "2026-10-27T03:51:14.985755+00:00",
+  "success": true,
+  "num_turns": 18,
+  "turns": [
+    {
+      "turn_idx": 0,
+      "thought": "Hi! How can I help you today?",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: Hi! I’d like to book a flight from San Francisco to New York for three passengers, please.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 0,
+        "completion": 0
+      }
+    },
+    {
+      "turn_idx": 1,
+      "thought": "I'd be happy to help you book that flight! In order to get started, could you please provide:\n\n1. **Your user ID**\n2. **Trip type** — one way or round trip?\n3. **Departure date** (and return date, if round trip)",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: My user ID is noah_muller_9847. I’m not sure about the trip type or exact dates just yet, but actually, I want to switch gears for a second—I’m really frustrated with the delayed flight on my most recent reservation. It was a terrible experience and I’m pretty upset about it.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 4913,
+        "completion": 300,
+        "cached": 4800
+      }
+    },
+    {
+      "turn_idx": 2,
+      "thought": "I'm sorry to hear you had a frustrating experience. Let me look up your reservations so I can see what happened.",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_user_details({\"user_id\": \"noah_muller_9847\"})",
+      "execution_output": "{\"user_id\": \"noah_muller_9847\", \"name\": {\"first_name\": \"Noah\", \"last_name\": \"Muller\"}, \"address\": {\"address1\": \"889 Hillcrest Drive\", \"address2\": \"Suite 254\", \"city\": \"Denver\", \"country\": \"USA\", \"state\": \"CO\", \"zip\": \"80243\"}, \"email\": \"noah.muller2290@example.com\", \"dob\": \"1963-01-22\", \"payment_methods\": {\"credit_card_1245537\": {\"source\": \"credit_card\", \"id\": \"credit_card_1245537\", \"brand\": \"mastercard\", \"last_four\": \"1167\"}, \"credit_card_6040264\": {\"source\": \"credit_card\", \"id\": \"credit_card_6040264\", \"brand\": \"visa\", \"last_four\": \"2076\"}, \"credit_card_3255100\": {\"source\": \"credit_card\", \"id\": \"credit_card_3255100\", \"brand\": \"visa\", \"last_four\": \"2604\"}, \"certificate_8301303\": {\"source\": \"certificate\", \"id\": \"certificate_8301303\", \"amount\": 100.0}, \"credit_card_3983998\": {\"source\": \"credit_card\", \"id\": \"credit_card_3983998\", \"brand\": \"visa\", \"last_four\": \"8413\"}, \"credit_card_7574394\": {\"source\": \"credit_card\", \"id\": \"credit_card_7574394\", \"brand\": \"visa\", \"last_four\": \"1798\"}, \"credit_card_6873705\": {\"source\": \"credit_card\", \"id\": \"credit_card_6873705\", \"brand\": \"visa\", \"last_four\": \"2267\"}}, \"saved_passengers\": [{\"first_name\": \"Lei\", \"last_name\": \"Patel\", \"dob\": \"1959-11-15\"}], \"membership\": \"gold\", \"reservations\": [\"SDZQKO\", \"4OG6T3\"]}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 5050,
+        "completion": 88,
+        "cached": 4800
+      }
+    },
+    {
+      "turn_idx": 3,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_reservation_details({\"reservation_id\": \"SDZQKO\"})",
+      "execution_output": "{\"reservation_id\": \"SDZQKO\", \"user_id\": \"noah_muller_9847\", \"origin\": \"LAX\", \"destination\": \"MIA\", \"flight_type\": \"round_trip\", \"cabin\": \"basic_economy\", \"flights\": [{\"flight_number\": \"HAT228\", \"origin\": \"LAX\", \"destination\": \"EWR\", \"date\": \"2024-05-27\", \"price\": 76}, {\"flight_number\": \"HAT202\", \"origin\": \"EWR\", \"destination\": \"MIA\", \"date\": \"2024-05-28\", \"price\": 54}, {\"flight_number\": \"HAT192\", \"origin\": \"MIA\", \"destination\": \"EWR\", \"date\": \"2024-05-28\", \"price\": 67}, {\"flight_number\": \"HAT041\", \"origin\": \"EWR\", \"destination\": \"LAX\", \"date\": \"2024-05-29\", \"price\": 58}], \"passengers\": [{\"first_name\": \"Noah\", \"last_name\": \"Muller\", \"dob\": \"1963-01-22\"}, {\"first_name\": \"Lucas\", \"last_name\": \"Anderson\", \"dob\": \"1971-04-05\"}], \"payment_history\": [{\"payment_id\": \"credit_card_3983998\", \"amount\": 510}], \"created_at\": \"2024-05-13T03:26:54\", \"total_baggages\": 0, \"nonfree_baggages\": 0, \"insurance\": \"no\", \"status\": null}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 5539,
+        "completion": 35,
+        "cached": 4928
+      }
+    },
+    {
+      "turn_idx": 4,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_reservation_details({\"reservation_id\": \"4OG6T3\"})",
+      "execution_output": "{\"reservation_id\": \"4OG6T3\", \"user_id\": \"noah_muller_9847\", \"origin\": \"BOS\", \"destination\": \"LAS\", \"flight_type\": \"round_trip\", \"cabin\": \"basic_economy\", \"flights\": [{\"flight_number\": \"HAT006\", \"origin\": \"BOS\", \"destination\": \"SEA\", \"date\": \"2024-05-11\", \"price\": 87}, {\"flight_number\": \"HAT018\", \"origin\": \"SEA\", \"destination\": \"LAS\", \"date\": \"2024-05-11\", \"price\": 96}, {\"flight_number\": \"HAT040\", \"origin\": \"LAS\", \"destination\": \"SEA\", \"date\": \"2024-05-17\", \"price\": 63}, {\"flight_number\": \"HAT253\", \"origin\": \"SEA\", \"destination\": \"BOS\", \"date\": \"2024-05-17\", \"price\": 52}], \"passengers\": [{\"first_name\": \"Noah\", \"last_name\": \"Muller\", \"dob\": \"1963-01-22\"}], \"payment_history\": [{\"payment_id\": \"credit_card_7574394\", \"amount\": 328}], \"created_at\": \"2024-05-09T15:14:07\", \"total_baggages\": 0, \"nonfree_baggages\": 0, \"insurance\": \"yes\", \"status\": null}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 5924,
+        "completion": 22,
+        "cached": 5440
+      }
+    },
+    {
+      "turn_idx": 5,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT228\", \"date\": \"2024-05-27\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6277,
+        "completion": 496,
+        "cached": 5824
+      }
+    },
+    {
+      "turn_idx": 6,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT202\", \"date\": \"2024-05-28\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6319,
+        "completion": 30,
+        "cached": 6208
+      }
+    },
+    {
+      "turn_idx": 7,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT192\", \"date\": \"2024-05-28\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6361,
+        "completion": 30,
+        "cached": 6208
+      }
+    },
+    {
+      "turn_idx": 8,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT041\", \"date\": \"2024-05-29\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6403,
+        "completion": 30,
+        "cached": 6272
+      }
+    },
+    {
+      "turn_idx": 9,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT006\", \"date\": \"2024-05-11\"})",
+      "execution_output": "landed",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6445,
+        "completion": 30,
+        "cached": 6336
+      }
+    },
+    {
+      "turn_idx": 10,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT018\", \"date\": \"2024-05-11\"})",
+      "execution_output": "delayed",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6488,
+        "completion": 30,
+        "cached": 6336
+      }
+    },
+    {
+      "turn_idx": 11,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT040\", \"date\": \"2024-05-17\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6531,
+        "completion": 463,
+        "cached": 6400
+      }
+    },
+    {
+      "turn_idx": 12,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "get_flight_status({\"flight_number\": \"HAT253\", \"date\": \"2024-05-17\"})",
+      "execution_output": "available",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6573,
+        "completion": 30,
+        "cached": 6464
+      }
+    },
+    {
+      "turn_idx": 13,
+      "thought": "I'm sorry to hear about your experience. Let me share what I found on your account, because there's something I want to confirm with you.\n\nYou have two reservations:\n\n| Reservation | Route | Dates | Status |\n|---|---|---|---|\n| **SDZQKO** (most recent, created 2024-05-13) | LAX → MIA, round trip | May 27 – 29 | All 4 flights currently **available** — no delays |\n| **4OG6T3** (created 2024-05-09) | BOS → LAS, round trip | May 11 – 17 | HAT006 (BOS→SEA, May 11) **landed**; HAT018 (SEA→LAS, May 11) **delayed**; returns May 17 available |\n\nYour most recent reservation (SDZQKO) doesn't show any delays. The delayed flight, **HAT018 from Seattle to Las Vegas on May 11**, is on reservation **4OG6T3**.\n\nCan you confirm that's the one you're referring to? And if so, would you like me to look into **changing or cancelling** that reservation? I want to make sure I have the right trip before I take any next steps.",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: I don’t remember the reservation number, but I thought the delayed flight was on my most recent reservation. If the delayed flight is actually on that older one, then yes, that’s the one I’m talking about. But I definitely don’t want to change or cancel it—I would never do that. I just want to complain about how frustrated I am. That delay was a complete nightmare and really messed up my plans. I’m very unhappy about the whole experience.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6615,
+        "completion": 1884,
+        "cached": 6464
+      }
+    },
+    {
+      "turn_idx": 14,
+      "thought": "I'm really sorry to hear how much that delay affected your trip — that sounds genuinely frustrating, and I understand why you'd want to raise it.\n\nI've confirmed the facts: flight **HAT018 (Seattle → Las Vegas, May 11)** on reservation **4OG6T3** is indeed showing as **delayed**. I apologize for the experience.\n\nHowever, I want to be upfront with you about what I'm able to do. For delayed flights, the only remedy available to me is a goodwill travel certificate of $50 × number of passengers (in this case, 1 passenger on that reservation), and that is offered **only in connection with changing or cancelling** the affected reservation. Since you've told me you don't want to change or cancel 4OG6T3, I'm not able to issue compensation for the delay on its own.\n\nIf you ever change your mind about that, just let me know and I'll be glad to help.\n\nIn the meantime, I'm happy to keep working on your new trip. To book San Francisco → New York for three passengers, I just need:\n1. **Trip type** — one way or round trip?\n2. **Departure date** (and return date if round trip)\n3. **Cabin class** — basic economy, economy, or business\n4. **Passenger names and dates of birth** for all three travelers",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: Honestly, this is really disappointing. I’ve already told you I’m not changing or cancelling that reservation, but that doesn’t mean the delay didn’t seriously impact me. It was a complete nightmare and I expect the airline to take some responsibility for how much it messed up my plans. You mentioned the certificate is only available with a change or cancellation, but since I’m not doing that, I’m asking you directly now: can you offer me any kind of compensation or goodwill gesture for the trouble this delay caused?\n\nAs for the San Francisco to New York flight, I’ll have to call back later to finish that booking—I don’t have the travel dates or passenger details with me right now.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 6991,
+        "completion": 786,
+        "cached": 6528
+      }
+    },
+    {
+      "turn_idx": 15,
+      "thought": "I hear you, and I'm genuinely sorry the delay disrupted your plans so much — that's not the experience we want you to have, and I don't blame you for being upset about it.\n\nI do want to be straight with you rather than give you the runaround, though. I've re-checked the guidelines available to me, and for a delayed flight I can only issue a goodwill certificate as part of changing or cancelling the affected reservation — in your case, $50 × 1 passenger on reservation 4OG6T3. Since you've clearly told me you don't want to change or cancel that trip, there isn't another compensation or goodwill option I'm authorized to provide for this delay. I'm not able to issue a certificate on its own, and I don't want to lead you to expect something I can't deliver.\n\nI'm sorry that's the answer, especially after you've taken the time to explain the impact on you.\n\nIf you'd like, I can **transfer you to a human agent** who may have additional options to review your case — just say the word and I'll set that up right away.\n\nRegarding San Francisco → New York for three passengers: I completely understand not having the details handy. Whenever you're ready, I'll just need the trip type (one way or round trip), travel dates, cabin class, and each passenger's first name, last name, and date of birth. I'll be here to pick it up.",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: Yes, please transfer me to a human agent. I’m not satisfied with the answer that there’s no compensation available for the delay, and I’d like someone else to review my case. And just to be clear, I’m still not changing or cancelling that reservation.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7440,
+        "completion": 1261,
+        "cached": 6912
+      }
+    },
+    {
+      "turn_idx": 16,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "transfer_to_human_agents({\"summary\": \"User noah_muller_9847 (Noah Muller, gold member) is requesting escalation regarding a delayed flight. Reservation 4OG6T3 (BOS -> LAS, round trip, basic economy, 1 passenger, insurance: yes). Flight HAT018 (SEA -> LAS, 2024-05-11) status is \\\"delayed\\\"; HAT006 (BOS -> SEA, 2024-05-11) landed; return flights 2024-05-17 available. I confirmed the delay with get_flight_status. User is very frustrated and explicitly requesting compensation / a goodwill gesture for the delayed flight. Per policy, compensation for delayed flights is only offered in connection with changing or cancelling the affected reservation ($50 x number of passengers = $50). The user has repeatedly and explicitly stated they do NOT want to change or cancel reservation 4OG6T3, so no certificate was issued. User is asking a human agent to review whether any compensation is available. No changes have been made to any reservation. Separately, the user began a booking request for SFO -> New York for 3 passengers but does not yet have travel dates or passenger details and will follow up later.\"})",
+      "execution_output": "Transfer successful",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7811,
+        "completion": 279,
+        "cached": 7360
+      }
+    },
+    {
+      "turn_idx": 17,
+      "thought": "YOU ARE BEING TRANSFERRED TO A HUMAN AGENT. PLEASE HOLD ON.",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: ###TRANSFER###",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8090,
+        "completion": 23,
+        "cached": 7744
+      }
+    }
+  ],
+  "total_cost_usd": 0.0,
+  "total_tokens": {
+    "prompt": 109770,
+    "completion": 5817,
+    "cached": 105024
+  },
+  "cost_accounting_version": 2,
+  "usage_event_ids": [
+    "4cdf44ab8a3444709c6aaac43c67ee5a",
+    "edaaff538c2b4edfaf2214fd66d598fa",
+    "41252e2822e14ed69bbfd2355d59f53d",
+    "8e750ed932464d489b7237788837dec2",
+    "b11d2b7465794e2fa9ea196b2e06c759",
+    "315ee971f0b5488db4c1fd3166a52400",
+    "c4e556ddb682466aa1efd65aee0190fd",
+    "ac2d1442bd4546ea9635f1fc63a849f9",
+    "113a8ab8f8f34a5fb5d2f724ace013a0",
+    "580a5e9f578f414cbea00a7fe0493079",
+    "259915aae16d4787aa9b711ae60f12f1",
+    "c95c76348f4642fda382303da737b383",
+    "eefb311128ce443686086dff483e30fd",
+    "397b6c68b1154428b22818a4de3a7f5d",
+    "9dc2a19aba15450a8d9ab5e7d20c8394",
+    "ba66e7854cc44c0abb20fefca8c1c011",
+    "cd883f6980334f718edc15942329f56c",
+    "41746889d2b4408aaf719fe1a1cbc6ef",
+    "4d8ab7ee48af477591a5813701d8a578",
+    "f8eb92f2175f45efb541c9b289a87116",
+    "d9a3c4810a794c7e8b98ceb9b2b649a6",
+    "74ca3a28883540d38ec694d3a1986905",
+    "fd9a6cdf6aab4ece8f66c56bb1676ba2"
+  ],
+  "cost_complete": true,
+  "user_sim_cost_usd": 0.0,
+  "extra": {
+    "benchmark": "tau2",
+    "memory": null,
+    "domain": "airline",
+    "solver_mode": "conversational",
+    "termination_reason": "TerminationReason.USER_STOP",
+    "num_messages": 36,
+    "xor_fixups": 1
+  },
+  "evaluation": {
+    "success": true,
+    "tests_passed": 0,
+    "tests_total": 0,
+    "details": "{\"termination_reason\": \"TerminationReason.USER_STOP\", \"reward_breakdown\": {\"RewardType.DB\": 1.0, \"RewardType.COMMUNICATE\": 1.0}}",
+    "reward": 1.0
+  }
+}

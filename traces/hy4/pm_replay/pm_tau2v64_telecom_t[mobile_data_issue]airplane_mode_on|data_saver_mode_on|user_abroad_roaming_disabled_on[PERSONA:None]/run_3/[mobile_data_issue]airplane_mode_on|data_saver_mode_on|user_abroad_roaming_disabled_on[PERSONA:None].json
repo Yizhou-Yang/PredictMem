@@ -1,0 +1,409 @@
+{
+  "task_id": "[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+  "experiment_name": "pm_tau2v64_telecom_t[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+  "config": {
+    "agent": {
+      "model": "openai/hy4-preview",
+      "max_turns": 30,
+      "temperature": 1.0,
+      "reasoning_effort": "high"
+    },
+    "appworld": {
+      "dataset": "dev",
+      "task_ids": null,
+      "experiment_name": "baseline"
+    },
+    "tau2": {
+      "domain": "telecom",
+      "task_split": "test",
+      "task_ids": [
+        "[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]"
+      ],
+      "solver_mode": null,
+      "user_llm": "openai/hy4-preview",
+      "user_llm_args": {
+        "temperature": 0.0,
+        "reasoning_effort": "high"
+      },
+      "max_steps": 100,
+      "max_errors": 10,
+      "seed": 42
+    },
+    "automationbench": {
+      "domains": [
+        "operations"
+      ],
+      "task_ids": null,
+      "split_file": null,
+      "split": null,
+      "repo_root": null,
+      "max_steps": 50,
+      "seed": 42
+    },
+    "memory": {
+      "enabled": false,
+      "pool_path": null,
+      "heuristics_at_start": false,
+      "retrieval_mode": "pre_generation",
+      "retriever": {
+        "type": "bm25",
+        "model_name": null,
+        "top_k": 5,
+        "seed": 0,
+        "base_url": null
+      },
+      "injection": {
+        "policy": "cumulative_dedup"
+      }
+    },
+    "predictmem": {
+      "enabled": true,
+      "predictor_model": "openai/hy4-preview",
+      "predictor_reasoning_effort": "high",
+      "predictor_temperature": 0.0,
+      "judge_model": "openai/hy4-preview",
+      "judge_temperature": 0.0,
+      "context_turns": 3,
+      "tau_admit": 0.55,
+      "weights": {
+        "semantic": 0.3,
+        "judge": 0.5,
+        "execution": 0.2
+      },
+      "retriever": "bm25",
+      "top_k": 0,
+      "max_records": 200,
+      "shared_bank": false,
+      "control_eps": 0.25,
+      "predict_consequential_only": true,
+      "horizon": 1,
+      "beam": 1,
+      "gamma": 0.9,
+      "gate": {
+        "enabled": true,
+        "tau_warn": 0.45,
+        "tau_block": 0.75
+      },
+      "ablation": {
+        "no_predictor": true,
+        "admit_all": false,
+        "no_versioning": false,
+        "no_gate": true
+      }
+    },
+    "logging": {
+      "trace_dir": "",
+      "save_every_turn": true,
+      "verbose": false
+    },
+    "accumulation": {
+      "max_failures": 8,
+      "num_success_to_continue": 3,
+      "extraction_model": "gpt-5.4",
+      "extraction_reasoning_effort": null,
+      "save_traces": true
+    },
+    "generation": {
+      "stage": "daedalus",
+      "sandbox_dataset": "train",
+      "explorer_model": "gpt-5.4",
+      "explorer_reasoning_effort": "high",
+      "explorer_max_turns": 40,
+      "explorer_last_turn_grace": 10,
+      "explorer_turn_steering": false,
+      "judge_model": "gpt-5.4",
+      "judge_reasoning_effort": "high",
+      "num_sessions": 90,
+      "num_explorers": 5,
+      "coverage_tags": true,
+      "coverage_tags_path": null,
+      "coverage_tags_max_turns": 100,
+      "coverage_escalate_after": 0.5,
+      "coverage_escalate_ratio": 0.5,
+      "explorer_guidelines": true,
+      "max_refinements": 5,
+      "min_novelty": -1.0,
+      "excluded_apps": [],
+      "spec_max_rejections": 3,
+      "reject_multi_item_exchange": false,
+      "withhold_discoverable_ids": false
+    },
+    "run": {
+      "max_tasks": null,
+      "parallel": 1,
+      "force": false,
+      "num_runs": 5
+    },
+    "cost_accounting": {
+      "enabled": true,
+      "ledger_dir": "",
+      "price_snapshot": "",
+      "require_complete_estimates": false,
+      "launch_id": "20261028T101336Z_3920686_6fa8aa"
+    },
+    "provider_routing": {
+      "order": [],
+      "only": [],
+      "ignore": [],
+      "quantizations": [],
+      "sort": "",
+      "allow_fallbacks": true
+    },
+    "benchmark": "tau2",
+    "experiment_name": "pm_tau2v64_telecom_t[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+    "kind": "inference",
+    "category": "predictmem",
+    "setup": "daedalus"
+  },
+  "task_instruction": "Instructions:\n\tDomain: telecom\n\tReason for call:\n\t\tYou mobile data is not working properly. It either stops working or is very slow. You want to fix it and absolutely want to get excellent internet speed on your phone. You are not willing to accept any other internet speed (poor, fair or good). You do not have access to wifi.\n\tKnown info:\n\t\tYou are John Smith with phone number 555-123-2002. You are currently abroad in France.\n\tTask instructions:\n\t\tIf the agent suggests actions that don't immediately fix the issue, follow their guidance but express mild frustration after the first unsuccessful attempt. You will consider the issue resolved only when speed test returns excellent internet speed and nothing else. If it returns poor, fair or good, you will not consider the issue resolved. You are willing to refuel 2.0 GB of data if necessary, but you do not want to change your mobile data plan. If the tool call does not return updated status information, you might need to perform another tool call to get the updated status. \n\t\tWhenever the agent asks you about your device, always ground your responses on the results of tool calls. \n\t\tFor example: If the agent asks what the status bar shows, always ground your response on the results of the `get_status_bar` tool call. If the agent asks if you are able to send an MMS message, always ground your response on the results of the `can_send_mms` tool call.\n\t\tNever make up the results of tool calls, always ground your responses on the results of tool calls.\n\t\tIf you are unsure about whether an action is necessary, always ask the agent for clarification.\n",
+  "timestamp": "2026-10-28T10:18:00.207781+00:00",
+  "success": true,
+  "num_turns": 13,
+  "turns": [
+    {
+      "turn_idx": 0,
+      "thought": "Hi! How can I help you today?",
+      "reasoning_with_memory": "",
+      "query": "",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_id({\"id\": \"L1002\"})\n- get_details_by_id({\"id\": \"P1002\"})\n- get_data_usage({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})\n- enable_roaming({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})\n- get_data_usage({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})\n- get_details_by_id({\"id\": \"L1002\"})\n\nHi, my mobile data has been acting up — it either stops working completely or crawls along really slowly. I'd really like to get it sorted out today.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 0,
+        "completion": 0
+      }
+    },
+    {
+      "turn_idx": 1,
+      "thought": "I'd be happy to help you sort out your mobile data today. Let me start by pulling up your account.",
+      "reasoning_with_memory": "",
+      "query": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_",
+      "retrieved_memories": [],
+      "code": "get_customer_by_phone({\"phone_number\": \"555-123-2002\"})",
+      "execution_output": "{\"customer_id\": \"C1001\", \"full_name\": \"John Smith\", \"date_of_birth\": \"1985-06-15\", \"email\": \"john.smith@example.com\", \"phone_number\": \"555-123-2002\", \"address\": {\"street\": \"123 Main St\", \"city\": \"Anytown\", \"state\": \"CA\", \"zip_code\": \"90210\"}, \"account_status\": \"Active\", \"payment_methods\": [{\"method_type\": \"Credit Card\", \"account_number_last_4\": \"1235\", \"expiration_date\": \"12/2026\"}], \"line_ids\": [\"L1001\", \"L1002\", \"L1003\"], \"bill_ids\": [\"B1001\", \"B1002\", \"B1003\"], \"created_at\": \"2025-01-15 10:30:00\", \"last_extension_date\": null, \"goodwill_credit_used_this_year\": 25.0}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7426,
+        "completion": 273,
+        "cached": 7232
+      }
+    },
+    {
+      "turn_idx": 2,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_",
+      "retrieved_memories": [],
+      "code": "get_details_by_id({\"id\": \"L1001\"})",
+      "execution_output": "{\"line_id\": \"L1001\", \"phone_number\": \"555-123-2001\", \"status\": \"Active\", \"plan_id\": \"P1001\", \"device_id\": \"D1001\", \"data_used_gb\": 3.2, \"data_refueling_gb\": 0.0, \"roaming_enabled\": false, \"contract_end_date\": \"2026-12-31\", \"last_plan_change_date\": \"2025-01-10\", \"last_sim_replacement_date\": null, \"suspension_start_date\": null}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7666,
+        "completion": 18,
+        "cached": 7360
+      }
+    },
+    {
+      "turn_idx": 3,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_",
+      "retrieved_memories": [],
+      "code": "get_details_by_id({\"id\": \"L1002\"})",
+      "execution_output": "{\"line_id\": \"L1002\", \"phone_number\": \"555-123-2002\", \"status\": \"Active\", \"plan_id\": \"P1002\", \"device_id\": \"D1002\", \"data_used_gb\": 8.7, \"data_refueling_gb\": 0.0, \"roaming_enabled\": false, \"contract_end_date\": \"2026-12-31\", \"last_plan_change_date\": \"2024-12-15\", \"last_sim_replacement_date\": \"2025-01-20\", \"suspension_start_date\": null}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7816,
+        "completion": 18,
+        "cached": 7552
+      }
+    },
+    {
+      "turn_idx": 4,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_",
+      "retrieved_memories": [],
+      "code": "get_details_by_id({\"id\": \"P1002\"})",
+      "execution_output": "{\"plan_id\": \"P1002\", \"name\": \"Premium Plan\", \"data_limit_gb\": 15.0, \"price_per_month\": 65.0, \"data_refueling_price_per_gb\": 2.0}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 7972,
+        "completion": 18,
+        "cached": 7744
+      }
+    },
+    {
+      "turn_idx": 5,
+      "thought": "I can see you have a line with 8.7 GB used of 15 GB on the Premium Plan. Could you confirm which phone number is having the data issue, and tell me a bit more? Specifically:\n\n1. Is this happening in one location or everywhere you go?\n2. Does it stop completely, or is it more often just very slow?",
+      "reasoning_with_memory": "",
+      "query": "User: [Reusable workflow from similar tasks]\nPrevious successful actions for this task:\n- get_customer_by_phone({\"phone_number\": \"555-123-2002\"})\n- get_details_by_id({\"id\": \"L1001\"})\n- get_details_by_",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile data.\n2. It's both, honestly. Sometimes it drops out completely and nothing loads at all, and other times it connects but is painfully slow — pages take forever, videos won't play.\n\nI really need this working properly, and I'm specifically hoping to get excellent speed out of it, not just \"good enough.\"",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8054,
+        "completion": 76,
+        "cached": 7872
+      }
+    },
+    {
+      "turn_idx": 6,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile dat",
+      "retrieved_memories": [],
+      "code": "get_data_usage({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})",
+      "execution_output": "{\"line_id\": \"L1002\", \"data_used_gb\": \"8.7\", \"data_limit_gb\": \"15.0\", \"data_refueling_gb\": \"0.0\", \"cycle_end_date\": \"2025-02-28\"}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8255,
+        "completion": 173,
+        "cached": 7936
+      }
+    },
+    {
+      "turn_idx": 7,
+      "thought": "You're abroad in France, and roaming isn't currently enabled on line 555-123-2002. Let me enable that for you now — it's at no cost.",
+      "reasoning_with_memory": "",
+      "query": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile dat",
+      "retrieved_memories": [],
+      "code": "enable_roaming({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})",
+      "execution_output": "Roaming enabled successfully",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8350,
+        "completion": 97,
+        "cached": 8128
+      }
+    },
+    {
+      "turn_idx": 8,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile dat",
+      "retrieved_memories": [],
+      "code": "get_data_usage({\"customer_id\": \"C1001\", \"line_id\": \"L1002\"})",
+      "execution_output": "{\"line_id\": \"L1002\", \"data_used_gb\": \"8.7\", \"data_limit_gb\": \"15.0\", \"data_refueling_gb\": \"0.0\", \"cycle_end_date\": \"2025-02-28\"}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8392,
+        "completion": 27,
+        "cached": 8256
+      }
+    },
+    {
+      "turn_idx": 9,
+      "thought": "",
+      "reasoning_with_memory": "",
+      "query": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile dat",
+      "retrieved_memories": [],
+      "code": "get_details_by_id({\"id\": \"L1002\"})",
+      "execution_output": "{\"line_id\": \"L1002\", \"phone_number\": \"555-123-2002\", \"status\": \"Active\", \"plan_id\": \"P1002\", \"device_id\": \"D1002\", \"data_used_gb\": 8.7, \"data_refueling_gb\": 0.0, \"roaming_enabled\": true, \"contract_end_date\": \"2026-12-31\", \"last_plan_change_date\": \"2024-12-15\", \"last_sim_replacement_date\": \"2025-01-20\", \"suspension_start_date\": null}",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8487,
+        "completion": 18,
+        "cached": 8320
+      }
+    },
+    {
+      "turn_idx": 10,
+      "thought": "I found the main problem and fixed it on the account side.\n\n**What I found on line 555-123-2002:**\n- Line status: **Active** (not suspended)\n- Data usage: **8.7 GB of 15 GB** — well within your allowance, so you have not hit a data limit\n- International roaming: **was OFF** — this is why your data dropped out completely in France\n\n**What I did:**\n- ✅ **Enabled international roaming** on line 555-123-2002, at no additional charge. This was the cause of the total dropouts.\n\n**What you need to do on your phone now (important):**\nOn the device itself, please turn **Data Roaming ON** in your settings — the line is now roaming-enabled on our side, but your phone also needs the data roaming switch on to connect abroad.\n\n**Regarding speed:**\nYour plan has sufficient data remaining this cycle, so once roaming is active you should have a working connection. If speeds are still slow after enabling data roaming on your phone, these are the things worth checking — let me know and I can walk you through any of them:\n- Your phone's network mode preference (older 2G/3G settings will be painfully slow)\n- Data Saver mode being on\n- An active VPN slowing things down\n- Airplane mode or mobile data being toggled off\n\nCould you turn on data roaming on your phone and let me know what you see — does it connect, and how fast is it now?",
+      "reasoning_with_memory": "",
+      "query": "User: It's the 555-123-2002 line. To answer your questions:\n\n1. It's happening everywhere I go — I'm currently abroad in France, and I don't have access to Wi-Fi, so I'm relying entirely on mobile dat",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: I'll turn on data roaming on my phone now.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 8643,
+        "completion": 327,
+        "cached": 8384
+      }
+    },
+    {
+      "turn_idx": 11,
+      "thought": "Yes — that's exactly the right thing to try next. Data Saver is a very likely contributor to the slowness you're seeing.\n\n**Please turn Data Saver OFF**, then re-run the speed test and tell me the result.\n\nWhy this matters: Data Saver restricts background data usage and can cap/throttle how much data apps get, which commonly shows up as pages loading slowly and videos refusing to play — even when you have strong 5G signal and full data allowance.\n\nEverything else in your status bar looks healthy:\n- Excellent signal ✅\n- 5G (best available network mode) ✅\n- Data enabled ✅\n- Airplane mode off ✅\n\nSo Data Saver is the one remaining item that's actively limiting you. Also, I can confirm again that your line is roaming-enabled on our side and you still have plenty of data left (8.7 GB of 15 GB this cycle), so there's no account-side limit holding you back.\n\nTurn off Data Saver, run the speed test again, and let me know the number.",
+      "reasoning_with_memory": "",
+      "query": "User: I turned data roaming on and ran a speed test — it came back at **55.00 Mbps, which is \"Good,\" not excellent**. Honestly, that's a bit frustrating since I was really hoping for excellent speed.\n",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: I'll turn Data Saver off now.",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 9095,
+        "completion": 403,
+        "cached": 8576
+      }
+    },
+    {
+      "turn_idx": 12,
+      "thought": "You're very welcome — glad we got it fully sorted! 🎉\n\n**Here's a summary of what resolved your issue on line 555-123-2002:**\n\n| Issue | Cause | Fix |\n|---|---|---|\n| Data dropping out completely | International roaming was OFF on the line while you're in France | ✅ Enabled roaming on our side (no charge) |\n| Painfully slow speeds | Data Saver mode was ON | ✅ Turned Data Saver OFF |\n\n**Result:** 55 Mbps (Good) → **275 Mbps (Excellent)** on 5G with full signal.\n\n**A couple of quick notes for the rest of your trip:**\n- Roaming is now enabled on the line permanently, so you don't need to call us again for future travel. You'll still want to keep the Data Roaming switch ON on your phone while abroad, though.\n- Your data usage is **8.7 GB of 15 GB** for this cycle, which ends **2025-02-28**. You're well within your allowance, so no throttling to worry about. If you do happen to approach the 15 GB limit, you can add up to 2 GB of extra data at $2.00/GB, or we can look at plan options — just let me know.\n\nSafe travels in France, and enjoy the rest of your trip! Anything else I can help with?",
+      "reasoning_with_memory": "",
+      "query": "User: Excellent — that did it! The speed test now shows **275.00 Mbps (Excellent)**. That's a huge jump from the 55 Mbps we were getting with Data Saver on.\n\nMy status bar now reads: excellent signal,",
+      "retrieved_memories": [],
+      "code": "",
+      "execution_output": "User: No, that's everything — I'm all set. Thanks again for getting me to excellent speed, and for enabling the roaming at no charge. Have a great day!\n\n###STOP###",
+      "execution_success": true,
+      "token_usage": {
+        "prompt": 9431,
+        "completion": 292,
+        "cached": 9024
+      }
+    }
+  ],
+  "total_cost_usd": 0.0,
+  "total_tokens": {
+    "prompt": 99587,
+    "completion": 1740,
+    "cached": 96384
+  },
+  "cost_accounting_version": 2,
+  "usage_event_ids": [
+    "7b336118d3274f38b953e9fe3def37a8",
+    "1929027f843b4859964e7a9a38a80b3a",
+    "2442016d913b457d979386072fef33b7",
+    "6efcb4905af64ffdb9a1ffd356c07970",
+    "c0486e4510bb4b44b590d42da16050d5",
+    "c73c32d619c143f89aa63a73afc8916a",
+    "0e7bedb95f93481d88b4580f48e09af8",
+    "e89c0a73e85e40abb6fbdc2d5cb053e9",
+    "e00760d5d13e46b38aaa75284a61f598",
+    "a06f508997ae428e83bc7d49dd8e0eeb",
+    "7a2ec664ec0c4201b88e36d8eb3338b1",
+    "e9e6fb6965ca4e26906cd8ecad293525",
+    "971066cbe2674379bde566f49aa8376d",
+    "364457b339fe42a7a06b65b171e137c3",
+    "1253b5b50b1840ed88a28686798a2257",
+    "b4963d8514184a6489fda85f61d5e3f7",
+    "1cd273b69782446cac6417762d6b2e21",
+    "67249b13ed924bc79c1d8633fa7cc70b",
+    "0f2abfc40b49468ea4249677e65ae148",
+    "c2f2f76818284be9ac4b9baf3ed12d15",
+    "21de1d10cc934c7584454aab913e9565",
+    "d18556db1eac4afd8d029cc4eb0a0567",
+    "87d1f962ec364563a43ae60aabd03851",
+    "9a1a2011305d46739d1e681faa348d1f"
+  ],
+  "cost_complete": true,
+  "user_sim_cost_usd": 0.0,
+  "extra": {
+    "benchmark": "tau2",
+    "memory": null,
+    "domain": "telecom",
+    "solver_mode": "conversational",
+    "termination_reason": "TerminationReason.USER_STOP",
+    "num_messages": 40,
+    "xor_fixups": 2
+  },
+  "evaluation": {
+    "success": true,
+    "tests_passed": 0,
+    "tests_total": 0,
+    "details": "{\"termination_reason\": \"TerminationReason.USER_STOP\", \"reward_breakdown\": {\"RewardType.ENV_ASSERTION\": 1.0}}",
+    "reward": 1.0
+  }
+}
