@@ -153,3 +153,16 @@ them much slower); their partial numbers are not comparable yet.
 
 Conclusion: **replay is the only positive component.** Adding the predictor/gate/memory stack
 turns the +5.6 gain into a −9.7 loss; the controller components are harmful, not neutral.
+
+## 2026-10-30 16:40 — calibrated predictor still not positive
+
+| Setting | Result | Compare |
+|---|---|---|
+| LME score-based predictor | 0.2992 (abstain 0) | retrieval-only 0.3021 → no gain |
+| ALF predictor on, gate off | 80.3% (249/310) | no predictor 78.6% (316/402) → no gain |
+| ALF with gate | 61.9% (402) | gate hurts |
+| τ² v68 destructive gate | 87.7% (13 tasks) | replay_only 92.3% on same tasks; baseline 81.5 |
+
+The predictor is neutral when it does not gate, and harmful when it gates. Replay/retrieval is
+where the gain comes from. Calibration (eps, score-based risk, destructive-only) did not
+produce a positive predictor contribution on any benchmark.
