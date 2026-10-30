@@ -142,3 +142,14 @@ content so far, but the gain is small.
 
 replay-only is complete on 39 tasks. full/gate_pred are still running (predictor+gate make
 them much slower); their partial numbers are not comparable yet.
+
+## 2026-10-30 14:25 — τ² ablation complete enough to conclude
+
+| Arm | n | PM | vs baseline | vs replay_only |
+|---|---|---|---|---|
+| replay_only | 39 | 83.6% | +5.6 (SE 3.8) | — |
+| full (predictor+gate+memory+replay) | 29 | 65.5% | **−9.7 (SE 6.1)** | **−15.9 (SE 4.7)** |
+| gate_pred (no replay) | 31 | 58.7% | **−18.1 (SE 7.5)** | **−23.9 (SE 6.1)** |
+
+Conclusion: **replay is the only positive component.** Adding the predictor/gate/memory stack
+turns the +5.6 gain into a −9.7 loss; the controller components are harmful, not neutral.
