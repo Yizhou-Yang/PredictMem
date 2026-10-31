@@ -175,3 +175,20 @@ a single task exceeded the 7200 s subprocess timeout. Per-step cost is ~3x the b
 does not fit a 5-run evaluation.
 
 v68 (destructive-only gate): 21 tasks, 72.4%, still below replay-only 83.6%.
+
+## 2026-10-31 16:20 — predictor-gated cross-task reuse (v71)
+
+26 common retail tasks:
+
+| Arm | success |
+|---|---|
+| v71 (predictor gates cross-task replay) | 80.0% |
+| replay_only | 79.2% |
+| baseline | 73.8% |
+
+Paired v71 vs replay_only: **+0.8** (not significant). The predictor admits or rejects cross-task
+trajectories, but the admitted ones add nothing beyond same-task replay.
+
+Log analysis of the predictor itself: mean risk 0.101 (success) vs 0.107 (failure), predicted
+success 1.00 vs 0.986. No discriminative signal. Tool-error rate is the only signal that
+separates outcomes: 0.4% (success) vs 4.4% (failure).
