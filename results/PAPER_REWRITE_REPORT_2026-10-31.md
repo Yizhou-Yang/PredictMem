@@ -44,3 +44,16 @@ not forecast effects), with a contrast against ACE/ExpeL/DAEDALUS.
 - Compile with the target template (no TeX on this machine).
 - Replace the LoCoMo sentence if the ExpeL comparison (29.2) must appear in the abstract.
 - Limitations section: predictor/gate ablation is negative; replay/retrieval carry the gains.
+
+## Method + Experiments rewrite (same skill)
+
+- Method now describes the **effect record**, **replay/retrieval reuse**, and an **optional
+  predictor/controller**, matching the implementation rather than claiming a working gate.
+- New Experiments section: setup (four official harnesses), main results per benchmark,
+  competitor comparison on the same splits, component ablation, limitations.
+- New `tab:ablation` on τ² retail: no memory 77.9, replay only **83.6**, full 65.5,
+  gate without replay 58.7.
+- Abstract deliberately does **not** contain the LoCoMo ExpeL 29.2 number; that comparison is
+  in the Experiments section only.
+- Checker on Method+Experiments: **0 errors, 0 warnings**, 1 NOTE (numeric claim with a test
+  statistic nearby, which is fine).
