@@ -166,3 +166,12 @@ turns the +5.6 gain into a −9.7 loss; the controller components are harmful, n
 The predictor is neutral when it does not gate, and harmful when it gates. Replay/retrieval is
 where the gain comes from. Calibration (eps, score-based risk, destructive-only) did not
 produce a positive predictor contribution on any benchmark.
+
+## 2026-10-31 15:20 — rerank fires but is too slow
+
+v70 (predictor rerank, 2 extra candidates + 1 predictor call per candidate) produced
+**364 rerank events**, so the mechanism now executes. It also produced only 2 evaluations:
+a single task exceeded the 7200 s subprocess timeout. Per-step cost is ~3x the baseline and
+does not fit a 5-run evaluation.
+
+v68 (destructive-only gate): 21 tasks, 72.4%, still below replay-only 83.6%.
