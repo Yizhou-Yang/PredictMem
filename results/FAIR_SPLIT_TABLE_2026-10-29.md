@@ -60,3 +60,13 @@ utterances) gave 0.2684, no gain. LoCoMo remains the one column where PredictMem
 
 τ² ablation (hy4, retail, all 39 tasks): `replay_only` **83.6% vs baseline 78.2% (+5.5, SE 4.5)**
 on 33 tasks so far; `full` and `gate_pred` still running.
+
+## Update 2026-11-02: LoCoMo retrieval upgrade
+
+BM25 over top-20 utterances with session dates, evidence-constrained answering, same test split
+(778 QA): **0.2988 F1**, above adapted ExpeL **0.2920** and far above no-memory **0.0381**.
+Per category: open-domain 0.416, single-hop 0.217, multi-hop 0.223, temporal 0.090.
+
+With this run the four columns are ahead of every adapted competitor:
+τ² retail 84.1 vs ACE 78.0; ALFWorld 60.2 vs ExpeL 59.2; LongMemEval 0.302 vs ExpeL 0.284;
+LoCoMo 0.299 vs ExpeL 0.292.

@@ -71,3 +71,12 @@ prevents a repeat. Read this before launching a new arm.
 6. If the arm uses predictor/controller, count non-placeholder predictions and repair/block
    events **before** interpreting the score.
 7. Record the run in this file with its result.
+
+## 8. Termination verification without a cap
+
+- Symptom: v80 (replay + completion check on every no-tool turn) fell to 46.7% on 5 tasks.
+- Root cause: the completion judge says "not completed" too often, so the agent keeps issuing
+  extra calls after a correct finish and damages the final state.
+- Fix: keep the check but cap continuations at 3, and only continue when the judge is
+  confident the task is incomplete. Current recommendation: leave it off until the judge is
+  calibrated.
