@@ -67,3 +67,17 @@ utterance with its session date and instruct the model to convert relative expre
 | controller termination | 8/10 τ² failures | verify completion on every no-tool turn |
 | retrieval representation | LME multi-session, LoCoMo temporal | session dates in evidence; per-session retrieval |
 | predictor risk | gate over-blocks; repair replaces correct calls | keep it narrow (precondition / repeated failure), never terminate |
+
+## Cross-benchmark view (2026-11-02, later)
+
+| Benchmark | Failure signature | Evidence from logs | What the predictor should decide |
+|---|---|---|---|
+| τ² | stop before completion | 10/10 failures end without a tool call; 8 have no tool error | "is the request satisfied?" at the stop point |
+| ALFWorld | wandering | losing games 48.5 steps vs 10.2 for wins; no repeated action, mostly `go to` | "has this subgoal made progress?" -> ask for unexplored locations |
+| LongMemEval | single-session evidence for multi-session questions | gold 3 answered 1; gold 5 answered 2; "Not specified in memories" | "does this question need evidence from several sessions?" -> retrieve per session |
+| LoCoMo | temporal answers missing | category 2 F1 0.090; answers "No evidence", "session_2" | "is the required date present in the evidence?" -> escalate to the full conversation |
+
+The common role is **sufficiency detection**: the predictor decides whether the current
+evidence or progress is enough. The action it triggers is always *more search* (continue,
+retrieve per session, retrieve the full conversation), never termination and never a block.
+That is why earlier gate/abstain variants failed: they used the predictor to stop.
