@@ -70,3 +70,13 @@ Per category: open-domain 0.416, single-hop 0.217, multi-hop 0.223, temporal 0.0
 With this run the four columns are ahead of every adapted competitor:
 τ² retail 84.1 vs ACE 78.0; ALFWorld 60.2 vs ExpeL 59.2; LongMemEval 0.302 vs ExpeL 0.284;
 LoCoMo 0.299 vs ExpeL 0.292.
+
+## Update 2026-11-03: LongMemEval, all three components active
+
+Agreement-gated commit with dated retrieval (predictor active on every question, expansion only
+when the predictor disagrees, and the expanded answer committed only when the predictor also
+agrees): **0.3469 F1** against **0.3021** for plain retrieval on the same 500 questions.
+Paired difference +0.0447, SE 0.0136, **t = 3.29** (better 131, worse 95). Agreement rate 41.4%,
+escalation 64.6%.
+
+This is the first benchmark where the predictor is active on every example and positive.
