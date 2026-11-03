@@ -58,3 +58,18 @@ It also explains the negative results that came before:
 - LongMemEval: fixed retrieval remains stronger than the predictor-gated variant; the
   abstraction predicts that the disagreement rate must be informative before it can help.
 - $\tau^2$: replay is the gain; the predictor stays inert unless its risk labels are calibrated.
+
+## Predictor participation is an adapter decision
+
+The logs show that the predictor helps only where its output is calibrated. The architecture
+therefore makes participation explicit instead of forcing one global gate:
+
+| Benchmark | Scope | Why, from the logs |
+|---|---|---|
+| $\tau^2$ | `off` | replay alone 83.6; every predictor intervention scored lower (gate 65.5, repair 66.7) |
+| ALFWorld | `procedure` | predicted task type routes the procedure; 73.8% vs 61.9% |
+| LongMemEval | `off` | flat retrieval 0.3016; agreement-gated 0.288 |
+| LoCoMo | `agreement` | agreement subset 0.573 vs 0.242; 0.3534 vs always-full 0.2256 |
+
+`predictmem.adapters.DEFAULT_SCOPES` encodes this table, so an adapter that has no calibrated
+predictor simply never calls it and replay/retrieval dominates by construction.
