@@ -16,3 +16,11 @@ Each column removes one component while keeping the harness fixed.
 2. ALFWorld: a no-controller arm is the same as no-procedure because the controller only routes.
 3. LongMemEval / LoCoMo: a "no store" arm is the full-context baseline, already reported.
 4. Significance: tau2 paired t=1.83 (borderline); LoCoMo +0.08 needs a paired test.
+
+## Update 2026-11-04
+
+- LoCoMo full (agreement + expansion): **0.3534** vs full-context baseline 0.2190, paired
+  **t = 9.25** (767 paired questions), and vs top-k retrieval 0.2988. The 0.3534 rows are now in
+  `traces/memory/locomo_predcommit_rows.json`, so the cell is verifiable.
+- tau2: v84 runs the predictor-active arm on all 39 tasks (the earlier v83 driver silently kept a
+  10-task cap; recorded in the iteration log).

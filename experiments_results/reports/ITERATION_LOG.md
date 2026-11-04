@@ -80,3 +80,10 @@ prevents a repeat. Read this before launching a new arm.
 - Fix: keep the check but cap continuations at 3, and only continue when the judge is
   confident the task is incomplete. Current recommendation: leave it off until the judge is
   calibrated.
+
+## 9. task cap silently kept in a derived driver
+
+- Symptom: v83 reported "10 tasks" although it was meant to run all 39 retail tasks.
+- Root cause: the driver was derived from the fast-10 script, which hard-codes a 10-task slice.
+- Fix: v84 derives from the full 39-task runner; check the printed task count before interpreting
+  a run.
