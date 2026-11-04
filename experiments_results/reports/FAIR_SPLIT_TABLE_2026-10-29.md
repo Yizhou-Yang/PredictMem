@@ -80,3 +80,17 @@ Paired difference +0.0447, SE 0.0136, **t = 3.29** (better 131, worse 95). Agree
 escalation 64.6%.
 
 This is the first benchmark where the predictor is active on every example and positive.
+
+## Update 2026-11-04: fair no-memory baselines and tau2 predictor participation
+
+Fair baselines use the same short-answer prompt and the full conversation:
+
+| Benchmark | PM | Fair baseline | Note |
+|---|---|---|---|
+| ALFWorld | 74.9 (holdout 76.6) | 52.5 (holdout 50.7) | procedure routing, 402 games |
+| LongMemEval | 0.3469 | 0.3074 | agreement-gated, paired t=4.25 |
+| LoCoMo | 0.2988 | 0.2190 | predictor agreement + expansion |
+| tau2 retail | 84.1 | 77.9 | v82: predictor active every step, no gate; 73.3 vs replay 74.0 on 10 paired tasks (equal) |
+
+tau2 v82 keeps all three components active (predictor predicts each tool effect, store records
+prediction error, controller never vetoes) and matches replay within noise.

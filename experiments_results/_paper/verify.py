@@ -71,7 +71,7 @@ def main() -> None:
     for bench in ("longmemeval", "locomo"):
         base_rows = json.loads((TRACES / TABLE[bench]["trace_base"]).read_text())
         pm_rows = json.loads((TRACES / TABLE[bench]["trace_pm"]).read_text())
-        base = statistics.mean(float(r.get("f1_base", 0)) for r in base_rows)
+        base = statistics.mean(float(r.get("f1_base", r.get("f1", 0))) for r in base_rows)
         pm = statistics.mean(float(r.get("f1_mem", r.get("f1", 0))) for r in pm_rows)
         for name, paper, trace in (("baseline", TABLE[bench]["baseline"], base), ("pm", TABLE[bench]["pm"], pm)):
             checked += 1
