@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional
 
 from .core import Prediction, agree
+from .predict import Predictor
 from .llm import LLMClient
 
 
@@ -36,10 +37,10 @@ class QAEngine:
 
     def __init__(self, client: Optional[LLMClient] = None):
         self.client = client or LLMClient()
+        self.predictor = Predictor(self.client, kind="answer")
 
     def _predict(self, question: str, evidence: str) -> str:
-        out = self.client.generate(PREDICT_PROMPT.format(evidence=evidence[:20000], question=question), 120)
-        return "INSUFFICIENT" if out.upper().startswith("INSUFFICIENT") else out
+        return self.predictor(evidence, question).expected_effect
 
     def _answer(self, question: str, evidence: str) -> str:
         out = self.client.generate(ANSWER_PROMPT.format(evidence=evidence[:20000], question=question), 150)

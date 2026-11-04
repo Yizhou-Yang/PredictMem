@@ -10,6 +10,9 @@ from .core import (
 )
 from .llm import LLMConfig, LLMClient
 from .qa import QAEngine, QAResult
+from .reuse import Reuse, skeletonize
+from .predict import Predictor
+from . import controller
 
 __all__ = [
     "Decision",
@@ -22,5 +25,9 @@ __all__ = [
     "LLMClient",
     "QAEngine",
     "QAResult",
+    "Reuse",
+    "skeletonize",
+    "Predictor",
+    "controller",
 ]
 __version__ = "0.1.0"

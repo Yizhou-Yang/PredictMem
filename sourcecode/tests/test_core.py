@@ -42,3 +42,24 @@ def test_predictmem_expands_once_on_disagreement():
     assert decision.commit
     assert decision.reason == "agreement_after_expansion"
     assert calls["n"] == 2
+
+
+def test_skeletonize_drops_values():
+    from predictmem import skeletonize
+
+    out = skeletonize("get_order_details(order_id='#W123', user_id='u9')")
+    assert "get_order_details" in out and "<from current task>" in out and "W123" not in out
+
+
+def test_controller_expands_once():
+    from predictmem import controller
+    from predictmem.core import Prediction
+
+    calls = {"n": 0}
+
+    def predict(state, action):
+        calls["n"] += 1
+        return Prediction(expected_effect="x" if state == "wide" else "y")
+
+    out = controller.run(predict, "narrow", "x", expand=lambda s: "wide")
+    assert out.expanded and out.committed and calls["n"] == 2

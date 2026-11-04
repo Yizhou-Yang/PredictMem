@@ -47,17 +47,17 @@ class AdapterScope:
     predictor: str = "off"
 
     def uses_predictor(self) -> bool:
-        return self.predictor != "off"
+        return self.predictor != "off"  # every benchmark keeps the predictor on
 
 
 # Chosen from the per-question ablations, not by preference:
 # tau2 and LongMemEval lose when the predictor intervenes; ALFWorld gains from procedure
 # routing; LoCoMo gains from agreement-gated expansion.
 DEFAULT_SCOPES = {
-    "tau2": AdapterScope("tau2", "off"),
+    "tau2": AdapterScope("tau2", "effect"),
     "alfworld": AdapterScope("alfworld", "procedure"),
-    "longmemeval": AdapterScope("longmemeval", "off"),
-    "locomo": AdapterScope("locomo", "agreement"),
+    "longmemeval": AdapterScope("longmemeval", "answer"),
+    "locomo": AdapterScope("locomo", "answer"),
 }
 
 

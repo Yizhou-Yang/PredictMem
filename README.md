@@ -22,6 +22,10 @@ predictmem/              the memory layer, installable on its own
   core.py                  Prediction, Decision, EffectStore, PredictMem, agreement test
   qa.py                    QA adapter: independent answer prediction, agreement-gated expansion
   adapters.py              ProcedureRouter: predicted task/effect type -> procedure
+  predict.py               Predictor: one interface, answer/effect prompts
+  reuse.py                 skeleton replay + dated retrieval over the effect store
+  controller.py            agreement commit, one-round expansion, never terminate
+  benchmarks/qa.py         generic QA runner: question + pool + expand -> rows
   llm.py                   OpenAI-compatible client
 tests/                   offline unit tests
 examples/                runnable demos
