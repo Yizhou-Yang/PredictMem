@@ -20,7 +20,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+def _find_root(start: Path) -> Path:
+    for parent in [start.parent, *start.parents]:
+        if (parent / "vendor/daedalus").exists() or (parent / "experiments_results").exists():
+            return parent
+    return start.parent
+
+
+ROOT = _find_root(Path(__file__).resolve())
 PYTHON = str(ROOT / "vendor/daedalus/.venv/bin/python")
 DATASETS = Path("/data/workspace/mem_bench")
 
@@ -90,7 +97,10 @@ def main() -> None:
         script = QA_SCRIPTS.get((args.bench, args.profile))
         if not script:
             sys.exit(f"no script for {args.bench}/{args.profile}")
-        cmd = [PYTHON, str(ROOT / "scripts" / script)]
+        script_path = ROOT / "scripts" / script
+        if not script_path.exists():
+            script_path = ROOT / "sourcecode/scripts" / script
+        cmd = [PYTHON, str(script_path)]
 
     env = env_for(profile, extra)
     print("profile:", args.profile, profile.model, "| cmd:", " ".join(cmd))
