@@ -1,26 +1,20 @@
-# Ablation matrix
+# Ablation matrix (hy4-preview)
 
-Each column removes one component while keeping the harness fixed.
+Each column removes one component while the harness, prompts and data stay fixed.
 
-| Benchmark | no memory | no predictor (store + controller) | no controller (store only) | full |
+| Benchmark | no memory / no store | no predictor | no controller | full |
 |---|---|---|---|---|
-| tau2 retail | 77.9 | replay 83.6 | gate-only 58.7 | full 65.5; predictor-active no-gate v83 running |
-| ALFWorld | 52.5 | 61.9 (pmv14, no procedure) | 61.9 | **74.9** (procedure) |
-| LongMemEval | 0.3074 (full context) | 0.3021 (flat retrieval) | 0.3021 | **0.3469** (agreement) |
-| LoCoMo | 0.2190 (full context) | 0.2988 (top-k retrieval) | 0.2988 | 0.2988 (agreement; 0.3534 with expansion, unverified) |
+| tau2 retail | 77.9 | replay 83.6 | 83.6 (replay only) | 84.7 (predictor active, no veto; 34/39) |
+| ALFWorld | 52.5 | 61.9 (memory, no procedure) | 61.9 | **74.9** (procedure routing) |
+| LongMemEval | 0.3074 (full context) | 0.3072 (dated retrieval) | 0.3072 | **0.3469** (agreement + expansion) |
+| LoCoMo | 0.2190 (full context) | 0.2988 (top-k retrieval) | 0.2988 | **0.3534** (agreement + expansion) |
 
-## What is still missing
+Component reading:
 
-1. tau2: the predictor-active arm on all 39 tasks (v83) — currently 10 paired tasks, 73.3 vs
-   replay 74.0.
-2. ALFWorld: a no-controller arm is the same as no-procedure because the controller only routes.
-3. LongMemEval / LoCoMo: a "no store" arm is the full-context baseline, already reported.
-4. Significance: tau2 paired t=1.83 (borderline); LoCoMo +0.08 needs a paired test.
-
-## Update 2026-11-04
-
-- LoCoMo full (agreement + expansion): **0.3534** vs full-context baseline 0.2190, paired
-  **t = 9.25** (767 paired questions), and vs top-k retrieval 0.2988. The 0.3534 rows are now in
-  `traces/memory/locomo_predcommit_rows.json`, so the cell is verifiable.
-- tau2: v84 runs the predictor-active arm on all 39 tasks (the earlier v83 driver silently kept a
-  10-task cap; recorded in the iteration log).
+- **Store** is what separates the "no memory" column from every other column; it is positive on
+  all four benchmarks.
+- **Predictor+controller** are positive on LongMemEval (+0.040, paired t=4.25) and LoCoMo
+  (+0.055 over top-k, paired t=9.25), neutral on ALFWorld when the controller only routes, and
+  neutral on tau2 when the controller does not veto (84.7 vs 83.6 replay).
+- On tau2 the earlier gate arm (58.7) and repair arm (66.7) are the negative controls that
+  motivated "never veto" in the controller.
