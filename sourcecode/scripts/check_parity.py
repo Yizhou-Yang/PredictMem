@@ -17,6 +17,7 @@ from collections import Counter
 from pathlib import Path
 
 from predictmem import LLMClient, LLMConfig, QAEngine
+from predictmem.reuse import bm25_rank
 
 ROOT = Path(__file__).resolve().parents[2]
 ROWS = {
@@ -82,7 +83,9 @@ def main() -> None:
     sdk, stored = [], []
     for row in rows:
         pool = pools.get(row["q"], [])
-        result = engine.answer(row["q"], "\n".join(pool)[:28000], expand=None)
+        base = "\n".join(bm25_rank(pool, row["q"], 20))[:14000]
+        wider = "\n".join(pool)[:30000]
+        result = engine.answer(row["q"], base, expand=lambda _q, wider=wider: wider)
         sdk.append(f1(result.answer, row.get("gold", "")))
         stored.append(float(row.get("f1", 0)))
     sdk_mean = sum(sdk) / len(sdk)
