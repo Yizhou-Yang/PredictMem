@@ -1,4 +1,4 @@
-# Ablation matrix (hy4-preview)
+# Ablation matrix (hy4)
 
 Each column removes one component while the harness, prompts and data stay fixed.
 

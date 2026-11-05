@@ -130,7 +130,7 @@ PM 33 vs baseline 32 games (still running) — flat.
 
 ## 2026-10-27 — LongMemEval (replaces ScienceWorld)
 
-Official cleaned S, 500 questions, hy4-preview:
+Official cleaned S, 500 questions, hy4:
 
 | Arm | token F1 |
 |---|---|
@@ -270,7 +270,7 @@ ALFWorld hy4 baseline continues in v12.
 ## 20:20 — hy3 archived; hy4 quota raised
 
 - hy3 archived under `archive_hy3_20261027/` and `configs/archive_hy3/`; main tables will report
-  hy4-preview only.
+  hy4 only.
 - hy4 QPM quota: 600, 7-day peak 409, usage 68% → headroom exists.
 - Raised concurrency: v54 (failure memory, 99×5) to 28 workers; v53 (AWM holdout) to 20.
 - ALFWorld v12 (hy4) continues.

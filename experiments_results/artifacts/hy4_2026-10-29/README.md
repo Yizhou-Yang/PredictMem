@@ -1,6 +1,6 @@
-# Raw traces — hy4-preview, 2026-10-29
+# Raw traces — hy4, 2026-10-29
 
-All runs use `hy4-preview` via the taiji relay.
+All runs use `hy4` via the taiji relay.
 
 | File | Contents |
 |---|---|

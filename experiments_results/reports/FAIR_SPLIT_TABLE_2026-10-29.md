@@ -1,4 +1,4 @@
-# Fair-split main table (hy4-preview)
+# Fair-split main table (hy4)
 
 All competitor numbers use the same test split as the adapted banks.
 

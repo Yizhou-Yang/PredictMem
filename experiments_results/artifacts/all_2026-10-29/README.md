@@ -1,4 +1,4 @@
-# All traces — 2026-10-29 (hy4-preview + DeepSeek V4 Flash)
+# All traces — 2026-10-29 (hy4 + DeepSeek V4 Flash)
 
 | File | Contents |
 |---|---|
