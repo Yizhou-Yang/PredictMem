@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 import litellm
 
 DATA = "/data/workspace/mem_bench/locomo10.json"
-MODEL = os.environ.get("PM_MODEL", "openai/hy4-preview")
+MODEL = os.environ.get("PM_MODEL", "openai/hy4")
 API = os.environ.get("OPENAI_BASE_URL", "http://127.0.0.1:8743/v1")
 K = int(os.environ.get("PM_K", "20"))
 START = int(os.environ.get("PM_START", "764"))

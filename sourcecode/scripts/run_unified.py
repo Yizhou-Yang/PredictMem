@@ -40,7 +40,7 @@ class Profile:
 
 
 PROFILES = {
-    "hy4": Profile("http://127.0.0.1:8743/v1", "openai/hy4-preview", "no_think"),
+    "hy4": Profile("http://127.0.0.1:8743/v1", "openai/hy4", "no_think"),
     "deepseek": Profile("http://127.0.0.1:8745/v1", "openai/deepseek-flash", "low"),
 }
 

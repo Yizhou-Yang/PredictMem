@@ -4,7 +4,7 @@ Each column removes one component while the harness, prompts and data stay fixed
 
 | Benchmark | no memory / no store | no predictor | no controller | full |
 |---|---|---|---|---|
-| tau2 retail | 77.9 | replay 83.6 | 83.6 (replay only) | 84.7 (predictor active, no veto; 34/39) |
+| tau2 retail | 77.9 | replay 83.6 | 83.6 (replay only) | 83.1 (predictor active, no veto; 39/39, paired -0.5, t=-0.23) |
 | ALFWorld | 52.5 | 61.9 (memory, no procedure) | 61.9 | **74.9** (procedure routing) |
 | LongMemEval | 0.3074 (full context) | 0.3072 (dated retrieval) | 0.3072 | **0.3469** (agreement + expansion) |
 | LoCoMo | 0.2190 (full context) | 0.2988 (top-k retrieval) | 0.2988 | **0.3534** (agreement + expansion) |
